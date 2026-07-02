@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-primary: #0077B6;
+  --color-secondary: #2A9D8F;
+  --color-accent: #F4B400;
+  --color-highlight: #48CAE4;
+  --color-soft-white: #FAFCFC;
+  --color-light-sand: #F8F6F2;
+  --color-deep-navy: #1D3557;
+  --color-forest-green: #3A7D44;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F6F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #0077B633;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0077B666;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(29, 53, 87, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Animations */
+@keyframes ripple {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+.water-ripple {
+  animation: ripple 3s infinite ease-out;
+}
+
+/* Accessibility high contrast styles when body has .high-contrast */
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+body.high-contrast .bg-light-sand {
+  background-color: #111111 !important;
+}
+body.high-contrast .text-deep-navy {
+  color: #FFFFFF !important;
+}
+body.high-contrast .text-slate-600, body.high-contrast .text-slate-500 {
+  color: #DDDDDD !important;
+}
+body.high-contrast button, body.high-contrast a {
+  border: 2px solid #FFFFFF !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+}
+

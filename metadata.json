@@ -1,0 +1,6 @@
+{
+  "name": "Bislig City Tourism",
+  "description": "Official digital portal for the Bislig City Department of Tourism, Mindanao, Philippines. Explore pristine waterfalls like Tinuy-an Falls, crystal-clear enchanted rivers, build custom itineraries, and plan your perfect eco-adventure with our real-time AI travel assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
