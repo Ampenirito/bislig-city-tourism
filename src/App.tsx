@@ -1009,60 +1009,40 @@ export default function App() {
         {/* Right CTA */}
         <div className="flex items-center gap-2">
 
-          {/* Language Selector (Inline for Extra Large Screens, Dropdown for Medium/Large Screens) */}
-          <div className="flex items-center gap-1.5">
-            {/* Inline flags for XL+ screens */}
-            <div className="xl:flex hidden items-center gap-1 bg-slate-100/60 p-1 rounded-full border border-slate-200/50">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => changeLang(lang.code)}
-                  className={`w-7 h-7 flex items-center justify-center rounded-full transition-all hover:scale-110 active:scale-90 cursor-pointer ${
-                    activeLang === lang.code
-                      ? "bg-white shadow-sm ring-1 ring-slate-200"
-                      : "opacity-60 hover:opacity-100"
-                  }`}
-                  title={lang.label}
-                >
-                  <span className="text-sm leading-none">{lang.flag}</span>
-                </button>
-              ))}
-            </div>
+          {/* Language Selector */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all border border-slate-200/80 shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+              title={`Active Language: ${currentLang.label}`}
+            >
+              <span className="text-lg leading-none">{currentLang.flag}</span>
+            </button>
 
-            {/* Dropdown Selector for smaller desktop/tablet screens */}
-            <div className="xl:hidden flex relative">
-              <button
-                onClick={() => setShowLangMenu(!showLangMenu)}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all border border-slate-200/80 shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
-                title={`Active Language: ${currentLang.label}`}
-              >
-                <span className="text-lg leading-none">{currentLang.flag}</span>
-              </button>
-
-              {showLangMenu && (
-                <div className="absolute right-0 top-full mt-2 w-44 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-3 z-[80] animate-fadeIn">
-                  <div className="text-center mb-2">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Select Language</p>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {LANGUAGES.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => changeLang(lang.code)}
-                        className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all hover:scale-110 active:scale-90 cursor-pointer ${
-                          activeLang === lang.code
-                            ? "bg-[#0047A1]/10 ring-2 ring-[#0047A1]"
-                            : "hover:bg-slate-100"
-                        }`}
-                        title={lang.label}
-                      >
-                        <span className="text-xl leading-none">{lang.flag}</span>
-                      </button>
-                    ))}
-                  </div>
+            {/* Dropdown Grid */}
+            {showLangMenu && (
+              <div className="absolute right-0 top-full mt-2 w-44 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-3 z-[80] animate-fadeIn">
+                <div className="text-center mb-2">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Select Language</p>
                 </div>
-              )}
-            </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLang(lang.code)}
+                      className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all hover:scale-110 active:scale-90 cursor-pointer ${
+                        activeLang === lang.code
+                          ? "bg-[#0047A1]/10 ring-2 ring-[#0047A1]"
+                          : "hover:bg-slate-100"
+                      }`}
+                      title={lang.label}
+                    >
+                      <span className="text-xl leading-none">{lang.flag}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <button
             onClick={() => setShowAccessibilityMenu(!showAccessibilityMenu)}
