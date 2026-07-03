@@ -17,36 +17,62 @@ const ai = new GoogleGenAI({
   },
 });
 
-// Robust content generation with model fallbacks
+// Robust content generation with model fallbacks + per-call timeout
 async function generateContentWithFallback(options: {
   contents: any;
   config?: any;
 }) {
-  const modelsToTry = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.5-flash"];
+  // Try fastest model first, fall back to more capable ones
+  const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro"];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
     try {
-      console.log(`[Gemini SDK] Attempting generation with model: ${model}`);
-      const response = await ai.models.generateContent({
-        model,
-        contents: options.contents,
-        config: options.config,
-      });
-      console.log(`[Gemini SDK] Success using model: ${model}`);
-      return response;
+      console.log(`[Gemini] Trying model: ${model}`);
+
+      // 50 s hard timeout per attempt — stays well within Vercel's 60 s limit
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 50_000);
+
+      const response = await Promise.race([
+        ai.models.generateContent({
+          model,
+          contents: options.contents,
+          config: options.config,
+        }),
+        new Promise<never>((_, reject) =>
+          controller.signal.addEventListener("abort", () =>
+            reject(new Error(`Model ${model} timed out after 50s`))
+          )
+        ),
+      ]);
+
+      clearTimeout(timer);
+      console.log(`[Gemini] Success with model: ${model}`);
+      return response as Awaited<ReturnType<typeof ai.models.generateContent>>;
     } catch (err: any) {
-      console.error(`[Gemini SDK] Model ${model} failed:`, err.message || err);
+      console.error(`[Gemini] Model ${model} failed:`, err.message || err);
       lastError = err;
+      // Short pause before trying the next model
+      await new Promise((r) => setTimeout(r, 500));
     }
   }
 
-  throw lastError || new Error("All travel AI servers are temporarily busy. Please try again in a few moments.");
+  throw lastError || new Error("All AI servers are temporarily busy. Please try again.");
 }
 
-// API endpoints
-app.get("/api/health", (req, res) => {
-  res.json({ status: "healthy", timestamp: new Date().toISOString() });
+// Keep-alive / health check endpoints
+app.get("/api/ping", (_req, res) => {
+  res.json({ ok: true, ts: Date.now() });
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    gemini: !!process.env.GEMINI_API_KEY,
+    mapsKey: !!process.env.GOOGLE_MAPS_PLATFORM_KEY,
+  });
 });
 
 // Real-time Weather Proxy for Bislig City (Lat: 8.2104, Lng: 126.3614)

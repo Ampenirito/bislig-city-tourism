@@ -754,6 +754,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [activeTab, selectedEventId]);
 
+  // Keep-alive ping — prevents Vercel serverless cold starts every 4 minutes
+  useEffect(() => {
+    const ping = () => fetch("/api/ping").catch(() => {});
+    ping(); // ping immediately on load
+    const id = setInterval(ping, 4 * 60 * 1000); // then every 4 min
+    return () => clearInterval(id);
+  }, []);
+
   // Search filtered items
   const filteredAttractions = useMemo(() => {
     return ATTRACTIONS.filter((att) => {
