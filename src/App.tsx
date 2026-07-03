@@ -176,6 +176,7 @@ export default function App() {
   const [textSize, setTextSize] = useState<"normal" | "large" | "xlarge">("normal");
   const [reducedMotion, setReducedMotion] = useState<boolean>(false);
   const [showAccessibilityMenu, setShowAccessibilityMenu] = useState<boolean>(false);
+  const [colorTheme, setColorTheme] = useState<"original" | "classic" | "lagoon" | "sunset" | "forest" | "sunrise" | "coral" | "coconut" | "shore" | "meadow" | "autumn" | "volcanic">("original");
 
   // Favorites state
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -287,6 +288,24 @@ export default function App() {
       document.body.classList.remove("high-contrast");
     }
   }, [highContrast]);
+
+  // Handle color theme class toggle
+  useEffect(() => {
+    document.body.classList.remove("theme-classic", "theme-lagoon", "theme-sunset", "theme-forest", "theme-sunrise", "theme-coral", "theme-coconut", "theme-shore", "theme-meadow", "theme-autumn", "theme-volcanic");
+    if (colorTheme !== "original") {
+      document.body.classList.add(`theme-${colorTheme}`);
+    }
+  }, [colorTheme]);
+
+  // Handle text size accessibility scaling
+  useEffect(() => {
+    document.documentElement.classList.remove("text-size-large", "text-size-xlarge");
+    if (textSize === "large") {
+      document.documentElement.classList.add("text-size-large");
+    } else if (textSize === "xlarge") {
+      document.documentElement.classList.add("text-size-xlarge");
+    }
+  }, [textSize]);
 
   // Save favorites to local storage
   const toggleFavorite = (id: string) => {
@@ -908,7 +927,7 @@ export default function App() {
 
       {/* Floating Accessibility Toolbar Dropdown */}
       {showAccessibilityMenu && (
-        <div className="absolute top-20 right-4 md:right-10 z-[60] w-72 glass p-5 rounded-xl shadow-xl border border-gray-200">
+        <div className="fixed top-24 right-4 md:right-10 z-[60] w-72 glass p-5 rounded-xl shadow-xl border border-gray-200">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-sm text-[#0047A1] flex items-center gap-2">
               <Accessibility className="w-4 h-4 text-[#0047A1]" />
@@ -959,6 +978,110 @@ export default function App() {
                 {reducedMotion ? <CheckCircle2 className="w-4 h-4 text-white" /> : <AlertCircle className="w-4 h-4 text-slate-400" />}
               </button>
             </div>
+            <div>
+              <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Color Palette Themes</label>
+              <div className="grid grid-cols-4 gap-1">
+                {(["original", "classic", "lagoon", "sunset", "forest", "sunrise", "coral", "coconut", "shore", "meadow", "autumn", "volcanic"] as const).map((theme) => (
+                  <button
+                    key={theme}
+                    onClick={() => setColorTheme(theme)}
+                    className={`py-2 text-[8px] font-bold rounded-lg border capitalize flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
+                      colorTheme === theme
+                        ? "bg-[#0047A1] text-white border-transparent shadow-sm"
+                        : "bg-white text-slate-700 border-gray-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    <div className="flex gap-0.5">
+                      {theme === "original" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                        </>
+                      )}
+                      {theme === "classic" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0077B6]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2A9D8F]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]"></span>
+                        </>
+                      )}
+                      {theme === "lagoon" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                        </>
+                      )}
+                      {theme === "sunset" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                        </>
+                      )}
+                      {theme === "forest" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                        </>
+                      )}
+                      {theme === "sunrise" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                        </>
+                      )}
+                      {theme === "coral" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                        </>
+                      )}
+                      {theme === "coconut" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FAFCFC]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                        </>
+                      )}
+                      {theme === "shore" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FAFCFC] border border-gray-200"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                        </>
+                      )}
+                      {theme === "meadow" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                        </>
+                      )}
+                      {theme === "autumn" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                        </>
+                      )}
+                      {theme === "volcanic" && (
+                        <>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                        </>
+                      )}
+                    </div>
+                    <span>{theme === "original" ? "Reset" : theme}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -986,7 +1109,7 @@ export default function App() {
               ))}
 
               {/* Gradient Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/55 via-slate-950/15 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent"></div>
               
               {/* Water Floating Particles / Ripple effect (CSS Animation) */}
               {!reducedMotion && (
@@ -1361,7 +1484,7 @@ export default function App() {
             </section>
 
             {/* Event Countdown Banner & Tourism Calendar */}
-            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#0047A1] text-white">
+            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#1D3557] text-white">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                 
                 {/* Left countdown widget */}
@@ -2789,7 +2912,7 @@ export default function App() {
       {/* ==================================
           BOTTOM UTILITY FOOTER
           ================================== */}
-      <footer className="bg-[#0047A1] px-4 md:px-10 py-10 text-white border-t border-white/10 mt-auto">
+      <footer className="bg-[#1D3557] px-4 md:px-10 py-10 text-white border-t border-white/10 mt-auto">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           
           <div className="space-y-4">

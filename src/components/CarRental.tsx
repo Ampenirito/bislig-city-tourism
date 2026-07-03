@@ -237,8 +237,8 @@ export default function CarRental() {
     <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8 animate-fadeIn">
       {/* Page Header */}
       <div className="text-center space-y-3">
-        <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block">PREMIUM MOBILITY SOLUTIONS</span>
-        <h2 className="text-3xl md:text-4xl font-serif text-[#1D3557] font-bold">Bislig Car Rental Hub</h2>
+        <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block">PREMIUM MOBILITY SOLUTIONS</span>
+        <h2 className="text-3xl md:text-4xl font-serif text-[#0047A1] font-bold">Bislig Car Rental Hub</h2>
         <p className="text-slate-500 text-xs max-w-2xl mx-auto">
           Explore Surigao del Sur with comfort. Pick a model matching your group size, decide on a professional driver, and directly coordinate with verified local operators.
         </p>
@@ -248,14 +248,14 @@ export default function CarRental() {
       <div className="max-w-xl mx-auto flex items-center justify-between relative px-2 mb-8">
         <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-slate-100 -translate-y-1/2 z-0"></div>
         <div 
-          className="absolute top-1/2 left-0 h-[2px] bg-[#0077B6] -translate-y-1/2 transition-all duration-300 z-0"
+          className="absolute top-1/2 left-0 h-[2px] bg-[#0047A1] -translate-y-1/2 transition-all duration-300 z-0"
           style={{ width: `${((step - 1) / 2) * 100}%` }}
         ></div>
 
         <button 
           onClick={() => { if (step > 1) setStep(1); }}
           className={`relative z-10 w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-            step >= 1 ? "bg-[#0077B6] text-white shadow-md" : "bg-slate-200 text-slate-500"
+            step >= 1 ? "bg-[#0047A1] text-white shadow-md" : "bg-slate-200 text-slate-500"
           }`}
         >
           {step > 1 ? <Check className="w-4 h-4" /> : "1"}
@@ -265,7 +265,7 @@ export default function CarRental() {
           onClick={() => { if (step > 2) setStep(2); }}
           disabled={!selectedVehicle}
           className={`relative z-10 w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-            step >= 2 ? "bg-[#0077B6] text-white shadow-md" : "bg-white border-2 border-slate-200 text-slate-500"
+            step >= 2 ? "bg-[#0047A1] text-white shadow-md" : "bg-white border-2 border-slate-200 text-slate-500"
           }`}
         >
           {step > 2 ? <Check className="w-4 h-4" /> : "2"}
@@ -274,7 +274,7 @@ export default function CarRental() {
         <button 
           disabled={!selectedVehicle || needsDriver === null}
           className={`relative z-10 w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
-            step >= 3 ? "bg-[#0077B6] text-white shadow-md" : "bg-white border-2 border-slate-200 text-slate-500"
+            step >= 3 ? "bg-[#0047A1] text-white shadow-md" : "bg-white border-2 border-slate-200 text-slate-500"
           }`}
         >
           "3"
@@ -285,8 +285,8 @@ export default function CarRental() {
       {step === 1 && (
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-lg font-bold text-[#1D3557] flex items-center gap-2">
-              <Car className="w-5 h-5 text-[#0077B6]" />
+            <h3 className="text-lg font-bold text-[#0047A1] flex items-center gap-2">
+              <Car className="w-5 h-5 text-[#0047A1]" />
               Step 1: Choose Your Vehicle Model
             </h3>
             <span className="text-slate-400 text-xs font-semibold">Select a model to proceed</span>
@@ -297,7 +297,7 @@ export default function CarRental() {
               <div 
                 key={vehicle.id} 
                 onClick={() => handleSelectVehicle(vehicle)}
-                className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:border-[#0077B6]/30 transition-all cursor-pointer flex flex-col justify-between group transform hover:-translate-y-1"
+                className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:border-[#0047A1]/30 transition-all cursor-pointer flex flex-col justify-between group transform hover:-translate-y-1"
               >
                 <div>
                   <div className="h-56 bg-slate-100 relative overflow-hidden">
@@ -307,24 +307,24 @@ export default function CarRental() {
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm border px-2.5 py-1 rounded-full text-[10px] font-bold text-[#1D3557] flex items-center gap-1 shadow-sm">
-                      <Users className="w-3 h-3 text-[#0077B6]" />
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm border px-2.5 py-1 rounded-full text-[10px] font-bold text-[#0047A1] flex items-center gap-1 shadow-sm">
+                      <Users className="w-3 h-3 text-[#0047A1]" />
                       <span>{vehicle.seaters} Seaters</span>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-4">
                     <div>
-                      <span className="text-[10px] text-[#2A9D8F] font-bold uppercase tracking-wider">{vehicle.type}</span>
-                      <h4 className="font-serif font-bold text-xl text-[#1D3557] mt-1 group-hover:text-[#0077B6] transition-colors">{vehicle.name}</h4>
+                      <span className="text-[10px] text-[#0097A7] font-bold uppercase tracking-wider">{vehicle.type}</span>
+                      <h4 className="font-serif font-bold text-xl text-[#0047A1] mt-1 group-hover:text-[#0047A1] transition-colors">{vehicle.name}</h4>
                     </div>
 
                     <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{vehicle.description}</p>
 
                     <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <div>Trans: <span className="text-[#1D3557] font-bold">{vehicle.transmission}</span></div>
-                      <div>Fuel: <span className="text-[#1D3557] font-bold">{vehicle.fuel}</span></div>
-                      <div className="col-span-2">Luggage: <span className="text-[#1D3557] font-bold">{vehicle.luggage}</span></div>
+                      <div>Trans: <span className="text-[#0047A1] font-bold">{vehicle.transmission}</span></div>
+                      <div>Fuel: <span className="text-[#0047A1] font-bold">{vehicle.fuel}</span></div>
+                      <div className="col-span-2">Luggage: <span className="text-[#0047A1] font-bold">{vehicle.luggage}</span></div>
                     </div>
 
                     <div className="space-y-1.5 pt-2">
@@ -332,7 +332,7 @@ export default function CarRental() {
                       <ul className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-slate-600">
                         {vehicle.features.map((feat, i) => (
                           <li key={i} className="flex items-center gap-1">
-                            <span className="w-1 h-1 bg-[#2A9D8F] rounded-full"></span>
+                            <span className="w-1 h-1 bg-[#0097A7] rounded-full"></span>
                             <span className="truncate">{feat}</span>
                           </li>
                         ))}
@@ -344,9 +344,9 @@ export default function CarRental() {
                 <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
                   <div>
                     <span className="text-[9px] text-slate-400 font-bold uppercase block">Est. Rate Range</span>
-                    <span className="font-bold text-sm text-[#2A9D8F]">{vehicle.rate}</span>
+                    <span className="font-bold text-sm text-[#0097A7]">{vehicle.rate}</span>
                   </div>
-                  <button className="bg-[#0077B6] text-white p-2.5 rounded-xl hover:bg-[#005f92] transition-colors flex items-center gap-1 text-xs font-bold shadow-sm">
+                  <button className="bg-[#0047A1] text-white p-2.5 rounded-xl hover:bg-[#005f92] transition-colors flex items-center gap-1 text-xs font-bold shadow-sm">
                     <span>Configure</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -369,8 +369,8 @@ export default function CarRental() {
               <ChevronLeft className="w-4 h-4" />
             </button>
             <div>
-              <h3 className="text-lg font-bold text-[#1D3557] flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-[#2A9D8F]" />
+              <h3 className="text-lg font-bold text-[#0047A1] flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-[#0097A7]" />
                 Step 2: Choose Driving Preference
               </h3>
               <p className="text-xs text-slate-400 mt-0.5">For {selectedVehicle.name}</p>
@@ -381,14 +381,14 @@ export default function CarRental() {
             {/* Self-Drive */}
             <div 
               onClick={() => handleSelectDriverPreference(false)}
-              className="bg-white border-2 border-slate-200 hover:border-[#0077B6] rounded-2xl p-8 cursor-pointer hover:shadow-lg transition-all flex flex-col justify-between text-center relative group transform hover:-translate-y-1"
+              className="bg-white border-2 border-slate-200 hover:border-[#0047A1] rounded-2xl p-8 cursor-pointer hover:shadow-lg transition-all flex flex-col justify-between text-center relative group transform hover:-translate-y-1"
             >
               <div className="space-y-6">
-                <div className="w-16 h-16 bg-blue-50 text-[#0077B6] rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-110">
+                <div className="w-16 h-16 bg-blue-50 text-[#0047A1] rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-110">
                   <Car className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-serif font-bold text-xl text-[#1D3557]">Self-Drive Option</h4>
+                  <h4 className="font-serif font-bold text-xl text-[#0047A1]">Self-Drive Option</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Rent the keys and drive yourself across Surigao. Navigate on your own schedule. Perfect for couples or private families seeking freedom.
                   </p>
@@ -412,7 +412,7 @@ export default function CarRental() {
               </div>
 
               <div className="pt-8">
-                <span className="w-full inline-block bg-[#0077B6] group-hover:bg-[#005f92] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
+                <span className="w-full inline-block bg-[#0047A1] group-hover:bg-[#005f92] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
                   Select Self-Drive
                 </span>
               </div>
@@ -421,14 +421,14 @@ export default function CarRental() {
             {/* With Driver */}
             <div 
               onClick={() => handleSelectDriverPreference(true)}
-              className="bg-white border-2 border-slate-200 hover:border-[#2A9D8F] rounded-2xl p-8 cursor-pointer hover:shadow-lg transition-all flex flex-col justify-between text-center relative group transform hover:-translate-y-1"
+              className="bg-white border-2 border-slate-200 hover:border-[#0097A7] rounded-2xl p-8 cursor-pointer hover:shadow-lg transition-all flex flex-col justify-between text-center relative group transform hover:-translate-y-1"
             >
               <div className="space-y-6">
-                <div className="w-16 h-16 bg-emerald-50 text-[#2A9D8F] rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-110">
+                <div className="w-16 h-16 bg-emerald-50 text-[#0097A7] rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-110">
                   <User className="w-8 h-8" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-serif font-bold text-xl text-[#1D3557]">With Professional Driver</h4>
+                  <h4 className="font-serif font-bold text-xl text-[#0047A1]">With Professional Driver</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Sit back, relax, and take in Bislig's beautiful rainforests. Our DOT-accredited drivers double as friendly local guides who handle routes, gas, and parking.
                   </p>
@@ -452,7 +452,7 @@ export default function CarRental() {
               </div>
 
               <div className="pt-8">
-                <span className="w-full inline-block bg-[#2A9D8F] group-hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
+                <span className="w-full inline-block bg-[#0097A7] group-hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors shadow-sm">
                   Select With Driver
                 </span>
               </div>
@@ -474,8 +474,8 @@ export default function CarRental() {
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <div>
-                <h3 className="text-lg font-bold text-[#1D3557] flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-[#F4B400] animate-pulse" />
+                <h3 className="text-lg font-bold text-[#0047A1] flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#FB8C00] animate-pulse" />
                   Step 3: Matched Local Operators ({filteredOperators.length})
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -486,7 +486,7 @@ export default function CarRental() {
 
             <button 
               onClick={resetWizard}
-              className="text-xs text-[#0077B6] hover:underline font-bold self-start sm:self-auto"
+              className="text-xs text-[#0047A1] hover:underline font-bold self-start sm:self-auto"
             >
               Start Over / Clear Filters
             </button>
@@ -495,13 +495,13 @@ export default function CarRental() {
           {filteredOperators.length === 0 ? (
             <div className="bg-slate-50 border p-12 rounded-2xl text-center space-y-4 max-w-lg mx-auto">
               <AlertCircle className="w-12 h-12 text-slate-400 mx-auto" />
-              <h4 className="font-serif font-bold text-lg text-[#1D3557]">No Direct Match Found</h4>
+              <h4 className="font-serif font-bold text-lg text-[#0047A1]">No Direct Match Found</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
                 Currently, none of our verified individuals offer the {selectedVehicle.name} in {needsDriver ? "With Driver" : "Self-Drive"} mode. Let us know and we'll help source one!
               </p>
               <button 
                 onClick={resetWizard}
-                className="bg-[#0077B6] text-white px-5 py-2 rounded-xl text-xs font-bold"
+                className="bg-[#0047A1] text-white px-5 py-2 rounded-xl text-xs font-bold"
               >
                 Choose Another Model
               </button>
@@ -517,12 +517,12 @@ export default function CarRental() {
                     {/* Header: Avatar, Name, Rating */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-[#F8F6F2] border border-slate-200 flex items-center justify-center text-[#1D3557] font-serif font-bold text-lg relative shrink-0">
+                        <div className="w-12 h-12 rounded-full bg-[#F9F9F0] border border-slate-200 flex items-center justify-center text-[#0047A1] font-serif font-bold text-lg relative shrink-0">
                           {op.name.charAt(0)}
                           <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                         </div>
                         <div>
-                          <h4 className="font-bold text-[#1D3557] flex items-center gap-1">
+                          <h4 className="font-bold text-[#0047A1] flex items-center gap-1">
                             {op.name}
                           </h4>
                           <span className="text-[9px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-bold border border-amber-200 uppercase tracking-wide block mt-0.5 max-w-max">
@@ -532,7 +532,7 @@ export default function CarRental() {
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[10px] text-[#2A9D8F] bg-[#2A9D8F]/10 px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+                        <span className="text-[10px] text-[#0097A7] bg-[#0097A7]/10 px-2 py-0.5 rounded font-bold uppercase tracking-wide">
                           Verified
                         </span>
                       </div>
@@ -550,7 +550,7 @@ export default function CarRental() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Unit Coverage:</span>
-                        <span className="font-semibold text-[#0077B6] uppercase text-[10px] tracking-wider">
+                        <span className="font-semibold text-[#0047A1] uppercase text-[10px] tracking-wider">
                           {op.supportedVehicles.join(" & ")}
                         </span>
                       </div>
@@ -601,7 +601,7 @@ export default function CarRental() {
                   <div className="pt-6 border-t border-slate-100 mt-6 space-y-3">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-slate-400">Mobile Hotline:</span>
-                      <strong className="text-[#1D3557] select-all">{op.phone}</strong>
+                      <strong className="text-[#0047A1] select-all">{op.phone}</strong>
                     </div>
 
                     {inquirySent === op.name ? (
@@ -612,7 +612,7 @@ export default function CarRental() {
                     ) : (
                       <button 
                         onClick={() => handleSendQuickInquiry(op.name)}
-                        className="w-full py-2.5 bg-[#0077B6] hover:bg-[#005f92] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                        className="w-full py-2.5 bg-[#0047A1] hover:bg-[#005f92] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all"
                       >
                         <Phone className="w-3.5 h-3.5" />
                         <span>Inquire Instantly via SMS</span>
@@ -625,8 +625,8 @@ export default function CarRental() {
           )}
 
           {/* Quick Informational Notice */}
-          <div className="bg-[#F8F6F2] p-4 rounded-xl border border-gray-100 text-slate-500 text-[10px] md:text-xs leading-relaxed max-w-4xl mx-auto flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-[#2A9D8F] shrink-0 mt-0.5" />
+          <div className="bg-[#F9F9F0] p-4 rounded-xl border border-gray-100 text-slate-500 text-[10px] md:text-xs leading-relaxed max-w-4xl mx-auto flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-[#0097A7] shrink-0 mt-0.5" />
             <div>
               <strong className="text-slate-700 block mb-0.5">Rental Fair Trade Policy</strong>
               All listed operators are certified local residents of Bislig City. Rates are standardized by the Surigao Transport Cooperative to prevent price gauging. Social media links are provided for direct traveler-to-local communication, meaning zero middle-man fees.

@@ -63,6 +63,14 @@
   animation: ripple 3s infinite ease-out;
 }
 
+/* Accessibility text size root multipliers */
+html.text-size-large {
+  font-size: 18px !important;
+}
+html.text-size-xlarge {
+  font-size: 20px !important;
+}
+
 /* Accessibility high contrast styles when body has .high-contrast */
 body.high-contrast {
   background-color: #000000 !important;
@@ -81,5 +89,464 @@ body.high-contrast button, body.high-contrast a {
   border: 2px solid #FFFFFF !important;
   background-color: #000000 !important;
   color: #FFFFFF !important;
+}
+
+/* --- THEME OVERRIDES --- */
+
+/* ==========================================
+   1. Theme: Classic Palette (Classic Blue + Emerald Teal + Gold)
+   ========================================== */
+body.theme-classic .bg-\[\#0047A1\] {
+  background-color: #0077B6 !important; /* Primary Ocean Blue -> Classic Blue */
+}
+body.theme-classic .text-\[\#0047A1\] {
+  color: #0077B6 !important;
+}
+body.theme-classic .border-\[\#0047A1\] {
+  border-color: #0077B6 !important;
+}
+body.theme-classic .hover\:bg-\[\#005f92\]:hover,
+body.theme-classic .hover\:bg-\[\#005F92\]:hover {
+  background-color: #0096C7 !important; /* Darker Classic Blue for primary hover */
+}
+body.theme-classic .bg-\[\#0097A7\] {
+  background-color: #2A9D8F !important; /* Secondary Lagoon Teal -> Emerald Teal */
+}
+body.theme-classic .text-\[\#0097A7\] {
+  color: #2A9D8F !important;
+}
+body.theme-classic .border-\[\#0097A7\] {
+  border-color: #2A9D8F !important;
+}
+body.theme-classic .hover\:text-\[\#FB8C00\]:hover {
+  color: #F4B400 !important; /* Accent Tropical Orange -> Gold/Yellow */
+}
+body.theme-classic .bg-\[\#FB8C00\] {
+  background-color: #F4B400 !important;
+}
+body.theme-classic .text-\[\#FB8C00\] {
+  color: #F4B400 !important;
+}
+body.theme-classic .border-\[\#FB8C00\] {
+  border-color: #F4B400 !important;
+}
+body.theme-classic .bg-\[\#1D3557\] {
+  background-color: #1D3557 !important; /* Remains Original Navy for events */
+}
+
+/* ==========================================
+   2. Theme: Lagoon Oasis (Lagoon Teal + Forest Green + Sunshine Yellow)
+   ========================================== */
+body.theme-lagoon .bg-\[\#0047A1\] {
+  background-color: #0097A7 !important; /* Primary Ocean Blue -> Lagoon Teal */
+}
+body.theme-lagoon .text-\[\#0047A1\] {
+  color: #0097A7 !important;
+}
+body.theme-lagoon .border-\[\#0047A1\] {
+  border-color: #0097A7 !important;
+}
+body.theme-lagoon .hover\:bg-\[\#005f92\]:hover,
+body.theme-lagoon .hover\:bg-\[\#005F92\]:hover {
+  background-color: #00838F !important; /* Darker Teal for primary hover */
+}
+body.theme-lagoon .bg-\[\#0097A7\] {
+  background-color: #2E7D32 !important; /* Secondary Lagoon Teal -> Forest Green */
+}
+body.theme-lagoon .text-\[\#0097A7\] {
+  color: #2E7D32 !important;
+}
+body.theme-lagoon .border-\[\#0097A7\] {
+  border-color: #2E7D32 !important;
+}
+body.theme-lagoon .hover\:text-\[\#FB8C00\]:hover {
+  color: #FBC02D !important; /* Accent Tropical Orange -> Sunshine Yellow */
+}
+body.theme-lagoon .bg-\[\#FB8C00\] {
+  background-color: #FBC02D !important;
+}
+body.theme-lagoon .text-\[\#FB8C00\] {
+  color: #FBC02D !important;
+}
+body.theme-lagoon .border-\[\#FB8C00\] {
+  border-color: #FBC02D !important;
+}
+body.theme-lagoon .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #F5B041 !important; /* Darker Sunshine Yellow for hover */
+}
+body.theme-lagoon .bg-\[\#1D3557\] {
+  background-color: #004D40 !important; /* Deep Lagoon Teal Green for events */
+}
+
+/* ==========================================
+   3. Theme: Sunset Glow (Coral Red + Tropical Orange + Coconut Brown)
+   ========================================== */
+body.theme-sunset .bg-\[\#0047A1\] {
+  background-color: #D32F2F !important; /* Primary Ocean Blue -> Coral Red */
+}
+body.theme-sunset .text-\[\#0047A1\] {
+  color: #D32F2F !important;
+}
+body.theme-sunset .border-\[\#0047A1\] {
+  border-color: #D32F2F !important;
+}
+body.theme-sunset .hover\:bg-\[\#005f92\]:hover,
+body.theme-sunset .hover\:bg-\[\#005F92\]:hover {
+  background-color: #B71C1C !important; /* Darker Red for primary hover */
+}
+body.theme-sunset .bg-\[\#0097A7\] {
+  background-color: #FB8C00 !important; /* Secondary Lagoon Teal -> Tropical Orange */
+}
+body.theme-sunset .text-\[\#0097A7\] {
+  color: #FB8C00 !important;
+}
+body.theme-sunset .border-\[\#0097A7\] {
+  border-color: #FB8C00 !important;
+}
+body.theme-sunset .hover\:text-\[\#FB8C00\]:hover {
+  color: #5D4037 !important; /* Accent Tropical Orange -> Coconut Brown */
+}
+body.theme-sunset .bg-\[\#FB8C00\] {
+  background-color: #5D4037 !important;
+}
+body.theme-sunset .text-\[\#FB8C00\] {
+  color: #5D4037 !important;
+}
+body.theme-sunset .border-\[\#FB8C00\] {
+  border-color: #5D4037 !important;
+}
+body.theme-sunset .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #4E342E !important; /* Darker Coconut Brown for hover */
+}
+body.theme-sunset .bg-\[\#1D3557\] {
+  background-color: #3E2723 !important; /* Deep Dark Brown for events */
+}
+
+/* ==========================================
+   4. Theme: Forest Sanctuary (Forest Green + Coconut Brown + Sand)
+   ========================================== */
+body.theme-forest .bg-\[\#0047A1\] {
+  background-color: #2E7D32 !important; /* Primary Ocean Blue -> Forest Green */
+}
+body.theme-forest .text-\[\#0047A1\] {
+  color: #2E7D32 !important;
+}
+body.theme-forest .border-\[\#0047A1\] {
+  border-color: #2E7D32 !important;
+}
+body.theme-forest .hover\:bg-\[\#005f92\]:hover,
+body.theme-forest .hover\:bg-\[\#005F92\]:hover {
+  background-color: #1B5E20 !important; /* Darker Green for primary hover */
+}
+body.theme-forest .bg-\[\#0097A7\] {
+  background-color: #5D4037 !important; /* Secondary Lagoon Teal -> Coconut Brown */
+}
+body.theme-forest .text-\[\#0097A7\] {
+  color: #5D4037 !important;
+}
+body.theme-forest .border-\[\#0097A7\] {
+  border-color: #5D4037 !important;
+}
+body.theme-forest .hover\:text-\[\#FB8C00\]:hover {
+  color: #FBC02D !important; /* Accent Tropical Orange -> Sunshine Yellow */
+}
+body.theme-forest .bg-\[\#FB8C00\] {
+  background-color: #FBC02D !important;
+}
+body.theme-forest .text-\[\#FB8C00\] {
+  color: #FBC02D !important;
+}
+body.theme-forest .border-\[\#FB8C00\] {
+  border-color: #FBC02D !important;
+}
+body.theme-forest .bg-\[\#1D3557\] {
+  background-color: #1B5E20 !important; /* Deep Forest Green for events */
+}
+
+/* ==========================================
+   5. Theme: Tropical Sunrise (Tropical Orange + Coral Red + Yellow)
+   ========================================== */
+body.theme-sunrise .bg-\[\#0047A1\] {
+  background-color: #FB8C00 !important; /* Primary Ocean Blue -> Tropical Orange */
+}
+body.theme-sunrise .text-\[\#0047A1\] {
+  color: #FB8C00 !important;
+}
+body.theme-sunrise .border-\[\#0047A1\] {
+  border-color: #FB8C00 !important;
+}
+body.theme-sunrise .hover\:bg-\[\#005f92\]:hover,
+body.theme-sunrise .hover\:bg-\[\#005F92\]:hover {
+  background-color: #E65100 !important; /* Darker Orange for primary hover */
+}
+body.theme-sunrise .bg-\[\#0097A7\] {
+  background-color: #D32F2F !important; /* Secondary Lagoon Teal -> Coral Red */
+}
+body.theme-sunrise .text-\[\#0097A7\] {
+  color: #D32F2F !important;
+}
+body.theme-sunrise .border-\[\#0097A7\] {
+  border-color: #D32F2F !important;
+}
+body.theme-sunrise .hover\:text-\[\#FB8C00\]:hover {
+  color: #FBC02D !important; /* Accent Tropical Orange -> Sunshine Yellow */
+}
+body.theme-sunrise .bg-\[\#FB8C00\] {
+  background-color: #FBC02D !important;
+}
+body.theme-sunrise .text-\[\#FB8C00\] {
+  color: #FBC02D !important;
+}
+body.theme-sunrise .border-\[\#FB8C00\] {
+  border-color: #FBC02D !important;
+}
+body.theme-sunrise .bg-\[\#1D3557\] {
+  background-color: #D84315 !important; /* Deep Sunrise Red-Orange for events */
+}
+
+/* ==========================================
+   6. Theme: Coral Coast (Coral Red + Ocean Blue + Lagoon Teal)
+   ========================================== */
+body.theme-coral .bg-\[\#0047A1\] {
+  background-color: #D32F2F !important; /* Primary Ocean Blue -> Coral Red */
+}
+body.theme-coral .text-\[\#0047A1\] {
+  color: #D32F2F !important;
+}
+body.theme-coral .border-\[\#0047A1\] {
+  border-color: #D32F2F !important;
+}
+body.theme-coral .hover\:bg-\[\#005f92\]:hover,
+body.theme-coral .hover\:bg-\[\#005F92\]:hover {
+  background-color: #B71C1C !important; /* Darker Red for primary hover */
+}
+body.theme-coral .bg-\[\#0097A7\] {
+  background-color: #0047A1 !important; /* Secondary Lagoon Teal -> Ocean Blue */
+}
+body.theme-coral .text-\[\#0097A7\] {
+  color: #0047A1 !important;
+}
+body.theme-coral .border-\[\#0097A7\] {
+  border-color: #0047A1 !important;
+}
+body.theme-coral .hover\:text-\[\#FB8C00\]:hover {
+  color: #0097A7 !important; /* Accent Tropical Orange -> Lagoon Teal */
+}
+body.theme-coral .bg-\[\#FB8C00\] {
+  background-color: #0097A7 !important;
+}
+body.theme-coral .text-\[\#FB8C00\] {
+  color: #0097A7 !important;
+}
+body.theme-coral .border-\[\#FB8C00\] {
+  border-color: #0097A7 !important;
+}
+body.theme-coral .bg-\[\#1D3557\] {
+  background-color: #9E1A1A !important; /* Deep Crimson for events */
+}
+
+/* ==========================================
+   7. Theme: Coconut & Sand (Coconut Brown + Sand + Lagoon Teal)
+   ========================================== */
+body.theme-coconut .bg-\[\#0047A1\] {
+  background-color: #5D4037 !important; /* Primary Ocean Blue -> Coconut Brown */
+}
+body.theme-coconut .text-\[\#0047A1\] {
+  color: #5D4037 !important;
+}
+body.theme-coconut .border-\[\#0047A1\] {
+  border-color: #5D4037 !important;
+}
+body.theme-coconut .hover\:bg-\[\#005f92\]:hover,
+body.theme-coconut .hover\:bg-\[\#005F92\]:hover {
+  background-color: #4E342E !important; /* Darker Brown for primary hover */
+}
+body.theme-coconut .bg-\[\#0097A7\] {
+  background-color: #FAFCFC !important; /* Secondary Lagoon Teal -> Sand */
+}
+body.theme-coconut .text-\[\#0097A7\] {
+  color: #5D4037 !important; /* Contrast text color for Sand background */
+}
+body.theme-coconut .border-\[\#0097A7\] {
+  border-color: #E0D8D0 !important;
+}
+body.theme-coconut .hover\:text-\[\#FB8C00\]:hover {
+  color: #0097A7 !important; /* Accent Tropical Orange -> Lagoon Teal */
+}
+body.theme-coconut .bg-\[\#FB8C00\] {
+  background-color: #0097A7 !important;
+}
+body.theme-coconut .text-\[\#FB8C00\] {
+  color: #0097A7 !important;
+}
+body.theme-coconut .border-\[\#FB8C00\] {
+  border-color: #0097A7 !important;
+}
+body.theme-coconut .bg-\[\#1D3557\] {
+  background-color: #3E2723 !important; /* Deep Coconut Brown for events */
+}
+
+/* ==========================================
+   8. Theme: Ocean Shore (Lagoon Teal + Sand + Coral Red)
+   ========================================== */
+body.theme-shore .bg-\[\#0047A1\] {
+  background-color: #0097A7 !important; /* Primary Ocean Blue -> Lagoon Teal */
+}
+body.theme-shore .text-\[\#0047A1\] {
+  color: #0097A7 !important;
+}
+body.theme-shore .border-\[\#0047A1\] {
+  border-color: #0097A7 !important;
+}
+body.theme-shore .hover\:bg-\[\#005f92\]:hover,
+body.theme-shore .hover\:bg-\[\#005F92\]:hover {
+  background-color: #00838F !important; /* Darker Teal for primary hover */
+}
+body.theme-shore .bg-\[\#0097A7\] {
+  background-color: #FAFCFC !important; /* Secondary Lagoon Teal -> Sand */
+}
+body.theme-shore .text-\[\#0097A7\] {
+  color: #0097A7 !important;
+}
+body.theme-shore .border-\[\#0097A7\] {
+  border-color: #E0D8D0 !important;
+}
+body.theme-shore .hover\:text-\[\#FB8C00\]:hover {
+  color: #D32F2F !important; /* Accent Tropical Orange -> Coral Red */
+}
+body.theme-shore .bg-\[\#FB8C00\] {
+  background-color: #D32F2F !important;
+}
+body.theme-shore .text-\[\#FB8C00\] {
+  color: #D32F2F !important;
+}
+body.theme-shore .border-\[\#FB8C00\] {
+  border-color: #D32F2F !important;
+}
+body.theme-shore .bg-\[\#1D3557\] {
+  background-color: #006064 !important; /* Deep Teal Green for events & footer */
+}
+
+/* ==========================================
+   9. Theme: Yellow Meadow (Sunshine Yellow + Forest Green + Orange)
+   ========================================== */
+body.theme-meadow .bg-\[\#0047A1\] {
+  background-color: #FBC02D !important; /* Primary Ocean Blue -> Sunshine Yellow */
+}
+body.theme-meadow .text-\[\#0047A1\] {
+  color: #FBC02D !important;
+}
+body.theme-meadow .border-\[\#0047A1\] {
+  border-color: #FBC02D !important;
+}
+body.theme-meadow .hover\:bg-\[\#005f92\]:hover,
+body.theme-meadow .hover\:bg-\[\#005F92\]:hover {
+  background-color: #F9A825 !important; /* Darker Yellow for primary hover */
+}
+body.theme-meadow .bg-\[\#0097A7\] {
+  background-color: #2E7D32 !important; /* Secondary Lagoon Teal -> Forest Green */
+}
+body.theme-meadow .text-\[\#0097A7\] {
+  color: #2E7D32 !important;
+}
+body.theme-meadow .border-\[\#0097A7\] {
+  border-color: #2E7D32 !important;
+}
+body.theme-meadow .hover\:text-\[\#FB8C00\]:hover {
+  color: #FB8C00 !important; /* Accent remains Tropical Orange */
+}
+body.theme-meadow .bg-\[\#FB8C00\] {
+  background-color: #FB8C00 !important;
+}
+body.theme-meadow .text-\[\#FB8C00\] {
+  color: #FB8C00 !important;
+}
+body.theme-meadow .border-\[\#FB8C00\] {
+  border-color: #FB8C00 !important;
+}
+body.theme-meadow .bg-\[\#1D3557\] {
+  background-color: #1B5E20 !important; /* Deep Forest Green for events & footer */
+}
+
+/* ==========================================
+   10. Theme: Autumn Leaves (Coconut Brown + Tropical Orange + Yellow)
+   ========================================== */
+body.theme-autumn .bg-\[\#0047A1\] {
+  background-color: #5D4037 !important; /* Primary Ocean Blue -> Coconut Brown */
+}
+body.theme-autumn .text-\[\#0047A1\] {
+  color: #5D4037 !important;
+}
+body.theme-autumn .border-\[\#0047A1\] {
+  border-color: #5D4037 !important;
+}
+body.theme-autumn .hover\:bg-\[\#005f92\]:hover,
+body.theme-autumn .hover\:bg-\[\#005F92\]:hover {
+  background-color: #4E342E !important; /* Darker Brown for primary hover */
+}
+body.theme-autumn .bg-\[\#0097A7\] {
+  background-color: #FB8C00 !important; /* Secondary Lagoon Teal -> Tropical Orange */
+}
+body.theme-autumn .text-\[\#0097A7\] {
+  color: #FB8C00 !important;
+}
+body.theme-autumn .border-\[\#0097A7\] {
+  border-color: #FB8C00 !important;
+}
+body.theme-autumn .hover\:text-\[\#FB8C00\]:hover {
+  color: #FBC02D !important; /* Accent Tropical Orange -> Sunshine Yellow */
+}
+body.theme-autumn .bg-\[\#FB8C00\] {
+  background-color: #FBC02D !important;
+}
+body.theme-autumn .text-\[\#FB8C00\] {
+  color: #FBC02D !important;
+}
+body.theme-autumn .border-\[\#FB8C00\] {
+  border-color: #FBC02D !important;
+}
+body.theme-autumn .bg-\[\#1D3557\] {
+  background-color: #2D1500 !important; /* Very Deep Brown for events & footer */
+}
+
+/* ==========================================
+   11. Theme: Volcanic Rock (Coral Red + Sunshine Yellow + Coconut Brown)
+   ========================================== */
+body.theme-volcanic .bg-\[\#0047A1\] {
+  background-color: #D32F2F !important; /* Primary Ocean Blue -> Coral Red */
+}
+body.theme-volcanic .text-\[\#0047A1\] {
+  color: #D32F2F !important;
+}
+body.theme-volcanic .border-\[\#0047A1\] {
+  border-color: #D32F2F !important;
+}
+body.theme-volcanic .hover\:bg-\[\#005f92\]:hover,
+body.theme-volcanic .hover\:bg-\[\#005F92\]:hover {
+  background-color: #B71C1C !important; /* Darker Red for primary hover */
+}
+body.theme-volcanic .bg-\[\#0097A7\] {
+  background-color: #FBC02D !important; /* Secondary Lagoon Teal -> Sunshine Yellow */
+}
+body.theme-volcanic .text-\[\#0097A7\] {
+  color: #FBC02D !important;
+}
+body.theme-volcanic .border-\[\#0097A7\] {
+  border-color: #FBC02D !important;
+}
+body.theme-volcanic .hover\:text-\[\#FB8C00\]:hover {
+  color: #5D4037 !important; /* Accent Tropical Orange -> Coconut Brown */
+}
+body.theme-volcanic .bg-\[\#FB8C00\] {
+  background-color: #5D4037 !important;
+}
+body.theme-volcanic .text-\[\#FB8C00\] {
+  color: #5D4037 !important;
+}
+body.theme-volcanic .border-\[\#FB8C00\] {
+  border-color: #5D4037 !important;
+}
+body.theme-volcanic .bg-\[\#1D3557\] {
+  background-color: #5D4037 !important; /* Coconut Brown for events & footer */
 }
 

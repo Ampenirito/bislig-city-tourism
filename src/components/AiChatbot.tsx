@@ -143,7 +143,7 @@ export default function AiChatbot() {
           parts.push(line.substring(lastIndex, match.index));
         }
         parts.push(
-          <strong key={match.index} className="font-extrabold text-[#1D3557] bg-[#E0F2FE]/40 px-1 rounded-sm">
+          <strong key={match.index} className="font-extrabold text-[#0047A1] bg-[#E0F2FE]/40 px-1 rounded-sm">
             {match[1]}
           </strong>
         );
@@ -178,8 +178,8 @@ export default function AiChatbot() {
           onClick={() => setIsOpen(prev => !prev)}
           className={`relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 ${
             isOpen
-              ? "bg-[#1D3557] text-white rotate-90"
-              : "bg-gradient-to-tr from-[#0077B6] to-[#0ea5e9] text-white hover:shadow-cyan-200/50 hover:shadow-xl"
+              ? "bg-[#0047A1] text-white rotate-90"
+              : "bg-gradient-to-tr from-[#0047A1] to-[#0ea5e9] text-white hover:shadow-cyan-200/50 hover:shadow-xl"
           }`}
           title="Chat with AI Concierge"
           id="chatbot-toggle-button"
@@ -208,12 +208,12 @@ export default function AiChatbot() {
             id="chatbot-window"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-[#1D3557] to-[#0077B6] text-white flex items-center justify-between shadow">
+            <div className="p-4 bg-gradient-to-r from-[#0047A1] to-[#0047A1] text-white flex items-center justify-between shadow">
               <div className="flex items-center gap-3">
                 {/* Custom AI Avatar design with subtle sparkle animation */}
                 <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center relative">
                   <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#1D3557]" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0047A1]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold tracking-wide font-serif">Kamayo AI Concierge</h3>
@@ -270,7 +270,7 @@ export default function AiChatbot() {
                         className={`p-3 rounded-2xl shadow-sm border ${
                           isBot
                             ? "bg-white border-slate-100 rounded-tl-none"
-                            : "bg-[#0077B6] text-white border-blue-600 rounded-tr-none"
+                            : "bg-[#0047A1] text-white border-blue-600 rounded-tr-none"
                         }`}
                       >
                         {isBot ? (
@@ -320,7 +320,7 @@ export default function AiChatbot() {
             {/* Playbook Quick Chips selection panel */}
             <div className="px-4 py-2 border-t border-slate-100 bg-white">
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-[#0077B6]" />
+                <Sparkles className="w-3 h-3 text-[#0047A1]" />
                 <span>Travel Guide Playbooks</span>
               </p>
               <div className="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-slate-200">
@@ -329,7 +329,7 @@ export default function AiChatbot() {
                     key={p.id}
                     onClick={() => handleSendMessage(p.text)}
                     disabled={isLoading}
-                    className="shrink-0 text-[10px] font-semibold bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-[#0077B6] border border-slate-200 rounded-full px-3 py-1 transition-all disabled:opacity-50"
+                    className="shrink-0 text-[10px] font-semibold bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-[#0047A1] border border-slate-200 rounded-full px-3 py-1 transition-all disabled:opacity-50"
                   >
                     {p.label}
                   </button>
@@ -351,12 +351,12 @@ export default function AiChatbot() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isLoading}
-                className="flex-grow bg-white border border-slate-200 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-[#0077B6] focus:ring-1 focus:ring-sky-100 transition disabled:opacity-75"
+                className="flex-grow bg-white border border-slate-200 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-sky-100 transition disabled:opacity-75"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
-                className="p-2.5 bg-[#0077B6] hover:bg-[#1D3557] text-white rounded-xl shadow transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                className="p-2.5 bg-[#0047A1] hover:bg-[#0047A1] text-white rounded-xl shadow transition disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
                 <Send className="w-4 h-4" />
               </button>

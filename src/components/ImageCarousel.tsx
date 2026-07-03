@@ -149,7 +149,7 @@ export default function ImageCarousel({
                 handleDotClick(idx);
               }}
               className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                currentIndex === idx ? "w-5 bg-[#F4B400]" : "w-2 bg-white/50 hover:bg-white"
+                currentIndex === idx ? "w-5 bg-[#FB8C00]" : "w-2 bg-white/50 hover:bg-white"
               }`}
               title={`Go to slide ${idx + 1}`}
             />

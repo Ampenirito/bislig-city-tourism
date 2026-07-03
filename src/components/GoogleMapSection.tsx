@@ -21,8 +21,8 @@ export default function GoogleMapSection({
     const attrs = ATTRACTIONS.map((item) => ({
       ...item,
       mapType: "attraction" as const,
-      color: "#0077B6",
-      badgeColor: "bg-[#0077B6]",
+      color: "#0047A1",
+      badgeColor: "bg-[#0047A1]",
       glyph: "F",
       displayCategory: item.category
     }));
@@ -152,7 +152,7 @@ export default function GoogleMapSection({
             {/* Map vs Satellite Toggle */}
             <button
               onClick={() => setMapType(prev => prev === "m" ? "k" : "m")}
-              className="w-8 h-8 bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200/50 flex items-center justify-center text-slate-600 hover:text-[#0077B6] hover:bg-white transition"
+              className="w-8 h-8 bg-white/95 backdrop-blur-sm rounded-lg shadow-md border border-slate-200/50 flex items-center justify-center text-slate-600 hover:text-[#0047A1] hover:bg-white transition"
               title={mapType === "m" ? "Switch to Satellite View" : "Switch to Map View"}
             >
               <Layers className="w-4 h-4" />
@@ -190,7 +190,7 @@ export default function GoogleMapSection({
           </span>
           <button 
             onClick={() => handleSelectLocation(activeLocation)}
-            className="text-[#0077B6] font-bold hover:underline flex items-center gap-0.5"
+            className="text-[#0047A1] font-bold hover:underline flex items-center gap-0.5"
           >
             <span>Read Complete Visitor Log</span>
             <span>&rarr;</span>
@@ -211,7 +211,7 @@ export default function GoogleMapSection({
               placeholder="Search attractions, dining, cafes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 outline-none focus:border-[#0077B6] focus:bg-white transition"
+              className="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 outline-none focus:border-[#0047A1] focus:bg-white transition"
             />
           </div>
 
@@ -220,7 +220,7 @@ export default function GoogleMapSection({
             <button
               onClick={() => setActiveTab("all")}
               className={`flex-1 text-center py-1 rounded transition-all ${
-                activeTab === "all" ? "bg-white text-[#1D3557] shadow-sm" : "text-slate-500 hover:text-slate-800"
+                activeTab === "all" ? "bg-white text-[#0047A1] shadow-sm" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               All
@@ -228,7 +228,7 @@ export default function GoogleMapSection({
             <button
               onClick={() => setActiveTab("attraction")}
               className={`flex-1 text-center py-1 rounded transition-all ${
-                activeTab === "attraction" ? "bg-white text-[#0077B6] shadow-sm" : "text-slate-500 hover:text-slate-800"
+                activeTab === "attraction" ? "bg-white text-[#0047A1] shadow-sm" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Sights
@@ -281,7 +281,7 @@ export default function GoogleMapSection({
                   {/* Body Content */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-1">
-                      <h4 className={`text-xs font-bold truncate ${isSelected ? "text-[#0077B6]" : "text-slate-800"}`}>
+                      <h4 className={`text-xs font-bold truncate ${isSelected ? "text-[#0047A1]" : "text-slate-800"}`}>
                         {loc.name}
                       </h4>
                     </div>
@@ -305,7 +305,7 @@ export default function GoogleMapSection({
         {/* Legend footer panel */}
         <div className="p-2 border-t border-slate-100 bg-white flex items-center justify-between text-[9px] text-slate-400">
           <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0077B6]" /> Sights
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]" /> Sights
           </span>
           <span className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#6C5CE7]" /> Stay

@@ -144,10 +144,10 @@ export default function TravelChecklist() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-100 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Backpack className="w-5 h-5 text-[#0077B6]" />
-            <span className="text-[#0077B6] text-xs font-bold uppercase tracking-wider">KAMAYO PACKING ASSISTANT</span>
+            <Backpack className="w-5 h-5 text-[#0047A1]" />
+            <span className="text-[#0047A1] text-xs font-bold uppercase tracking-wider">KAMAYO PACKING ASSISTANT</span>
           </div>
-          <h3 className="text-2xl font-serif text-[#1D3557] font-extrabold">Bislig Eco-Adventure Checklist</h3>
+          <h3 className="text-2xl font-serif text-[#0047A1] font-extrabold">Bislig Eco-Adventure Checklist</h3>
           <p className="text-xs text-slate-500 mt-1">
             Ensure you have all necessary gear for waterfalls, white sandbars, and humid tropical caves. Saved automatically to your browser.
           </p>
@@ -164,7 +164,7 @@ export default function TravelChecklist() {
       </div>
 
       {/* Progress Card Section */}
-      <div className="bg-gradient-to-r from-slate-900 to-[#1D3557] text-white p-6 rounded-2xl mb-8 shadow-md">
+      <div className="bg-gradient-to-r from-slate-900 to-[#0047A1] text-white p-6 rounded-2xl mb-8 shadow-md">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -208,7 +208,7 @@ export default function TravelChecklist() {
             onClick={() => setFilter(btn.key)}
             className={`px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
               filter === btn.key
-                ? "bg-[#0077B6] border-[#0077B6] text-white shadow-md shadow-blue-50"
+                ? "bg-[#0047A1] border-[#0047A1] text-white shadow-md shadow-blue-50"
                 : "border-slate-100 hover:border-slate-300 text-slate-600 bg-slate-50/50"
             }`}
           >
@@ -240,7 +240,7 @@ export default function TravelChecklist() {
             >
               <div className="mt-0.5">
                 {item.packed ? (
-                  <div className="bg-[#0077B6] text-white p-0.5 rounded">
+                  <div className="bg-[#0047A1] text-white p-0.5 rounded">
                     <Check className="w-4 h-4" />
                   </div>
                 ) : (
@@ -249,7 +249,7 @@ export default function TravelChecklist() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className={`text-sm font-semibold leading-tight ${item.packed ? "line-through text-slate-400" : "text-[#1D3557]"}`}>
+                <p className={`text-sm font-semibold leading-tight ${item.packed ? "line-through text-slate-400" : "text-[#0047A1]"}`}>
                   {item.name}
                 </p>
                 {item.notes && (
@@ -290,13 +290,13 @@ export default function TravelChecklist() {
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             placeholder="e.g. Hydro-flask water jug, GoPro harness, Sunglasses..."
-            className="w-full text-xs bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-[#0077B6] focus:ring-1 focus:ring-[#0077B6] text-[#1D3557]"
+            className="w-full text-xs bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] text-[#0047A1]"
           />
         </div>
         
         <button
           type="submit"
-          className="sm:self-end bg-[#1D3557] hover:bg-[#112237] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+          className="sm:self-end bg-[#0047A1] hover:bg-[#112237] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
         >
           <Plus className="w-4 h-4" />
           <span>Add Gear</span>

@@ -278,12 +278,12 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       <div className="min-h-screen flex items-center justify-center px-4 bg-slate-900 text-white font-sans relative overflow-hidden">
         {/* Abstract background grids */}
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-30" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#0077B6]/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#0047A1]/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
 
         <div className="w-full max-w-md bg-slate-950/80 backdrop-blur-md border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10 transition-all">
           <div className="text-center mb-8">
-            <div className="inline-flex p-3 bg-white/5 border border-white/10 rounded-2xl mb-4 text-[#F4B400] animate-bounce">
+            <div className="inline-flex p-3 bg-white/5 border border-white/10 rounded-2xl mb-4 text-[#FB8C00] animate-bounce">
               <Lock className="w-6 h-6" />
             </div>
             <h2 className="text-2xl font-serif font-bold tracking-tight">BFO Administrative Portal</h2>
@@ -301,7 +301,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter admin username"
-                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#0077B6] focus:ring-1 focus:ring-[#0077B6] outline-none transition-colors"
+                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] outline-none transition-colors"
               />
             </div>
 
@@ -314,7 +314,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="w-full bg-slate-900 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:border-[#0077B6] focus:ring-1 focus:ring-[#0077B6] outline-none transition-colors"
+                  className="w-full bg-slate-900 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] outline-none transition-colors"
                 />
                 <button
                   type="button"
@@ -334,7 +334,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-[#0077B6] to-[#2A9D8F] hover:opacity-90 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg shadow-sky-500/10"
+              className="w-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] hover:opacity-90 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg shadow-sky-500/10"
             >
               Authenticate & Unlock
             </button>
@@ -357,7 +357,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
   // Admin Dashboard Content (Logged In)
   return (
-    <div className="min-h-screen bg-[#F0F4F8] text-[#1D3557] font-sans pb-16">
+    <div className="min-h-screen bg-[#F0F4F8] text-[#0047A1] font-sans pb-16">
       
       {/* Top Banner Control Panel */}
       <div className="bg-slate-900 text-white py-4 px-4 md:px-10 border-b border-white/5 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-40 shadow-md">
@@ -382,7 +382,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             className="bg-white/10 hover:bg-white/15 text-white border border-white/15 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
             title="Inject a realistic random visitor hit to test analytics updates in real-time."
           >
-            <PlusCircle className="w-4 h-4 text-[#F4B400]" />
+            <PlusCircle className="w-4 h-4 text-[#FB8C00]" />
             <span>Simulate Hit</span>
           </button>
           
@@ -511,7 +511,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                       <span className="text-slate-400 font-mono text-[10px]">#{idx + 1}</span>
                       <span>{country.name}</span>
                     </span>
-                    <span className="font-mono text-[11px] text-[#0077B6]">{country.count} inquiries ({country.pct}%)</span>
+                    <span className="font-mono text-[11px] text-[#0047A1]">{country.count} inquiries ({country.pct}%)</span>
                   </div>
                   
                   {/* Custom Track and Bar */}
@@ -561,7 +561,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               <div className="space-y-3">
                 {stats.topPages.map((page, idx) => (
                   <div key={page.name} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
-                    <span className="w-6 h-6 flex items-center justify-center text-[10px] font-black bg-white border border-slate-200 text-[#0077B6] rounded-full shrink-0">
+                    <span className="w-6 h-6 flex items-center justify-center text-[10px] font-black bg-white border border-slate-200 text-[#0047A1] rounded-full shrink-0">
                       {idx + 1}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -576,8 +576,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-[#F8F6F2] rounded-2xl border border-gray-100">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#2A9D8F] mb-1.5 uppercase tracking-wide">
+            <div className="mt-6 p-4 bg-[#F9F9F0] rounded-2xl border border-gray-100">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#0097A7] mb-1.5 uppercase tracking-wide">
                 <Sparkles className="w-4 h-4" />
                 <span>Geotargeting Pro-Tip</span>
               </div>
@@ -597,8 +597,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1.5">
-                <Sparkles className="w-4 h-4 text-[#F4B400] animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#F4B400]">GEMINI TRAVEL INTELLIGENCE</span>
+                <Sparkles className="w-4 h-4 text-[#FB8C00] animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#FB8C00]">GEMINI TRAVEL INTELLIGENCE</span>
               </div>
               <h3 className="text-xl md:text-2xl font-serif font-bold">AI Geographic Demographic Analyzer</h3>
               <p className="text-xs text-slate-400 mt-1">
@@ -609,7 +609,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             <button
               onClick={generateAiReport}
               disabled={isGeneratingAi}
-              className="bg-gradient-to-r from-[#0077B6] to-[#2A9D8F] hover:opacity-90 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 self-start md:self-auto"
+              className="bg-gradient-to-r from-[#0047A1] to-[#0097A7] hover:opacity-90 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 self-start md:self-auto"
             >
               {isGeneratingAi ? (
                 <>
@@ -661,7 +661,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   <div className="mt-4 space-y-3">
                     {aiAnswers.map((item, idx) => (
                       <div key={idx} className="bg-black/20 border border-white/5 p-3 rounded-xl space-y-1.5 text-xs">
-                        <p className="font-bold text-[#F4B400] flex items-center gap-1.5">
+                        <p className="font-bold text-[#FB8C00] flex items-center gap-1.5">
                           <span>👤</span>
                           <span>Inquiry: {item.q}</span>
                         </p>
@@ -701,7 +701,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search IP, country, or page..."
-                  className="bg-transparent text-xs outline-none text-[#1D3557] w-full"
+                  className="bg-transparent text-xs outline-none text-[#0047A1] w-full"
                 />
               </div>
 
@@ -713,8 +713,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                     onClick={() => setLogFilter(btn)}
                     className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-colors cursor-pointer ${
                       logFilter === btn 
-                        ? "bg-[#0077B6] text-white" 
-                        : "text-slate-500 hover:text-[#0077B6]"
+                        ? "bg-[#0047A1] text-white" 
+                        : "text-slate-500 hover:text-[#0047A1]"
                     }`}
                   >
                     {btn}
