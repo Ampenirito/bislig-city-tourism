@@ -176,7 +176,7 @@ export default function App() {
   const [textSize, setTextSize] = useState<"normal" | "large" | "xlarge">("normal");
   const [reducedMotion, setReducedMotion] = useState<boolean>(false);
   const [showAccessibilityMenu, setShowAccessibilityMenu] = useState<boolean>(false);
-  const [colorTheme, setColorTheme] = useState<"original" | "classic" | "lagoon" | "sunset" | "forest" | "sunrise" | "coral" | "coconut" | "shore" | "meadow" | "autumn" | "volcanic">("original");
+  const [colorTheme, setColorTheme] = useState<"original" | "premium" | "tropical" | "waterfall" | "sunset-adv" | "island" | "nature" | "coastal" | "heritage" | "festival">("original");
 
   // Favorites state
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -291,7 +291,7 @@ export default function App() {
 
   // Handle color theme class toggle
   useEffect(() => {
-    document.body.classList.remove("theme-classic", "theme-lagoon", "theme-sunset", "theme-forest", "theme-sunrise", "theme-coral", "theme-coconut", "theme-shore", "theme-meadow", "theme-autumn", "theme-volcanic");
+    document.body.classList.remove("theme-premium", "theme-tropical", "theme-waterfall", "theme-sunset-adv", "theme-island", "theme-nature", "theme-coastal", "theme-heritage", "theme-festival");
     if (colorTheme !== "original") {
       document.body.classList.add(`theme-${colorTheme}`);
     }
@@ -678,36 +678,7 @@ export default function App() {
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab("home")}>
           {/* Custom Stylized Logo of Bislig (Sun, Forests, and Tinuy-an Falls Cascades) */}
           <div className="w-11 h-11 relative shrink-0 transform group-hover:scale-105 transition-transform duration-300">
-            <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="logo-sun-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#F59E0B" />
-                  <stop offset="100%" stopColor="#EF4444" />
-                </linearGradient>
-                <linearGradient id="logo-water-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#38BDF8" />
-                  <stop offset="50%" stopColor="#0EA5E9" />
-                  <stop offset="100%" stopColor="#0047A1" />
-                </linearGradient>
-                <linearGradient id="logo-forest-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#059669" />
-                  <stop offset="100%" stopColor="#10B981" />
-                </linearGradient>
-              </defs>
-              <circle cx="50" cy="50" r="46" fill="#F8FAFC" />
-              <circle cx="50" cy="50" r="46" stroke="#E2E8F0" strokeWidth="1" />
-              <circle cx="50" cy="50" r="42" stroke="#F1F5F9" strokeWidth="4" />
-              
-              <circle cx="50" cy="42" r="16" fill="url(#logo-sun-grad)" opacity="0.9" />
-              <path d="M28 65 L42 42 L52 58 L62 42 L72 65 Z" fill="url(#logo-forest-grad)" opacity="0.85" />
-              <path d="M20 65 Q 35 55, 50 65 T 80 65 L 80 82 Q 50 86, 20 82 Z" fill="url(#logo-water-grad)" />
-              <path d="M25 72 Q 40 64, 55 72 T 75 72" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" opacity="0.9" />
-              <path d="M30 78 Q 45 72, 60 78 T 70 78" stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-              
-              <circle cx="32" cy="30" r="2" fill="#F59E0B" />
-              <circle cx="68" cy="30" r="2" fill="#F59E0B" />
-              <circle cx="50" cy="20" r="2.5" fill="#EF4444" />
-            </svg>
+            <img src="/assets/images/logo.jpg" className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm" alt="Bislig City Tourism Logo" />
           </div>
           <div>
             <h1 className="text-sm font-extrabold tracking-wider text-[#0047A1] leading-none uppercase">Bislig City</h1>
@@ -980,12 +951,12 @@ export default function App() {
             </div>
             <div>
               <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Color Palette Themes</label>
-              <div className="grid grid-cols-4 gap-1">
-                {(["original", "classic", "lagoon", "sunset", "forest", "sunrise", "coral", "coconut", "shore", "meadow", "autumn", "volcanic"] as const).map((theme) => (
+              <div className="grid grid-cols-5 gap-0.5">
+                {(["original", "premium", "tropical", "waterfall", "sunset-adv", "island", "nature", "coastal", "heritage", "festival"] as const).map((theme) => (
                   <button
                     key={theme}
                     onClick={() => setColorTheme(theme)}
-                    className={`py-2 text-[8px] font-bold rounded-lg border capitalize flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
+                    className={`py-1.5 text-[6.5px] font-bold rounded border capitalize flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all ${
                       colorTheme === theme
                         ? "bg-[#0047A1] text-white border-transparent shadow-sm"
                         : "bg-white text-slate-700 border-gray-200 hover:bg-slate-50"
@@ -994,90 +965,76 @@ export default function App() {
                     <div className="flex gap-0.5">
                       {theme === "original" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#0047A1]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#FB8C00]"></span>
                         </>
                       )}
-                      {theme === "classic" && (
+                      {theme === "premium" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0077B6]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2A9D8F]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#F4B400]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
                         </>
                       )}
-                      {theme === "lagoon" && (
+                      {theme === "tropical" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
-                      {theme === "sunset" && (
+                      {theme === "waterfall" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
-                      {theme === "forest" && (
+                      {theme === "sunset-adv" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
-                      {theme === "sunrise" && (
+                      {theme === "island" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1F2F8A]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#8A6B5D]"></span>
                         </>
                       )}
-                      {theme === "coral" && (
+                      {theme === "nature" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
                         </>
                       )}
-                      {theme === "coconut" && (
+                      {theme === "coastal" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FAFCFC]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
                         </>
                       )}
-                      {theme === "shore" && (
+                      {theme === "heritage" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FAFCFC] border border-gray-200"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#8A6B5D]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
-                      {theme === "meadow" && (
+                      {theme === "festival" && (
                         <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
-                        </>
-                      )}
-                      {theme === "autumn" && (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
-                        </>
-                      )}
-                      {theme === "volcanic" && (
-                        <>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#D32F2F]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FBC02D]"></span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#5D4037]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
                         </>
                       )}
                     </div>
-                    <span>{theme === "original" ? "Reset" : theme}</span>
+                    <span>{theme === "original" ? "Reset" : theme === "sunset-adv" ? "sunset" : theme}</span>
                   </button>
                 ))}
               </div>
@@ -2918,30 +2875,7 @@ export default function App() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 relative shrink-0">
-                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="footer-logo-sun" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#F59E0B" />
-                      <stop offset="100%" stopColor="#EF4444" />
-                    </linearGradient>
-                    <linearGradient id="footer-logo-water" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#38BDF8" />
-                      <stop offset="50%" stopColor="#0EA5E9" />
-                      <stop offset="100%" stopColor="#0047A1" />
-                    </linearGradient>
-                    <linearGradient id="footer-logo-forest" x1="0%" y1="100%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#059669" />
-                      <stop offset="100%" stopColor="#10B981" />
-                    </linearGradient>
-                  </defs>
-                  <circle cx="50" cy="50" r="46" fill="#111827" fillOpacity="0.5" />
-                  <circle cx="50" cy="50" r="46" stroke="#FFFFFF" strokeOpacity="0.1" strokeWidth="1" />
-                  
-                  <circle cx="50" cy="42" r="16" fill="url(#footer-logo-sun)" opacity="0.9" />
-                  <path d="M28 65 L42 42 L52 58 L62 42 L72 65 Z" fill="url(#footer-logo-forest)" opacity="0.85" />
-                  <path d="M20 65 Q 35 55, 50 65 T 80 65 L 80 82 Q 50 86, 20 82 Z" fill="url(#footer-logo-water)" />
-                  <path d="M25 72 Q 40 64, 55 72 T 75 72" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" opacity="0.95" />
-                </svg>
+                <img src="/assets/images/logo.jpg" className="w-full h-full object-cover rounded-full border border-white/20 shadow-sm bg-white" alt="Bislig City Tourism Logo" />
               </div>
               <div>
                 <h4 className="font-extrabold font-sans text-sm tracking-wide text-white leading-tight uppercase">Bislig City</h4>

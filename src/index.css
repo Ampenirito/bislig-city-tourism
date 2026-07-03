@@ -387,166 +387,400 @@ body.theme-coconut .bg-\[\#1D3557\] {
 }
 
 /* ==========================================
-   8. Theme: Ocean Shore (Lagoon Teal + Sand + Coral Red)
+   /* --- THEME OVERRIDES --- */
+
+/* ==========================================
+   1. Theme: Premium Tourism Brand (Primary #1557B8 + Secondary #129DA3 + Accent #EEA542)
    ========================================== */
-body.theme-shore .bg-\[\#0047A1\] {
-  background-color: #0097A7 !important; /* Primary Ocean Blue -> Lagoon Teal */
+body.theme-premium .bg-\[\#0047A1\] {
+  background-color: #1557B8 !important;
 }
-body.theme-shore .text-\[\#0047A1\] {
-  color: #0097A7 !important;
+body.theme-premium .text-\[\#0047A1\] {
+  color: #1557B8 !important;
 }
-body.theme-shore .border-\[\#0047A1\] {
-  border-color: #0097A7 !important;
+body.theme-premium .border-\[\#0047A1\] {
+  border-color: #1557B8 !important;
 }
-body.theme-shore .hover\:bg-\[\#005f92\]:hover,
-body.theme-shore .hover\:bg-\[\#005F92\]:hover {
-  background-color: #00838F !important; /* Darker Teal for primary hover */
+body.theme-premium .hover\:bg-\[\#005f92\]:hover,
+body.theme-premium .hover\:bg-\[\#005F92\]:hover {
+  background-color: #114694 !important;
 }
-body.theme-shore .bg-\[\#0097A7\] {
-  background-color: #FAFCFC !important; /* Secondary Lagoon Teal -> Sand */
+body.theme-premium .bg-\[\#0097A7\] {
+  background-color: #129DA3 !important;
 }
-body.theme-shore .text-\[\#0097A7\] {
-  color: #0097A7 !important;
+body.theme-premium .text-\[\#0097A7\] {
+  color: #129DA3 !important;
 }
-body.theme-shore .border-\[\#0097A7\] {
-  border-color: #E0D8D0 !important;
+body.theme-premium .border-\[\#0097A7\] {
+  border-color: #129DA3 !important;
 }
-body.theme-shore .hover\:text-\[\#FB8C00\]:hover {
-  color: #D32F2F !important; /* Accent Tropical Orange -> Coral Red */
+body.theme-premium .hover\:text-\[\#FB8C00\]:hover {
+  color: #EEA542 !important;
 }
-body.theme-shore .bg-\[\#FB8C00\] {
-  background-color: #D32F2F !important;
+body.theme-premium .bg-\[\#FB8C00\] {
+  background-color: #EEA542 !important;
 }
-body.theme-shore .text-\[\#FB8C00\] {
-  color: #D32F2F !important;
+body.theme-premium .text-\[\#FB8C00\] {
+  color: #EEA542 !important;
 }
-body.theme-shore .border-\[\#FB8C00\] {
-  border-color: #D32F2F !important;
+body.theme-premium .border-\[\#FB8C00\] {
+  border-color: #EEA542 !important;
 }
-body.theme-shore .bg-\[\#1D3557\] {
-  background-color: #006064 !important; /* Deep Teal Green for events & footer */
+body.theme-premium .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #d68f2f !important;
+}
+body.theme-premium .bg-\[\#1D3557\] {
+  background-color: #1F2F8A !important; /* Deep Blue text/background */
 }
 
 /* ==========================================
-   9. Theme: Yellow Meadow (Sunshine Yellow + Forest Green + Orange)
+   2. Theme: Tropical Paradise (Primary #1557B8 + Secondary #129DA3 + Accent #489E4C)
    ========================================== */
-body.theme-meadow .bg-\[\#0047A1\] {
-  background-color: #FBC02D !important; /* Primary Ocean Blue -> Sunshine Yellow */
+body.theme-tropical .bg-\[\#0047A1\] {
+  background-color: #1557B8 !important;
 }
-body.theme-meadow .text-\[\#0047A1\] {
-  color: #FBC02D !important;
+body.theme-tropical .text-\[\#0047A1\] {
+  color: #1557B8 !important;
 }
-body.theme-meadow .border-\[\#0047A1\] {
-  border-color: #FBC02D !important;
+body.theme-tropical .border-\[\#0047A1\] {
+  border-color: #1557B8 !important;
 }
-body.theme-meadow .hover\:bg-\[\#005f92\]:hover,
-body.theme-meadow .hover\:bg-\[\#005F92\]:hover {
-  background-color: #F9A825 !important; /* Darker Yellow for primary hover */
+body.theme-tropical .hover\:bg-\[\#005f92\]:hover,
+body.theme-tropical .hover\:bg-\[\#005F92\]:hover {
+  background-color: #114694 !important;
 }
-body.theme-meadow .bg-\[\#0097A7\] {
-  background-color: #2E7D32 !important; /* Secondary Lagoon Teal -> Forest Green */
+body.theme-tropical .bg-\[\#0097A7\] {
+  background-color: #129DA3 !important;
 }
-body.theme-meadow .text-\[\#0097A7\] {
-  color: #2E7D32 !important;
+body.theme-tropical .text-\[\#0097A7\] {
+  color: #129DA3 !important;
 }
-body.theme-meadow .border-\[\#0097A7\] {
-  border-color: #2E7D32 !important;
+body.theme-tropical .border-\[\#0097A7\] {
+  border-color: #129DA3 !important;
 }
-body.theme-meadow .hover\:text-\[\#FB8C00\]:hover {
-  color: #FB8C00 !important; /* Accent remains Tropical Orange */
+body.theme-tropical .hover\:text-\[\#FB8C00\]:hover {
+  color: #489E4C !important;
 }
-body.theme-meadow .bg-\[\#FB8C00\] {
-  background-color: #FB8C00 !important;
+body.theme-tropical .bg-\[\#FB8C00\] {
+  background-color: #489E4C !important;
 }
-body.theme-meadow .text-\[\#FB8C00\] {
-  color: #FB8C00 !important;
+body.theme-tropical .text-\[\#FB8C00\] {
+  color: #489E4C !important;
 }
-body.theme-meadow .border-\[\#FB8C00\] {
-  border-color: #FB8C00 !important;
+body.theme-tropical .border-\[\#FB8C00\] {
+  border-color: #489E4C !important;
 }
-body.theme-meadow .bg-\[\#1D3557\] {
-  background-color: #1B5E20 !important; /* Deep Forest Green for events & footer */
+body.theme-tropical .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #387c3b !important;
+}
+body.theme-tropical .bg-\[\#1D3557\] {
+  background-color: #1F2F8A !important;
 }
 
 /* ==========================================
-   10. Theme: Autumn Leaves (Coconut Brown + Tropical Orange + Yellow)
+   3. Theme: Waterfall Escape (Primary #129DA3 + Secondary #1557B8 + Accent #489E4C)
    ========================================== */
-body.theme-autumn .bg-\[\#0047A1\] {
-  background-color: #5D4037 !important; /* Primary Ocean Blue -> Coconut Brown */
+body.theme-waterfall .bg-\[\#0047A1\] {
+  background-color: #129DA3 !important;
 }
-body.theme-autumn .text-\[\#0047A1\] {
-  color: #5D4037 !important;
+body.theme-waterfall .text-\[\#0047A1\] {
+  color: #129DA3 !important;
 }
-body.theme-autumn .border-\[\#0047A1\] {
-  border-color: #5D4037 !important;
+body.theme-waterfall .border-\[\#0047A1\] {
+  border-color: #129DA3 !important;
 }
-body.theme-autumn .hover\:bg-\[\#005f92\]:hover,
-body.theme-autumn .hover\:bg-\[\#005F92\]:hover {
-  background-color: #4E342E !important; /* Darker Brown for primary hover */
+body.theme-waterfall .hover\:bg-\[\#005f92\]:hover,
+body.theme-waterfall .hover\:bg-\[\#005F92\]:hover {
+  background-color: #0f8388 !important;
 }
-body.theme-autumn .bg-\[\#0097A7\] {
-  background-color: #FB8C00 !important; /* Secondary Lagoon Teal -> Tropical Orange */
+body.theme-waterfall .bg-\[\#0097A7\] {
+  background-color: #1557B8 !important;
 }
-body.theme-autumn .text-\[\#0097A7\] {
-  color: #FB8C00 !important;
+body.theme-waterfall .text-\[\#0097A7\] {
+  color: #1557B8 !important;
 }
-body.theme-autumn .border-\[\#0097A7\] {
-  border-color: #FB8C00 !important;
+body.theme-waterfall .border-\[\#0097A7\] {
+  border-color: #1557B8 !important;
 }
-body.theme-autumn .hover\:text-\[\#FB8C00\]:hover {
-  color: #FBC02D !important; /* Accent Tropical Orange -> Sunshine Yellow */
+body.theme-waterfall .hover\:text-\[\#FB8C00\]:hover {
+  color: #489E4C !important;
 }
-body.theme-autumn .bg-\[\#FB8C00\] {
-  background-color: #FBC02D !important;
+body.theme-waterfall .bg-\[\#FB8C00\] {
+  background-color: #489E4C !important;
 }
-body.theme-autumn .text-\[\#FB8C00\] {
-  color: #FBC02D !important;
+body.theme-waterfall .text-\[\#FB8C00\] {
+  color: #489E4C !important;
 }
-body.theme-autumn .border-\[\#FB8C00\] {
-  border-color: #FBC02D !important;
+body.theme-waterfall .border-\[\#FB8C00\] {
+  border-color: #489E4C !important;
 }
-body.theme-autumn .bg-\[\#1D3557\] {
-  background-color: #2D1500 !important; /* Very Deep Brown for events & footer */
+body.theme-waterfall .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #387c3b !important;
+}
+body.theme-waterfall .bg-\[\#1D3557\] {
+  background-color: #1F2F8A !important;
 }
 
 /* ==========================================
-   11. Theme: Volcanic Rock (Coral Red + Sunshine Yellow + Coconut Brown)
+   4. Theme: Sunset Adventure (Primary #EEA542 + Secondary #F2C425 + Accent #489E4C)
    ========================================== */
-body.theme-volcanic .bg-\[\#0047A1\] {
-  background-color: #D32F2F !important; /* Primary Ocean Blue -> Coral Red */
+body.theme-sunset-adv .bg-\[\#0047A1\] {
+  background-color: #EEA542 !important;
 }
-body.theme-volcanic .text-\[\#0047A1\] {
-  color: #D32F2F !important;
+body.theme-sunset-adv .text-\[\#0047A1\] {
+  color: #EEA542 !important;
 }
-body.theme-volcanic .border-\[\#0047A1\] {
-  border-color: #D32F2F !important;
+body.theme-sunset-adv .border-\[\#0047A1\] {
+  border-color: #EEA542 !important;
 }
-body.theme-volcanic .hover\:bg-\[\#005f92\]:hover,
-body.theme-volcanic .hover\:bg-\[\#005F92\]:hover {
-  background-color: #B71C1C !important; /* Darker Red for primary hover */
+body.theme-sunset-adv .hover\:bg-\[\#005f92\]:hover,
+body.theme-sunset-adv .hover\:bg-\[\#005F92\]:hover {
+  background-color: #d68f2f !important;
 }
-body.theme-volcanic .bg-\[\#0097A7\] {
-  background-color: #FBC02D !important; /* Secondary Lagoon Teal -> Sunshine Yellow */
+body.theme-sunset-adv .bg-\[\#0097A7\] {
+  background-color: #F2C425 !important;
 }
-body.theme-volcanic .text-\[\#0097A7\] {
-  color: #FBC02D !important;
+body.theme-sunset-adv .text-\[\#0097A7\] {
+  color: #C29A10 !important; /* Slightly darker gold text for contrast */
 }
-body.theme-volcanic .border-\[\#0097A7\] {
-  border-color: #FBC02D !important;
+body.theme-sunset-adv .border-\[\#0097A7\] {
+  border-color: #F2C425 !important;
 }
-body.theme-volcanic .hover\:text-\[\#FB8C00\]:hover {
-  color: #5D4037 !important; /* Accent Tropical Orange -> Coconut Brown */
+body.theme-sunset-adv .hover\:text-\[\#FB8C00\]:hover {
+  color: #489E4C !important;
 }
-body.theme-volcanic .bg-\[\#FB8C00\] {
-  background-color: #5D4037 !important;
+body.theme-sunset-adv .bg-\[\#FB8C00\] {
+  background-color: #489E4C !important;
 }
-body.theme-volcanic .text-\[\#FB8C00\] {
-  color: #5D4037 !important;
+body.theme-sunset-adv .text-\[\#FB8C00\] {
+  color: #489E4C !important;
 }
-body.theme-volcanic .border-\[\#FB8C00\] {
-  border-color: #5D4037 !important;
+body.theme-sunset-adv .border-\[\#FB8C00\] {
+  border-color: #489E4C !important;
 }
-body.theme-volcanic .bg-\[\#1D3557\] {
-  background-color: #5D4037 !important; /* Coconut Brown for events & footer */
+body.theme-sunset-adv .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #387c3b !important;
+}
+body.theme-sunset-adv .bg-\[\#1D3557\] {
+  background-color: #1557B8 !important;
 }
 
+/* ==========================================
+   5. Theme: Island Luxury (Primary #1F2F8A + Secondary #129DA3 + Accent #8A6B5D)
+   ========================================== */
+body.theme-island .bg-\[\#0047A1\] {
+  background-color: #1F2F8A !important;
+}
+body.theme-island .text-\[\#0047A1\] {
+  color: #1F2F8A !important;
+}
+body.theme-island .border-\[\#0047A1\] {
+  border-color: #1F2F8A !important;
+}
+body.theme-island .hover\:bg-\[\#005f92\]:hover,
+body.theme-island .hover\:bg-\[\#005F92\]:hover {
+  background-color: #162263 !important;
+}
+body.theme-island .bg-\[\#0097A7\] {
+  background-color: #129DA3 !important;
+}
+body.theme-island .text-\[\#0097A7\] {
+  color: #129DA3 !important;
+}
+body.theme-island .border-\[\#0097A7\] {
+  border-color: #129DA3 !important;
+}
+body.theme-island .hover\:text-\[\#FB8C00\]:hover {
+  color: #8A6B5D !important;
+}
+body.theme-island .bg-\[\#FB8C00\] {
+  background-color: #8A6B5D !important;
+}
+body.theme-island .text-\[\#FB8C00\] {
+  color: #8A6B5D !important;
+}
+body.theme-island .border-\[\#FB8C00\] {
+  border-color: #8A6B5D !important;
+}
+body.theme-island .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #72584c !important;
+}
+body.theme-island .bg-\[\#1D3557\] {
+  background-color: #1F2F8A !important;
+}
+
+/* ==========================================
+   6. Theme: Nature Explorer (Primary #489E4C + Secondary #129DA3 + Accent #F2C425)
+   ========================================== */
+body.theme-nature .bg-\[\#0047A1\] {
+  background-color: #489E4C !important;
+}
+body.theme-nature .text-\[\#0047A1\] {
+  color: #489E4C !important;
+}
+body.theme-nature .border-\[\#0047A1\] {
+  border-color: #489E4C !important;
+}
+body.theme-nature .hover\:bg-\[\#005f92\]:hover,
+body.theme-nature .hover\:bg-\[\#005F92\]:hover {
+  background-color: #387c3b !important;
+}
+body.theme-nature .bg-\[\#0097A7\] {
+  background-color: #129DA3 !important;
+}
+body.theme-nature .text-\[\#0097A7\] {
+  color: #129DA3 !important;
+}
+body.theme-nature .border-\[\#0097A7\] {
+  border-color: #129DA3 !important;
+}
+body.theme-nature .hover\:text-\[\#FB8C00\]:hover {
+  color: #F2C425 !important;
+}
+body.theme-nature .bg-\[\#FB8C00\] {
+  background-color: #F2C425 !important;
+}
+body.theme-nature .text-\[\#FB8C00\] {
+  color: #C29A10 !important;
+}
+body.theme-nature .border-\[\#FB8C00\] {
+  border-color: #F2C425 !important;
+}
+body.theme-nature .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #d1a70c !important;
+}
+body.theme-nature .bg-\[\#1D3557\] {
+  background-color: #1B5E20 !important; /* Deep Forest Green */
+}
+
+/* ==========================================
+   7. Theme: Coastal Modern (Primary #1557B8 + Secondary #129DA3 + Accent #F2C425)
+   ========================================== */
+body.theme-coastal .bg-\[\#0047A1\] {
+  background-color: #1557B8 !important;
+}
+body.theme-coastal .text-\[\#0047A1\] {
+  color: #1557B8 !important;
+}
+body.theme-coastal .border-\[\#0047A1\] {
+  border-color: #1557B8 !important;
+}
+body.theme-coastal .hover\:bg-\[\#005f92\]:hover,
+body.theme-coastal .hover\:bg-\[\#005F92\]:hover {
+  background-color: #114694 !important;
+}
+body.theme-coastal .bg-\[\#0097A7\] {
+  background-color: #129DA3 !important;
+}
+body.theme-coastal .text-\[\#0097A7\] {
+  color: #129DA3 !important;
+}
+body.theme-coastal .border-\[\#0097A7\] {
+  border-color: #129DA3 !important;
+}
+body.theme-coastal .hover\:text-\[\#FB8C00\]:hover {
+  color: #F2C425 !important;
+}
+body.theme-coastal .bg-\[\#FB8C00\] {
+  background-color: #F2C425 !important;
+}
+body.theme-coastal .text-\[\#FB8C00\] {
+  color: #C29A10 !important;
+}
+body.theme-coastal .border-\[\#FB8C00\] {
+  border-color: #F2C425 !important;
+}
+body.theme-coastal .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #d1a70c !important;
+}
+body.theme-coastal .bg-\[\#1D3557\] {
+  background-color: #1557B8 !important;
+}
+
+/* ==========================================
+   8. Theme: Heritage & Culture (Primary #8A6B5D + Secondary #EEA542 + Accent #489E4C)
+   ========================================== */
+body.theme-heritage .bg-\[\#0047A1\] {
+  background-color: #8A6B5D !important;
+}
+body.theme-heritage .text-\[\#0047A1\] {
+  color: #8A6B5D !important;
+}
+body.theme-heritage .border-\[\#0047A1\] {
+  border-color: #8A6B5D !important;
+}
+body.theme-heritage .hover\:bg-\[\#005f92\]:hover,
+body.theme-heritage .hover\:bg-\[\#005F92\]:hover {
+  background-color: #72584c !important;
+}
+body.theme-heritage .bg-\[\#0097A7\] {
+  background-color: #EEA542 !important;
+}
+body.theme-heritage .text-\[\#0097A7\] {
+  color: #EEA542 !important;
+}
+body.theme-heritage .border-\[\#0097A7\] {
+  border-color: #EEA542 !important;
+}
+body.theme-heritage .hover\:text-\[\#FB8C00\]:hover {
+  color: #489E4C !important;
+}
+body.theme-heritage .bg-\[\#FB8C00\] {
+  background-color: #489E4C !important;
+}
+body.theme-heritage .text-\[\#FB8C00\] {
+  color: #489E4C !important;
+}
+body.theme-heritage .border-\[\#FB8C00\] {
+  border-color: #489E4C !important;
+}
+body.theme-heritage .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #387c3b !important;
+}
+body.theme-heritage .bg-\[\#1D3557\] {
+  background-color: #5D4037 !important; /* Coconut Brown */
+}
+
+/* ==========================================
+   9. Theme: Festival Colors (Primary #1557B8 + Secondary #F2C425 + Accent #EEA542)
+   ========================================== */
+body.theme-festival .bg-\[\#0047A1\] {
+  background-color: #1557B8 !important;
+}
+body.theme-festival .text-\[\#0047A1\] {
+  color: #1557B8 !important;
+}
+body.theme-festival .border-\[\#0047A1\] {
+  border-color: #1557B8 !important;
+}
+body.theme-festival .hover\:bg-\[\#005f92\]:hover,
+body.theme-festival .hover\:bg-\[\#005F92\]:hover {
+  background-color: #114694 !important;
+}
+body.theme-festival .bg-\[\#0097A7\] {
+  background-color: #F2C425 !important;
+}
+body.theme-festival .text-\[\#0097A7\] {
+  color: #C29A10 !important;
+}
+body.theme-festival .border-\[\#0097A7\] {
+  border-color: #F2C425 !important;
+}
+body.theme-festival .hover\:text-\[\#FB8C00\]:hover {
+  color: #EEA542 !important;
+}
+body.theme-festival .bg-\[\#FB8C00\] {
+  background-color: #EEA542 !important;
+}
+body.theme-festival .text-\[\#FB8C00\] {
+  color: #EEA542 !important;
+}
+body.theme-festival .border-\[\#FB8C00\] {
+  border-color: #EEA542 !important;
+}
+body.theme-festival .hover\:bg-\[\#e67e00\]:hover {
+  background-color: #d68f2f !important;
+}
+body.theme-festival .bg-\[\#1D3557\] {
+  background-color: #E3766A !important; /* Festival Coral Red-Orange */
+}
