@@ -675,14 +675,10 @@ export default function App() {
 
       {/* Transparent Sticky Navigation */}
       <nav id="navbar" className="z-50 w-full px-4 md:px-10 h-20 flex items-center justify-between glass sticky top-0 border-b border-gray-200 shadow-sm transition-all duration-300">
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab("home")}>
+        <div className="flex items-center cursor-pointer group" onClick={() => setActiveTab("home")}>
           {/* Custom Stylized Logo of Bislig (Sun, Forests, and Tinuy-an Falls Cascades) */}
-          <div className="w-11 h-11 relative shrink-0 transform group-hover:scale-105 transition-transform duration-300">
+          <div className="w-16 h-16 relative shrink-0 transform group-hover:scale-105 transition-transform duration-300">
             <img src="/assets/images/logo.jpg" className="w-full h-full object-cover rounded-full border border-gray-200 shadow-sm" alt="Bislig City Tourism Logo" />
-          </div>
-          <div>
-            <h1 className="text-sm font-extrabold tracking-wider text-[#0047A1] leading-none uppercase">Bislig City</h1>
-            <p className="text-[10px] text-[#0047A1] tracking-widest uppercase font-black mt-0.5">Tourism</p>
           </div>
         </div>
 
@@ -951,86 +947,86 @@ export default function App() {
             </div>
             <div>
               <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Color Palette Themes</label>
-              <div className="grid grid-cols-5 gap-0.5">
+              <div className="grid grid-cols-2 gap-1.5">
                 {(["original", "premium", "tropical", "waterfall", "sunset-adv", "island", "nature", "coastal", "heritage", "festival"] as const).map((theme) => (
                   <button
                     key={theme}
                     onClick={() => setColorTheme(theme)}
-                    className={`py-1.5 text-[6.5px] font-bold rounded border capitalize flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all ${
+                    className={`py-2 px-1 text-[10px] font-bold rounded-lg border capitalize flex flex-col items-center justify-center gap-1 cursor-pointer transition-all ${
                       colorTheme === theme
                         ? "bg-[#0047A1] text-white border-transparent shadow-sm"
                         : "bg-white text-slate-700 border-gray-200 hover:bg-slate-50"
                     }`}
                   >
-                    <div className="flex gap-0.5">
+                    <div className="flex gap-1">
                       {theme === "original" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#0047A1]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#0097A7]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#FB8C00]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#0097A7]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]"></span>
                         </>
                       )}
                       {theme === "premium" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#EEA542]"></span>
                         </>
                       )}
                       {theme === "tropical" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
                       {theme === "waterfall" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
                       {theme === "sunset-adv" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
                       {theme === "island" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#1F2F8A]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#8A6B5D]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1F2F8A]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#8A6B5D]"></span>
                         </>
                       )}
                       {theme === "nature" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F2C425]"></span>
                         </>
                       )}
                       {theme === "coastal" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#129DA3]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#129DA3]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F2C425]"></span>
                         </>
                       )}
                       {theme === "heritage" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#8A6B5D]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#489E4C]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#8A6B5D]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#489E4C]"></span>
                         </>
                       )}
                       {theme === "festival" && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-[#1557B8]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#F2C425]"></span>
-                          <span className="w-1 h-1 rounded-full bg-[#EEA542]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#1557B8]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#F2C425]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#EEA542]"></span>
                         </>
                       )}
                     </div>
@@ -2873,13 +2869,9 @@ export default function App() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 relative shrink-0">
+            <div className="flex items-center">
+              <div className="w-16 h-16 relative shrink-0">
                 <img src="/assets/images/logo.jpg" className="w-full h-full object-cover rounded-full border border-white/20 shadow-sm bg-white" alt="Bislig City Tourism Logo" />
-              </div>
-              <div>
-                <h4 className="font-extrabold font-sans text-sm tracking-wide text-white leading-tight uppercase">Bislig City</h4>
-                <p className="text-[10px] text-[#38BDF8] tracking-widest uppercase font-black">Tourism</p>
               </div>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
