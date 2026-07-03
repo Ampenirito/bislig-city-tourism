@@ -788,13 +788,7 @@ body.theme-festival .bg-\[\#1D3557\] {
 /* Custom Heading Gradients for Premium Theme */
 body.theme-premium h2.text-\[\#0047A1\],
 body.theme-premium h2.text-3xl.font-serif,
-body.theme-premium h2.text-2xl.font-serif,
-body.theme-premium h3.text-\[\#0047A1\],
-body.theme-premium h3.text-3xl.font-serif,
-body.theme-premium h3.text-2xl.font-serif,
-body.theme-premium h3.font-serif,
-body.theme-premium h4.text-\[\#0047A1\],
-body.theme-premium h4.font-serif {
+body.theme-premium h2.text-2xl.font-serif {
   background-image: linear-gradient(to right, #1873D9, #18B326, #7BCB00, #F7B500, #F68A14, #F7431C) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;

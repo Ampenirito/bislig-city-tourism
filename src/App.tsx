@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "motion/react";
 import { jsPDF } from "jspdf";
 import {
@@ -48,7 +48,8 @@ import {
   Check,
   Menu,
   Star,
-  Facebook
+  Facebook,
+  Mail
 } from "lucide-react";
 
 import {
@@ -110,6 +111,138 @@ const ATTRACTION_PHOTOS: Record<string, string[]> = {
     "/assets/images/Lake 77 Featured 2.jpg",
     "/assets/images/Lake 77 Featured 3.jpg"
   ]
+};
+
+const KajabiFormEmbed = () => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (iframeRef.current) {
+      const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+      if (doc) {
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+              <style>
+                body {
+                  margin: 0;
+                  padding: 16px;
+                  background: transparent;
+                  font-family: 'Inter', sans-serif;
+                }
+                #kajabi-form {
+                  max-width: 100% !important;
+                  margin: 0 auto !important;
+                  box-sizing: border-box !important;
+                }
+                .kajabi-form__content {
+                  padding: 0 !important;
+                }
+                .kajabi-form__title {
+                  display: none !important;
+                }
+                .kajabi-form__form-item {
+                  margin-bottom: 16px !important;
+                }
+                .kajabi-form__form-item input[type="text"],
+                .kajabi-form__form-item input[type="email"],
+                .kajabi-form__form-item input[type="tel"] {
+                  width: 100% !important;
+                  box-sizing: border-box !important;
+                  padding: 14px 18px !important;
+                  border: 1px solid #E2E8F0 !important;
+                  border-radius: 12px !important;
+                  font-size: 14px !important;
+                  font-family: 'Inter', sans-serif !important;
+                  background-color: #FAFAFA !important;
+                  color: #1E293B !important;
+                  outline: none !important;
+                  transition: all 0.2s ease !important;
+                }
+                .kajabi-form__form-item input:focus {
+                  background-color: #FFFFFF !important;
+                  border-color: #0047A1 !important;
+                  box-shadow: 0 0 0 3px rgba(0, 71, 161, 0.15) !important;
+                }
+                .radio-buttons-field {
+                  margin: 20px 0 !important;
+                }
+                .radio-buttons-field > label {
+                  font-size: 13px !important;
+                  font-weight: 700 !important;
+                  color: #475569 !important;
+                  margin-bottom: 12px !important;
+                  display: block !important;
+                }
+                .radio {
+                  margin-bottom: 10px !important;
+                }
+                .radio label {
+                  display: flex !important;
+                  align-items: center !important;
+                  gap: 10px !important;
+                  color: #334155 !important;
+                  font-size: 13.5px !important;
+                  font-weight: 500 !important;
+                  cursor: pointer !important;
+                  position: relative !important;
+                }
+                .radio input[type="radio"] {
+                  width: 18px !important;
+                  height: 18px !important;
+                  accent-color: #0047A1 !important;
+                  cursor: pointer !important;
+                  margin: 0 !important;
+                }
+                .radio .overlay, .radio .text {
+                  display: inline-block !important;
+                }
+                .kajabi-form__btn {
+                  width: 100% !important;
+                  padding: 14px 24px !important;
+                  background-color: #0047A1 !important;
+                  color: #FFFFFF !important;
+                  font-family: 'Inter', sans-serif !important;
+                  font-weight: 700 !important;
+                  font-size: 14px !important;
+                  text-transform: uppercase !important;
+                  letter-spacing: 0.05em !important;
+                  border-radius: 9999px !important;
+                  border: none !important;
+                  cursor: pointer !important;
+                  transition: all 0.25s ease !important;
+                  box-shadow: 0 4px 6px -1px rgba(0, 71, 161, 0.15), 0 2px 4px -1px rgba(0, 71, 161, 0.08) !important;
+                }
+                .kajabi-form__btn:hover {
+                  background-color: #002D6E !important;
+                  transform: translateY(-2.5px) !important;
+                  box-shadow: 0 8px 16px -2px rgba(0, 71, 161, 0.25) !important;
+                }
+              </style>
+            </head>
+            <body>
+              <script src="https://desiree-bastiano-3d5b.mykajabi.com/forms/2149631471/embed.js"></script>
+            </body>
+          </html>
+        `);
+        doc.close();
+      }
+    }
+  }, []);
+
+  return (
+    <iframe
+      ref={iframeRef}
+      title="Kajabi Contact Form"
+      className="w-full h-[620px] border-0 rounded-2xl bg-white"
+      sandbox="allow-scripts allow-same-origin allow-forms"
+    />
+  );
 };
 
 export default function App() {
@@ -306,8 +439,6 @@ export default function App() {
       document.documentElement.classList.add("text-size-xlarge");
     }
   }, [textSize]);
-
-
 
   // Save favorites to local storage
   const toggleFavorite = (id: string) => {
@@ -750,6 +881,14 @@ export default function App() {
           >
             Car Rental
           </button>
+          <button
+            onClick={() => setActiveTab("contact")}
+            className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
+              activeTab === "contact" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
+            }`}
+          >
+            Contact Us
+          </button>
 
 
         </div>
@@ -875,6 +1014,17 @@ export default function App() {
               }`}
             >
               Car Rental
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("contact");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
+                activeTab === "contact" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              Contact Us
             </button>
 
             
@@ -1536,124 +1686,26 @@ export default function App() {
                   Subscribe to receive quarterly curated travel schedules, newly discovered waterfalls, local discount packages, and cultural celebration dates.
                 </p>
 
-                {/* Kajabi Embedded Form Frame */}
-                <div className="mt-8 max-w-xl mx-auto bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
-                  <iframe 
-                    srcDoc="
-                      <!DOCTYPE html>
-                      <html>
-                        <head>
-                          <meta charset='utf-8'>
-                          <link href='//fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet' type='text/css'>
-                          <style>
-                            html, body { 
-                              margin: 0; 
-                              padding: 0; 
-                              background: transparent; 
-                              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-                              overflow: hidden;
-                            }
-                            #kajabi-form {
-                              max-width: 100%;
-                              margin: 0 auto;
-                            }
-                            .kajabi-form__content {
-                              background: transparent !important;
-                              border: none !important;
-                              padding: 0 !important;
-                              box-shadow: none !important;
-                            }
-                            .kajabi-form__title {
-                              color: #0047A1 !important;
-                              font-family: serif !important;
-                              font-size: 22px !important;
-                              font-weight: 800 !important;
-                              margin-bottom: 20px !important;
-                              text-align: center;
-                              letter-spacing: -0.02em;
-                            }
-                            .kajabi-form__form-item input {
-                              width: 100%;
-                              padding: 12px 16px !important;
-                              border-radius: 12px !important;
-                              border: 1px solid #E2E8F0 !important;
-                              font-size: 13px !important;
-                              box-sizing: border-box !important;
-                              margin-bottom: 12px !important;
-                              outline: none !important;
-                              transition: all 0.2s !important;
-                              background-color: #FAFCFC !important;
-                            }
-                            .kajabi-form__form-item input:focus {
-                              border-color: #0047A1 !important;
-                              box-shadow: 0 0 0 3px rgba(0, 71, 161, 0.15) !important;
-                              background-color: #FFFFFF !important;
-                            }
-                            .radio-buttons-field {
-                              margin: 16px 0 !important;
-                              text-align: left !important;
-                            }
-                            .radio-buttons-field > label {
-                              font-size: 12px !important;
-                              color: #475569 !important;
-                              font-weight: 700 !important;
-                              display: block !important;
-                              margin-bottom: 8px !important;
-                            }
-                            .radio {
-                              margin-bottom: 6px !important;
-                              display: flex !important;
-                              align-items: center !important;
-                              font-size: 13px !important;
-                              color: #334155 !important;
-                              cursor: pointer !important;
-                            }
-                            .radio input {
-                              margin-right: 8px !important;
-                              accent-color: #0047A1 !important;
-                              width: 16px !important;
-                              height: 16px !important;
-                              cursor: pointer !important;
-                            }
-                            .kajabi-form__btn {
-                              background-color: #0047A1 !important;
-                              color: white !important;
-                              border: none !important;
-                              padding: 12px 24px !important;
-                              font-size: 13px !important;
-                              font-weight: bold !important;
-                              text-transform: uppercase !important;
-                              letter-spacing: 0.05em !important;
-                              border-radius: 9999px !important;
-                              cursor: pointer !important;
-                              width: 100% !important;
-                              transition: all 0.2s !important;
-                              box-shadow: 0 4px 6px -1px rgba(0, 71, 161, 0.2) !important;
-                            }
-                            .kajabi-form__btn:hover {
-                              background-color: #003680 !important;
-                              box-shadow: 0 6px 12px -2px rgba(0, 71, 161, 0.3) !important;
-                              transform: translateY(-1px);
-                            }
-                            label[for='form_submission_name'], 
-                            label[for='form_submission_custom_3'], 
-                            label[for='form_submission_email'], 
-                            label[for='form_submission_phone_number'],
-                            label[for='form_submission_custom_5'] {
-                              display: none !important;
-                            }
-                          </style>
-                        </head>
-                        <body>
-                          <script src='https://desiree-bastiano-3d5b.mykajabi.com/forms/2149631471/embed.js'></script>
-                        </body>
-                      </html>
-                    "
-                    className="w-full min-h-[680px] border-none overflow-hidden"
-                    scrolling="no"
-                    title="Kajabi Subscription Form"
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    alert("Thank you for subscribing to our official Department of Tourism Updates!");
+                  }}
+                  className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                >
+                  <input
+                    type="email"
+                    required
+                    placeholder="Enter your personal email address"
+                    className="flex-grow px-5 py-3 rounded-full bg-white border border-gray-300 text-xs focus:ring-2 focus:ring-[#0047A1] outline-none shadow-inner"
                   />
-                </div>
+                  <button
+                    type="submit"
+                    className="bg-[#0047A1] text-white px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider shadow hover:bg-[#005f92] transition-colors shrink-0"
+                  >
+                    Subscribe
+                  </button>
+                </form>
                 <p className="text-[10px] text-slate-400 mt-3">We respect your privacy. Unsubscribe any time.</p>
               </div>
             </motion.section>
@@ -2650,6 +2702,82 @@ export default function App() {
           </div>
         )}
 
+        {/* ==================================
+            CONTACT US TAB RENDER
+            ================================== */}
+        {activeTab === "contact" && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5 }} 
+            className="max-w-6xl mx-auto px-4 py-16"
+          >
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">GET IN TOUCH</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Connect With Us</h2>
+              <p className="text-slate-600 mt-3 text-sm md:text-base">
+                Have questions about your trip, rentals, or bookings? Send us a message and our official tourism officers will get back to you shortly.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              {/* Contact Details Column */}
+              <div className="lg:col-span-5 space-y-8 bg-white border border-gray-100 p-8 rounded-2xl shadow-sm">
+                <div>
+                  <h3 className="font-serif font-bold text-xl text-[#0047A1] mb-2">Tourism Headquarters</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Official Information & Assistance Center, Department of Tourism, Bislig City Administration.
+                  </p>
+                </div>
+
+                <div className="space-y-5">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-[#0097A7] shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-700">Office Address</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Tourism Building, Baywalk Park, Brgy. Poblacion, Bislig City, Surigao del Sur, Philippines
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-700">Hotlines</h4>
+                      <p className="text-xs text-slate-500 mt-1 font-mono leading-relaxed">
+                        Tourism: +63 (086) 853-6089<br />
+                        Emergency PNP: +63 998-598-6754
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-xs text-slate-700">Official Email</h4>
+                      <p className="text-xs text-slate-500 mt-1 font-mono leading-relaxed">
+                        tourism@bislig.gov.ph
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-100 pt-6">
+                  <h4 className="font-bold text-xs text-slate-700 mb-2">Office Hours</h4>
+                  <p className="text-xs text-slate-500">Monday – Friday: 8:00 AM – 5:00 PM PHT</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Closed on weekends and public holidays.</p>
+                </div>
+              </div>
+
+              {/* Kajabi Form Embedded Column */}
+              <div className="lg:col-span-7 bg-white border border-gray-100 p-6 rounded-2xl shadow-sm relative">
+                <KajabiFormEmbed />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
       </main>
 
       {/* ==================================
@@ -3050,7 +3178,17 @@ export default function App() {
               </li>
               <li>
                 <button 
+                  onClick={() => setActiveTab("contact")} 
+                  className="hover:text-[#FB8C00] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]/60"></span>
+                  <span>Contact Us</span>
+                </button>
+              </li>
+              <li>
+                <button 
                   onClick={() => setActiveTab("admin")} 
+
                   className="hover:text-[#FB8C00] text-slate-400 font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-500/60"></span>
