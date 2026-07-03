@@ -307,6 +307,23 @@ export default function App() {
     }
   }, [textSize]);
 
+  // Dynamically load Kajabi subscription form on home tab mount
+  useEffect(() => {
+    if (activeTab === "home") {
+      const timer = setTimeout(() => {
+        const container = document.getElementById("kajabi-form-container");
+        if (container) {
+          container.innerHTML = ""; // Clear loader spinner
+          const script = document.createElement("script");
+          script.src = "https://desiree-bastiano-3d5b.mykajabi.com/forms/2149631471/embed.js";
+          script.async = true;
+          container.appendChild(script);
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTab]);
+
   // Save favorites to local storage
   const toggleFavorite = (id: string) => {
     let updated;
@@ -1534,26 +1551,16 @@ export default function App() {
                   Subscribe to receive quarterly curated travel schedules, newly discovered waterfalls, local discount packages, and cultural celebration dates.
                 </p>
 
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    alert("Thank you for subscribing to our official Department of Tourism Updates!");
-                  }}
-                  className="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                {/* Kajabi Embedded Form Container */}
+                <div 
+                  className="mt-8 max-w-md mx-auto bg-white p-6 rounded-2xl border border-slate-100 shadow-sm transition-all hover:shadow-md min-h-[150px] flex items-center justify-center" 
+                  id="kajabi-form-container"
                 >
-                  <input
-                    type="email"
-                    required
-                    placeholder="Enter your personal email address"
-                    className="flex-grow px-5 py-3 rounded-full bg-white border border-gray-300 text-xs focus:ring-2 focus:ring-[#0047A1] outline-none shadow-inner"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-[#0047A1] text-white px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider shadow hover:bg-[#005f92] transition-colors shrink-0"
-                  >
-                    Subscribe
-                  </button>
-                </form>
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#0047A1] border-t-transparent" />
+                    <span className="text-xs text-slate-400">Loading subscription form...</span>
+                  </div>
+                </div>
                 <p className="text-[10px] text-slate-400 mt-3">We respect your privacy. Unsubscribe any time.</p>
               </div>
             </motion.section>
