@@ -92,21 +92,6 @@ body.high-contrast button, body.high-contrast a {
 }
 /* --- THEME OVERRIDES --- */
 
-/* Default Original Theme (Sets default Ocean Blue #0047A1 elements to #1D3557 Deep Navy) */
-.bg-\[\#0047A1\] {
-  background-color: #1D3557 !important;
-}
-.text-\[\#0047A1\] {
-  color: #1D3557 !important;
-}
-.border-\[\#0047A1\] {
-  border-color: #1D3557 !important;
-}
-.hover\:bg-\[\#005f92\]:hover,
-.hover\:bg-\[\#005F92\]:hover {
-  background-color: #14263f !important; /* Slightly darker navy for hover state */
-}
-
 /* ========================================== */
 /* ==========================================
    1. Theme: Classic Palette (Classic Blue + Emerald Teal + Gold)
