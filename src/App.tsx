@@ -533,9 +533,10 @@ export default function App() {
 
       doc.setTextColor(0, 119, 182);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text(itinerary.itineraryName, margin, y);
-      y += 10;
+      doc.setFontSize(14);
+      const titleLines = doc.splitTextToSize(itinerary.itineraryName, contentWidth);
+      doc.text(titleLines, margin, y);
+      y += titleLines.length * 7 + 3;
 
       itinerary.days.forEach((day) => {
         checkPageBreak(30);
@@ -570,7 +571,8 @@ export default function App() {
 
           if (act.estimatedCost) {
             doc.setTextColor(42, 157, 143);
-            doc.text(act.estimatedCost, pageWidth - margin - 25, y + 1);
+            const costText = act.estimatedCost.length > 22 ? act.estimatedCost.substring(0, 20) + "…" : act.estimatedCost;
+            doc.text(costText, pageWidth - margin, y + 1, { align: "right" });
           }
 
           y += 5.5;
@@ -747,6 +749,11 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Scroll to top on every page / tab navigation
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [activeTab, selectedEventId]);
+
   // Search filtered items
   const filteredAttractions = useMemo(() => {
     return ATTRACTIONS.filter((att) => {
@@ -802,7 +809,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#FAFCFC] text-[#0047A1] font-sans flex flex-col relative transition-all duration-300 ${highContrast ? 'bg-black text-white' : ''}`}>
+    <div className={`min-h-screen bg-[#FAFCFC] text-[#0047A1] font-sans flex flex-col relative transition-all duration-300 overflow-x-hidden ${highContrast ? 'bg-black text-white' : ''}`}>
       
       {/* Dynamic Scroll Progress Indicator */}
       <div className="fixed top-0 left-0 w-full h-1 bg-[#F8F6F2] z-[100]">
@@ -1289,7 +1296,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.0, ease: "easeOut", delay: 0.1 }}
-                className="absolute inset-y-0 left-0 max-w-4xl px-4 md:px-12 lg:px-20 flex flex-col justify-center z-10 text-white"
+                className="absolute inset-y-0 left-0 w-full max-w-4xl px-4 md:px-12 lg:px-20 flex flex-col justify-center z-10 text-white pr-4 md:pr-0"
               >
                 <div className="flex items-center gap-3 mb-4 flex-wrap">
                   <span className="w-12 h-[2px] bg-[#FB8C00] hidden sm:block"></span>
@@ -1314,17 +1321,17 @@ export default function App() {
                   Experience the legendary tiered cascades of <strong className="text-white underline decoration-[#FB8C00] underline-offset-4">Tinuy-an Falls</strong> and the deep mystical sapphire spring waters of the <strong className="text-white underline decoration-[#0097A7] underline-offset-4">Enchanted River</strong> in beautiful Bislig City.
                 </p>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => setActiveTab("attractions")}
-                    className="bg-[#0047A1] hover:bg-[#005F92] text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all btn-glow"
+                    className="bg-[#0047A1] hover:bg-[#005F92] text-white px-6 py-3 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all btn-glow"
                   >
                     <span>Explore Attractions</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setActiveTab("map")}
-                    className="bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all btn-glow"
+                    className="bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white px-6 py-3 rounded-full text-xs font-bold tracking-wider uppercase transition-all btn-glow"
                   >
                     Plan Your Itinerary
                   </button>
@@ -1684,16 +1691,16 @@ export default function App() {
                     Experience the legendary crab harvest dance of the Kamayo tribe. Vibrant street choreographies, indigenous musical instruments, and local feasts.
                   </p>
 
-                  <div className="flex gap-4 pt-4">
-                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
+                  <div className="flex gap-3 pt-4">
+                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center flex-1">
                       <p className="text-2xl font-bold text-[#FB8C00]">{countdown.days}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Days</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
+                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center flex-1">
                       <p className="text-2xl font-bold text-[#FB8C00]">{countdown.hours}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Hours</p>
                     </div>
-                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
+                    <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center flex-1">
                       <p className="text-2xl font-bold text-[#FB8C00]">{countdown.mins}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Minutes</p>
                     </div>
@@ -2242,20 +2249,21 @@ export default function App() {
 
             {/* Split Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-              
+
               {/* Left Column: Interactive Map Pinpoint Plotter */}
               <div className="lg:col-span-6 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col gap-3 mb-4">
                   <div>
                     <h3 className="font-bold font-serif text-lg text-[#0047A1]">Interactive Coordinate Plotter</h3>
                     <p className="text-[10px] text-slate-400">Filter by category to view custom pin-points</p>
                   </div>
-                  <div className="flex gap-1 bg-[#F8F6F2] p-1 rounded-lg">
+                  {/* Scrollable filter pill row — never overflows on mobile */}
+                  <div className="flex gap-1 bg-[#F8F6F2] p-1 rounded-lg overflow-x-auto scrollbar-hide">
                     {["All", "Waterfalls", "Rivers", "Beaches", "Hotels", "Restaurants"].map((filt) => (
                       <button
                         key={filt}
                         onClick={() => setMapFilter(filt)}
-                        className={`px-2 py-1 text-[9px] font-bold uppercase rounded-md transition-colors ${
+                        className={`px-2.5 py-1.5 text-[9px] font-bold uppercase rounded-md transition-colors shrink-0 ${
                           mapFilter === filt ? "bg-[#0047A1] text-white" : "text-slate-500 hover:text-[#0047A1]"
                         }`}
                       >
@@ -3062,7 +3070,7 @@ export default function App() {
                   {EVENTS.filter(e => e.id !== selectedEvent.id).map(evt => (
                     <button
                       key={evt.id}
-                      onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); window.scrollTo(0,0); }}
+                      onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); }}
                       className="group text-left bg-white border border-slate-100 rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300"
                     >
                       <div className="h-32 overflow-hidden">
