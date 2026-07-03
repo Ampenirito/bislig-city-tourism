@@ -266,34 +266,161 @@ export const EVENTS: TourismEvent[] = [
   {
     id: "karawasan",
     title: "Karawasan Festival",
+    subtitle: "The Grand Crab Harvest Celebration of the Kamayo Tribe",
     date: "September 17 - 18",
+    dateRange: "September 17–18, 2025",
     month: "SEP",
     day: "17",
-    description: "The primary cultural festival of Bislig City, celebrated through vibrant, nature-inspired street dancing, ethnic chants, and indigenous games representing the Kamayo tribe's appreciation of crab harvests (Karawasan translates to crab abundance).",
+    year: "2025",
+    description: "The primary cultural festival of Bislig City, celebrated through vibrant, nature-inspired street dancing, ethnic chants, and indigenous games representing the Kamayo tribe's appreciation of crab harvests.",
     type: "Festival",
-    image: "/assets/images/Harip Featured 2.jpg"
+    image: "/assets/images/Harip Featured 2.jpg",
+    heroImage: "/assets/images/Harip Featured 2.jpg",
+    gallery: [
+      "/assets/images/Harip Featured 3.jpg",
+      "/assets/images/Harip Resort Featured 1.webp",
+      "/assets/images/Hinayagan Cave Featured 2.jpg"
+    ],
+    location: "Bislig City Plaza & Baywalk Park, Bislig City",
+    organizer: "Bislig City Government & Department of Tourism, Region XIII",
+    overview: "The Karawasan Festival is the crown jewel of Bislig City's cultural calendar — a dazzling two-day celebration held every September 17–18 that transforms the city into a vivid tapestry of indigenous color, music, and movement. Named after the Kamayo word for the native blue swimming crab (Portunus pelagicus), which thrives in the waters of Bislig Bay and the rivers that flow to it, the festival is both a thanksgiving rite and a proud declaration of Bislig's cultural identity. Thousands of locals, performers, and tourists from across Mindanao and beyond gather to witness elaborate street-dancing contingents, tribal costumes adorned with shells and woven rattan, live gong percussion ensembles, and a festive trade fair showcasing the best of Surigao del Sur's agricultural and seafood products.",
+    history: "The roots of Karawasan stretch back to the pre-colonial era when the indigenous Kamayo people of the Bislig River basin performed ritual harvest dances to honor the sea spirits (Diwata sa Dagat) before each communal crab-harvesting season. Elders would lead the village in a night-long ceremony of chanting, torch-lit dances, and offerings of woven gifts placed at the river's mouth. When Spanish missionaries arrived in the 17th century, they incorporated elements of the feast into the Catholic calendar, blending indigenous and Christian celebration. The formal festival as we know it today was institutionalized in 1996 under then-Mayor Edilberto Uy to coincide with Bislig City Charter Day, giving the festival a permanent civic identity and attracting funding for larger, more organized contingents. Over three decades it has grown from a modest barangay affair to a province-wide spectacle featuring over 2,000 performers across competing street-dancing groups from all barangays.",
+    highlights: [
+      "Grand Street-Dancing Parade along Quezon Avenue featuring 20+ barangay contingents in full tribal regalia",
+      "\"Sayaw sa Karawasan\" — the signature crab-mimicking dance choreography judged for creativity and cultural authenticity",
+      "Live Kulintang (bronze gong) and Agung ensemble performances at the Open-Air Amphitheater",
+      "Karawasan Cook-Off — live seafood cooking competition using locally-caught crabs and Bislig Bay seafood",
+      "Tribal Artisan Market with handwoven baskets, Kamayo pottery, and native jewelry from surrounding villages",
+      "Fireworks display over Bislig Bay on the evening of September 18",
+      "Search for Mutya ng Karawasan — Miss Bislig pageant featuring candidates in traditional Kamayo attire"
+    ],
+    schedule: [
+      { time: "Day 1 — 6:00 AM", activity: "Fluvial Procession along Bislig River — offerings of flowers and native goods to the sea" },
+      { time: "Day 1 — 9:00 AM", activity: "Opening Ceremonies, raising of the Festival Colors at the City Plaza" },
+      { time: "Day 1 — 10:00 AM", activity: "Grand Street-Dancing Parade — barangay contingents in full Kamayo tribal costume" },
+      { time: "Day 1 — 2:00 PM", activity: "Karawasan Cook-Off Competition at the Baywalk Pavilion" },
+      { time: "Day 1 — 6:00 PM", activity: "Kulintang Night — live traditional gong music & cultural variety show" },
+      { time: "Day 2 — 8:00 AM", activity: "Sports Tournament (Dragon Boat & Outrigger Racing in Bislig Bay)" },
+      { time: "Day 2 — 12:00 PM", activity: "Bislig City Charter Day Program — civic awards & recognition rites" },
+      { time: "Day 2 — 7:00 PM", activity: "Search for Mutya ng Karawasan Pageant Night & Grand Concert" },
+      { time: "Day 2 — 9:00 PM", activity: "Fireworks Finale over Bislig Bay" }
+    ],
+    tips: [
+      "Arrive by 8 AM on Day 1 to secure front-row viewing spots along Quezon Avenue before the parade begins.",
+      "Wear lightweight breathable clothing — September heat and humidity can be intense especially near the bay.",
+      "Book accommodations at least 3–4 weeks in advance; hotels along the Baywalk fill up quickly during festival week.",
+      "Try the festival's iconic \"sinuglaw\" (grilled tuna mixed with raw crab ceviche) from street vendors — it is a Karawasan tradition.",
+      "Bring cash for the artisan market; most vendors do not accept digital payments.",
+      "Respect tribal performers — ask permission before photographing close-up during the procession."
+    ],
+    tags: ["Festival", "Culture", "Heritage", "Kamayo", "Street Dancing", "September"]
   },
   {
     id: "charter-day",
     title: "Bislig City Charter Day",
+    subtitle: "Celebrating the City's Founding & Identity Since 2000",
     date: "September 18",
+    dateRange: "September 18, 2025",
     month: "SEP",
     day: "18",
-    description: "A grand anniversary celebration featuring dynamic agricultural trade fairs, coastal regattas, musical concerts, and the highly anticipated Search for Miss Bislig.",
+    year: "2025",
+    description: "A grand anniversary celebration featuring dynamic agricultural trade fairs, coastal regattas, musical concerts, and the highly anticipated Search for Miss Bislig — commemorating the city's official charter.",
     type: "Community",
-    image: "/assets/images/Harip Resort Featured 1.webp"
+    image: "/assets/images/Harip Resort Featured 1.webp",
+    heroImage: "/assets/images/Harip Resort Featured 1.webp",
+    gallery: [
+      "/assets/images/Harip Featured 2.jpg",
+      "/assets/images/bislig sports center.jpg",
+      "/assets/images/Bislig City Hall.jpg"
+    ],
+    location: "Bislig City Hall Grounds, Plaza & Bislig Bay Area",
+    organizer: "Office of the City Mayor, Bislig City",
+    overview: "Bislig City Charter Day on September 18 is the annual commemoration of the city's elevation from municipality to city status — a milestone that reshaped the political, economic, and cultural landscape of Surigao del Sur. The celebration is a multi-event civic showcase that brings together government officials, barangay leaders, civil society, and thousands of residents in a shared expression of civic pride. From trade fairs displaying the city's agricultural bounty to regattas racing across the sparkling waters of Bislig Bay, Charter Day is as much a festival of progress as it is of heritage. Musical concerts, recognition ceremonies, and the beloved Miss Bislig pageant round out a packed day of celebration that typically runs from dawn to midnight.",
+    history: "Bislig's history as a chartered city is relatively young but deeply meaningful. The municipality of Bislig was formally converted into a city by Republic Act No. 8804, signed into law on August 16, 2000, by President Joseph Estrada, and ratified by the people of Bislig in a plebiscite on October 28, 2000. However, the official Charter Day falls on September 18 to commemorate the date the city government formally began operations. Before cityhood, Bislig was a thriving timber town built largely around the Paper Industries Corporation of the Philippines (PICOP), one of the largest wood-pulp complexes in Asia. When the timber industry declined, Bislig reinvented itself as an emerging eco-tourism and agri-fishery hub — a transformation that Charter Day celebrations have increasingly highlighted in recent years with agricultural fairs, seafood festivals, and investor forums.",
+    highlights: [
+      "Agricultural & Aquaculture Trade Fair — booths from all 25 barangays showcasing Bislig's finest farm and sea produce",
+      "Bislig Bay Regatta — traditional outrigger (bangka) racing competition open to all barangay teams",
+      "DOT-accredited Tourism Investment Forum — showcasing new resort, eco-tourism, and hospitality opportunities",
+      "Cultural Variety Show — performances by local schools and universities featuring Bislig folk music and dances",
+      "Search for Miss Bislig — the city's premier beauty and intelligence pageant, broadcast live on local radio",
+      "Public awards ceremony recognizing outstanding citizens, barangay officials, and young achievers",
+      "Evening Grand Concert featuring OPM (Original Pilipino Music) artists"
+    ],
+    schedule: [
+      { time: "6:00 AM", activity: "Flag Raising Ceremony at Bislig City Hall with full civic honors" },
+      { time: "8:00 AM", activity: "Opening of Agricultural & Aquaculture Trade Fair at the Civic Center Grounds" },
+      { time: "10:00 AM", activity: "Bislig Bay Regatta — outrigger races across designated bay course" },
+      { time: "12:00 PM", activity: "Official Charter Day Program — guest speakers, civic awards, and recognition rites" },
+      { time: "2:00 PM", activity: "Tourism Investment Forum at the City Hall Multi-Purpose Hall" },
+      { time: "4:00 PM", activity: "Cultural Show & Talent Competition — schools and community groups" },
+      { time: "7:00 PM", activity: "Miss Bislig Pageant Night at the City Plaza Grandstand" },
+      { time: "9:00 PM", activity: "Grand Concert & Street Party along Baywalk" }
+    ],
+    tips: [
+      "The Agricultural Trade Fair is the best place to buy fresh, local Bislig products at excellent prices — bring an extra bag.",
+      "The Regatta is best viewed from the Baywalk seawall or hire a small banca for a water-level vantage point.",
+      "Charter Day falls on the same day as Karawasan Festival Day 2 — plan your schedule to enjoy both events.",
+      "City Hall and barangay offices may have reduced service hours — plan any official business a day before.",
+      "Parking near the plaza fills up fast; consider arriving by tricycle from your hotel.",
+      "The evening concert draws large crowds — stake out a good spot before the pageant ends."
+    ],
+    tags: ["Civic", "Culture", "Community", "Cityhood", "September", "Trade Fair"]
   },
   {
     id: "tinuyan-swim",
     title: "Tinuy-an Eco Trail Marathon",
+    subtitle: "Race Through the Rainforest to the Base of the Philippines' Widest Waterfall",
     date: "May 24",
+    dateRange: "May 24, 2025",
     month: "MAY",
     day: "24",
-    description: "An annual sports-tourism marathon that tests participants' stamina along rugged tropical rainforest terrains, finishing directly at the base pool of the magnificent Tinuy-an Falls.",
+    year: "2025",
+    description: "An annual sports-tourism marathon that tests participants' stamina along rugged tropical rainforest terrains, finishing directly at the base pool of the magnificent Tinuy-an Falls — the widest curtain waterfall in the Philippines.",
     type: "Sports",
-    image: "/assets/images/Tinuy.an Featured 2.webp"
+    image: "/assets/images/Tinuy.an Featured 2.webp",
+    heroImage: "/assets/images/Tinuy.an Featured 3.webp",
+    gallery: [
+      "/assets/images/Tinuy.an Featured 1.webp",
+      "/assets/images/Tinuy.an Featured 2.webp",
+      "/assets/images/Lake 77 Featured 1.jpg"
+    ],
+    location: "Starting Point: Barangay Burboanan Trailhead → Finish: Tinuy-an Falls Viewing Deck",
+    organizer: "Bislig City Sports Development & Tourism Office in partnership with Philippine Athletics Track & Field Association (PATAFA)",
+    overview: "The Tinuy-an Eco Trail Marathon is one of the most breathtaking trail-running events in Mindanao — a race unlike any other where the finish line is the base of the Philippines' most spectacular waterfall. Held annually in May, the marathon draws hundreds of athletes and adventure enthusiasts from across the Philippines and abroad who come not just to compete but to experience the raw, humbling beauty of Bislig's rainforest trails. The 21-kilometer primary route winds through old-growth dipterocarp forest, elevated ridge trails with panoramic views of the Bislig River valley, and finishes at the iconic three-tiered curtain cascade of Tinuy-an Falls where participants are rewarded with a natural plunge-pool swim and the roar of 95 meters of falling water.",
+    history: "The marathon was first organized in 2009 by a group of Bislig-based trail runners who wanted to create an adventure sports event that would put the city on the eco-tourism map. The inaugural race had just 87 participants, mostly local athletes, but the striking finish-line imagery — runners emerging from jungle trails into the mist of Tinuy-an Falls — quickly went viral on early Philippine social media, attracting national attention. By 2015, the event had grown to over 500 participants and earned recognition from the Philippine Sports Commission as one of the Top 10 Most Scenic Trail Running Events in the country. The COVID-19 pandemic forced a hiatus from 2020–2021, but the event returned stronger in 2022 with a new environmental component — participants are required to carry a small trash bag and collect litter along the trail as part of the Bislig City \"Race Clean\" initiative.",
+    highlights: [
+      "3K Fun Run category — family-friendly entry-level trail through the forest edges, open to all ages",
+      "10K Trail Run — intermediate mountain category crossing the elevated Bislig Ridge Trail",
+      "21K Half-Marathon — the signature \"Falls Finish\" route through primary-growth dipterocarp rainforest",
+      "Post-race swimming at the natural plunge pool at the base of Tinuy-an Falls",
+      "\"Race Clean\" eco-initiative — prizes awarded to the team collecting the most litter along the trail",
+      "Finisher medals and custom shirts made from locally-woven Kamayo cloth",
+      "Adventure photography stations along the route capturing participants against the jungle canopy"
+    ],
+    schedule: [
+      { time: "4:00 AM", activity: "Race Day Registration & Kit Collection at Burboanan Trailhead Base Camp" },
+      { time: "5:00 AM", activity: "21K Half-Marathon Gun Start — elite and open categories" },
+      { time: "5:30 AM", activity: "10K Trail Run Gun Start" },
+      { time: "6:30 AM", activity: "3K Fun Run Gun Start — families and community participants" },
+      { time: "7:00 AM", activity: "First elite finishers expected at Tinuy-an Falls finish line" },
+      { time: "9:00 AM", activity: "Final cutoff for all categories — post-race swimming open" },
+      { time: "10:00 AM", activity: "Awarding Ceremony at the Tinuy-an Falls Eco Park Pavilion" },
+      { time: "11:00 AM", activity: "Race Clean Eco Awards — top trash-collecting teams recognized" },
+      { time: "12:00 PM", activity: "Free lunch for all participants (local catering by Bislig City vendors)" }
+    ],
+    tips: [
+      "Register early — the 21K category fills up fast; registration typically opens 3 months before the event.",
+      "Train specifically for trail running; the route includes steep ascents and root-covered paths that are very different from road running.",
+      "Bring waterproof trail shoes — the river crossings and forested sections are consistently muddy regardless of weather.",
+      "Pack a lightweight waterproof dry bag for your phone and documents; the finish involves spray from the falls.",
+      "Carry electrolyte supplements; the tropical heat and humidity along jungle sections are intense even in early morning.",
+      "Book accommodation in Bislig City the night before — the 4 AM start makes same-day travel from other cities impractical.",
+      "Stay for the afternoon after the race — a visit to the top tier of Tinuy-an Falls by bamboo raft is unforgettable."
+    ],
+    tags: ["Sports", "Trail Running", "Eco-Tourism", "Tinuy-an Falls", "Adventure", "May"]
   }
 ];
+
 
 export const GALLERY_ITEMS: GalleryItem[] = [
   {

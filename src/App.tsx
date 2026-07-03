@@ -301,8 +301,10 @@ export default function App() {
   };
 
   // Navigation State
-  // Values: 'home' | 'explore' | 'attractions' | 'things-to-do' | 'hotels' | 'restaurants' | 'map' | 'gallery' | 'blog' | 'about' | 'contact' | 'downloads'
+  // Values: 'home' | 'explore' | 'attractions' | 'things-to-do' | 'hotels' | 'restaurants' | 'map' | 'gallery' | 'blog' | 'about' | 'contact' | 'downloads' | 'events' | 'event-detail'
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const selectedEvent = EVENTS.find(e => e.id === selectedEventId) ?? null;
 
   // Accessibility State
   const [highContrast, setHighContrast] = useState<boolean>(false);
@@ -329,6 +331,7 @@ export default function App() {
   });
   const [selectedItineraryDay, setSelectedItineraryDay] = useState<number>(1);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [showNotifBar, setShowNotifBar] = useState<boolean>(true);
 
   // AI Planner State
   const [aiDays, setAiDays] = useState<number>(3);
@@ -806,6 +809,44 @@ export default function App() {
         <div className="h-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] transition-all duration-300 w-full" style={{ width: "100%" }}></div>
       </div>
 
+      {/* =========================================
+          FEATURED EVENT NOTIFICATION BAR
+          ========================================= */}
+      {showNotifBar && (
+        <div className="relative z-[60] w-full bg-gradient-to-r from-[#1D3557] via-[#0047A1] to-[#1D3557] text-white overflow-hidden">
+          {/* Animated shimmer background */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" style={{ animation: 'shimmer 3s ease-in-out infinite' }} />
+          </div>
+          {/* Centered content wrapper */}
+          <div className="relative flex items-center justify-center px-4 py-3">
+            {/* Center: event info + CTA */}
+            <div className="flex items-center gap-5 flex-wrap justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#FB8C00] shrink-0">Featured Event</span>
+              <span className="text-white/40 text-xs mx-1">·</span>
+              <span className="text-xs font-semibold text-white/90">
+                🎉 <strong>Karawasan Festival</strong> — Sep 17–18, 2025 · Bislig City Plaza &amp; Baywalk Park
+              </span>
+              <button
+                onClick={() => { setSelectedEventId("karawasan"); setActiveTab("event-detail"); }}
+                className="flex items-center gap-1.5 bg-[#FB8C00] hover:bg-[#e57c00] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 shrink-0 ml-2"
+              >
+                View Event <ArrowRight className="w-3 h-3" />
+              </button>
+            </div>
+            {/* Dismiss — absolute right so it doesn't affect centering */}
+            <button
+              onClick={() => setShowNotifBar(false)}
+              className="absolute right-4 p-1 text-white/50 hover:text-white transition-colors rounded-full hover:bg-white/10"
+              aria-label="Dismiss notification"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+
       {/* Transparent Sticky Navigation */}
       <nav id="navbar" className="z-50 w-full px-4 md:px-10 h-20 flex items-center justify-between glass sticky top-0 border-b border-gray-200 shadow-sm transition-all duration-300">
         <div className="flex items-center cursor-pointer group" onClick={() => setActiveTab("home")}>
@@ -880,6 +921,14 @@ export default function App() {
             }`}
           >
             Car Rental
+          </button>
+          <button
+            onClick={() => setActiveTab("events")}
+            className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
+              activeTab === "events" || activeTab === "event-detail" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
+            }`}
+          >
+            Events
           </button>
           <button
             onClick={() => setActiveTab("contact")}
@@ -1014,6 +1063,17 @@ export default function App() {
               }`}
             >
               Car Rental
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("events");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
+                activeTab === "events" || activeTab === "event-detail" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              Events
             </button>
             <button
               onClick={() => {
@@ -1649,22 +1709,38 @@ export default function App() {
 
                   <div className="space-y-4">
                     {EVENTS.map((evt) => (
-                      <div key={evt.id} className="bg-white/5 border border-white/10 hover:border-white/30 rounded-xl p-4 flex gap-4 transition-all">
-                        <div className="bg-[#0047A1] w-12 h-14 rounded-lg flex flex-col items-center justify-center text-center shrink-0">
+                      <button
+                        key={evt.id}
+                        onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); }}
+                        className="w-full text-left bg-white/5 border border-white/10 hover:border-[#FB8C00]/60 hover:bg-white/10 rounded-xl p-4 flex gap-4 transition-all group cursor-pointer"
+                      >
+                        <div className="bg-[#0047A1] w-12 h-14 rounded-lg flex flex-col items-center justify-center text-center shrink-0 group-hover:bg-[#FB8C00] transition-colors">
                           <span className="text-[9px] font-bold tracking-wider text-slate-200">{evt.month}</span>
                           <span className="text-lg font-bold leading-none">{evt.day}</span>
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h5 className="font-bold text-base text-white">{evt.title}</h5>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h5 className="font-bold text-base text-white group-hover:text-[#FB8C00] transition-colors">{evt.title}</h5>
                             <span className="text-[9px] px-2 py-0.5 bg-white/15 rounded text-slate-300 uppercase tracking-wider">
                               {evt.type}
                             </span>
                           </div>
                           <p className="text-xs text-slate-300 mt-1 line-clamp-2">{evt.description}</p>
+                          <span className="text-[10px] text-[#FB8C00]/70 mt-2 block group-hover:text-[#FB8C00] transition-colors">Read more →</span>
                         </div>
-                      </div>
+                      </button>
                     ))}
+                  </div>
+
+                  {/* View All Events Button */}
+                  <div className="mt-6 text-center">
+                    <button
+                      onClick={() => setActiveTab("events")}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#FB8C00] hover:bg-[#e57c00] text-white font-bold text-xs uppercase tracking-wider rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      View All Events
+                    </button>
                   </div>
                 </div>
 
@@ -2703,9 +2779,312 @@ export default function App() {
         )}
 
         {/* ==================================
+            EVENTS LIST PAGE
+            ================================== */}
+        {activeTab === "events" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-6xl mx-auto px-4 py-16"
+          >
+            {/* Page Header */}
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-[#FB8C00] text-xs font-bold uppercase tracking-[0.25em] block mb-2">Bislig City</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold mb-3">Events & Festivals</h2>
+              <p className="text-slate-500 text-sm md:text-base leading-relaxed">
+                Discover the vibrant cultural calendar of Bislig City — from ancient tribal festivals to modern sports marathons — every event a window into the heart of the Kamayo people.
+              </p>
+            </div>
+
+            {/* Visual Calendar Strip */}
+            <div className="bg-[#1D3557] rounded-2xl p-6 mb-12 overflow-x-auto">
+              <h3 className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-5 text-center">2025 Event Calendar</h3>
+              <div className="flex gap-3 justify-center flex-wrap">
+                {["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"].map((m) => {
+                  const eventsInMonth = EVENTS.filter(e => e.month === m);
+                  const hasEvent = eventsInMonth.length > 0;
+                  return (
+                    <div key={m} className={`relative flex flex-col items-center gap-1.5 ${hasEvent ? "cursor-pointer" : ""}`}>
+                      <div className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center transition-all ${
+                        hasEvent
+                          ? "bg-[#FB8C00] shadow-lg shadow-[#FB8C00]/30 scale-110"
+                          : "bg-white/10"
+                      }`}>
+                        <span className="text-[9px] font-bold text-white/70 uppercase">{m}</span>
+                        {hasEvent && (
+                          <span className="text-white font-bold text-base leading-none">{eventsInMonth[0].day}</span>
+                        )}
+                        {!hasEvent && <span className="text-white/30 text-xs">—</span>}
+                      </div>
+                      {hasEvent && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00] animate-pulse"></span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-white/40 text-center text-[10px] mt-4 uppercase tracking-wider">Orange months have scheduled events</p>
+            </div>
+
+            {/* Event Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {EVENTS.map((evt, idx) => {
+                const typeColors: Record<string, string> = {
+                  Festival: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+                  Community: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+                  Sports: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+                  Seasonal: "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                };
+                return (
+                  <motion.div
+                    key={evt.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: idx * 0.12 }}
+                  >
+                    <button
+                      onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); }}
+                      className="w-full text-left group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
+                    >
+                      {/* Card Image */}
+                      <div className="relative h-52 overflow-hidden">
+                        <img
+                          src={evt.image}
+                          alt={evt.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                        {/* Date badge */}
+                        <div className="absolute top-4 left-4 bg-[#0047A1] text-white rounded-xl px-3 py-2 text-center min-w-[52px] shadow-lg">
+                          <p className="text-[9px] font-bold uppercase tracking-wider opacity-80">{evt.month}</p>
+                          <p className="text-xl font-bold leading-none">{evt.day}</p>
+                        </div>
+                        {/* Type badge */}
+                        <div className="absolute top-4 right-4">
+                          <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-full border backdrop-blur-sm ${typeColors[evt.type]}`}>
+                            {evt.type}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Card Body */}
+                      <div className="p-5">
+                        <h3 className="font-serif font-bold text-lg text-[#0047A1] group-hover:text-[#0097A7] transition-colors leading-snug">{evt.title}</h3>
+                        <p className="text-xs text-slate-400 mt-1 mb-3 flex items-center gap-1">
+                          <MapPin className="w-3 h-3 shrink-0" />
+                          {evt.location}
+                        </p>
+                        <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">{evt.description}</p>
+                        <div className="mt-4 flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1">
+                            {evt.tags.slice(0,3).map(tag => (
+                              <span key={tag} className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
+                            ))}
+                          </div>
+                          <span className="text-xs font-bold text-[#0047A1] group-hover:text-[#FB8C00] transition-colors flex items-center gap-1">
+                            Read <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* ==================================
+            EVENT DETAIL BLOG PAGE
+            ================================== */}
+        {activeTab === "event-detail" && selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Hero Banner */}
+            <div className="relative h-[55vh] min-h-[380px] w-full overflow-hidden">
+              <img
+                src={selectedEvent.heroImage}
+                alt={selectedEvent.title}
+                className="w-full h-full object-cover scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+              {/* Back button */}
+              <button
+                onClick={() => setActiveTab("events")}
+                className="absolute top-6 left-6 flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all border border-white/30"
+              >
+                <ChevronLeft className="w-4 h-4" /> All Events
+              </button>
+              {/* Hero text */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 max-w-4xl">
+                <div className="flex items-center gap-3 mb-3 flex-wrap">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#FB8C00]">{selectedEvent.type}</span>
+                  <span className="text-white/50 text-xs">·</span>
+                  <span className="text-white/70 text-xs">{selectedEvent.dateRange}</span>
+                </div>
+                <h1 className="text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-2">{selectedEvent.title}</h1>
+                <p className="text-white/80 text-sm md:text-base max-w-2xl">{selectedEvent.subtitle}</p>
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="max-w-5xl mx-auto px-4 py-12">
+              {/* Meta bar */}
+              <div className="flex flex-wrap gap-6 pb-8 mb-8 border-b border-gray-100 text-xs text-slate-500">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-[#0047A1]" />
+                  <span>{selectedEvent.dateRange}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-[#0097A7]" />
+                  <span>{selectedEvent.location}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#FB8C00]" />
+                  <span>{selectedEvent.organizer}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                {/* Main article content */}
+                <div className="lg:col-span-2 space-y-10">
+
+                  {/* Overview */}
+                  <section>
+                    <h2 className="text-xl font-serif font-bold text-[#0047A1] mb-4 flex items-center gap-2">
+                      <span className="w-1 h-6 bg-[#0047A1] rounded-full block"></span>
+                      Overview
+                    </h2>
+                    <p className="text-slate-600 leading-relaxed text-sm md:text-base">{selectedEvent.overview}</p>
+                  </section>
+
+                  {/* History */}
+                  <section className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <h2 className="text-xl font-serif font-bold text-[#0047A1] mb-4 flex items-center gap-2">
+                      <span className="w-1 h-6 bg-[#FB8C00] rounded-full block"></span>
+                      History & Origin
+                    </h2>
+                    <p className="text-slate-600 leading-relaxed text-sm">{selectedEvent.history}</p>
+                  </section>
+
+                  {/* Highlights */}
+                  <section>
+                    <h2 className="text-xl font-serif font-bold text-[#0047A1] mb-5 flex items-center gap-2">
+                      <span className="w-1 h-6 bg-emerald-500 rounded-full block"></span>
+                      Event Highlights
+                    </h2>
+                    <ul className="space-y-3">
+                      {selectedEvent.highlights.map((h, i) => (
+                        <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
+                          <span className="w-5 h-5 shrink-0 rounded-full bg-[#0047A1]/10 text-[#0047A1] flex items-center justify-center text-[10px] font-bold mt-0.5">{i + 1}</span>
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  {/* Photo Gallery */}
+                  <section>
+                    <h2 className="text-xl font-serif font-bold text-[#0047A1] mb-5 flex items-center gap-2">
+                      <span className="w-1 h-6 bg-purple-500 rounded-full block"></span>
+                      Event Gallery
+                    </h2>
+                    <div className="grid grid-cols-3 gap-3">
+                      {selectedEvent.gallery.map((img, i) => (
+                        <div key={i} className="aspect-video rounded-xl overflow-hidden">
+                          <img src={img} alt={`${selectedEvent.title} gallery ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                  {/* Schedule */}
+                  <div className="bg-[#1D3557] rounded-2xl p-6 text-white">
+                    <h3 className="font-bold text-sm uppercase tracking-widest mb-5 text-[#FB8C00]">Program Schedule</h3>
+                    <div className="space-y-4">
+                      {selectedEvent.schedule.map((s, i) => (
+                        <div key={i} className="flex gap-3 text-xs border-b border-white/10 pb-4 last:border-0 last:pb-0">
+                          <div className="shrink-0">
+                            <span className="text-[#FB8C00] font-bold block leading-tight">{s.time}</span>
+                          </div>
+                          <p className="text-slate-300 leading-relaxed">{s.activity}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Visitor Tips */}
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+                    <h3 className="font-bold text-sm uppercase tracking-widest text-amber-800 mb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" /> Visitor Tips
+                    </h3>
+                    <ul className="space-y-3">
+                      {selectedEvent.tips.map((tip, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-amber-900 leading-relaxed">
+                          <CheckCircle2 className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+                    <h3 className="font-bold text-xs uppercase tracking-widest text-slate-500 mb-3">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedEvent.tags.map(tag => (
+                        <span key={tag} className="text-[11px] bg-[#0047A1]/10 text-[#0047A1] px-3 py-1 rounded-full font-medium">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={() => setActiveTab("contact")}
+                    className="w-full bg-[#0047A1] hover:bg-[#005f92] text-white py-3 px-5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <Mail className="w-4 h-4" /> Inquire About This Event
+                  </button>
+                </div>
+              </div>
+
+              {/* More Events */}
+              <div className="mt-14 pt-10 border-t border-gray-100">
+                <h3 className="font-serif font-bold text-xl text-[#0047A1] mb-6">More Events</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {EVENTS.filter(e => e.id !== selectedEvent.id).map(evt => (
+                    <button
+                      key={evt.id}
+                      onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); window.scrollTo(0,0); }}
+                      className="group text-left bg-white border border-slate-100 rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+                    >
+                      <div className="h-32 overflow-hidden">
+                        <img src={evt.image} alt={evt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                      <div className="p-4">
+                        <span className="text-[9px] text-[#FB8C00] font-bold uppercase tracking-wider">{evt.month} {evt.day} · {evt.type}</span>
+                        <h4 className="font-serif font-bold text-sm text-[#0047A1] mt-1 group-hover:text-[#0097A7] transition-colors">{evt.title}</h4>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ==================================
             CONTACT US TAB RENDER
             ================================== */}
         {activeTab === "contact" && (
+
           <motion.div 
             initial={{ opacity: 0, y: 15 }} 
             animate={{ opacity: 1, y: 0 }} 

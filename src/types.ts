@@ -62,12 +62,26 @@ export interface Restaurant {
 export interface TourismEvent {
   id: string;
   title: string;
+  subtitle: string;
   date: string;
-  month: string; // for calendar
+  dateRange: string;       // e.g. "September 17–18, 2025"
+  month: string;
   day: string;
+  year: string;
   description: string;
   type: "Festival" | "Community" | "Sports" | "Seasonal";
   image: string;
+  heroImage: string;       // wide hero banner for the detail page
+  gallery: string[];       // additional images
+  location: string;        // venue / area
+  organizer: string;
+  // Blog-style rich content
+  overview: string;        // full overview paragraph
+  history: string;         // origin & historical background
+  highlights: string[];    // key moments / what to expect
+  schedule: { time: string; activity: string }[];
+  tips: string[];          // practical visitor tips
+  tags: string[];
 }
 
 export interface GalleryItem {

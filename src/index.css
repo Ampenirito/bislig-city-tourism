@@ -825,3 +825,10 @@ body.theme-premium h2 span.bg-clip-text {
   left: 125%;
   opacity: 1;
 }
+
+/* Notification Bar Shimmer Keyframe */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(200%); }
+  100% { transform: translateX(200%); }
+}
