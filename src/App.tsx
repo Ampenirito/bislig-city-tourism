@@ -986,7 +986,7 @@ export default function App() {
               ))}
 
               {/* Gradient Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0047A1]/80 via-[#0047A1]/45 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/55 via-slate-950/15 to-transparent"></div>
               
               {/* Water Floating Particles / Ripple effect (CSS Animation) */}
               {!reducedMotion && (
