@@ -647,11 +647,11 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#FAFCFC] text-[#1D3557] font-sans flex flex-col relative transition-all duration-300 ${highContrast ? 'bg-black text-white' : ''}`}>
+    <div className={`min-h-screen bg-[#FAFCFC] text-[#0047A1] font-sans flex flex-col relative transition-all duration-300 ${highContrast ? 'bg-black text-white' : ''}`}>
       
       {/* Dynamic Scroll Progress Indicator */}
       <div className="fixed top-0 left-0 w-full h-1 bg-[#F8F6F2] z-[100]">
-        <div className="h-full bg-gradient-to-r from-[#0077B6] to-[#2A9D8F] transition-all duration-300 w-full" style={{ width: "100%" }}></div>
+        <div className="h-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] transition-all duration-300 w-full" style={{ width: "100%" }}></div>
       </div>
 
       {/* Transparent Sticky Navigation */}
@@ -668,7 +668,7 @@ export default function App() {
                 <linearGradient id="logo-water-grad" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#38BDF8" />
                   <stop offset="50%" stopColor="#0EA5E9" />
-                  <stop offset="100%" stopColor="#1D3557" />
+                  <stop offset="100%" stopColor="#0047A1" />
                 </linearGradient>
                 <linearGradient id="logo-forest-grad" x1="0%" y1="100%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#059669" />
@@ -691,8 +691,8 @@ export default function App() {
             </svg>
           </div>
           <div>
-            <h1 className="text-sm font-extrabold tracking-wider text-[#1D3557] leading-none uppercase">Bislig City</h1>
-            <p className="text-[10px] text-[#0077B6] tracking-widest uppercase font-black mt-0.5">Tourism</p>
+            <h1 className="text-sm font-extrabold tracking-wider text-[#0047A1] leading-none uppercase">Bislig City</h1>
+            <p className="text-[10px] text-[#0047A1] tracking-widest uppercase font-black mt-0.5">Tourism</p>
           </div>
         </div>
 
@@ -701,7 +701,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("home")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "home" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "home" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Home
@@ -709,7 +709,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("explore")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "explore" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "explore" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Explore
@@ -717,7 +717,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("attractions")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "attractions" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "attractions" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Attractions
@@ -725,7 +725,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("things-to-do")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "things-to-do" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "things-to-do" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Things to Do
@@ -733,7 +733,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("hotels")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "hotels" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "hotels" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Resorts
@@ -741,7 +741,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("restaurants")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "restaurants" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "restaurants" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Dining
@@ -749,7 +749,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("directory")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "directory" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "directory" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Directory
@@ -757,7 +757,7 @@ export default function App() {
           <button
             onClick={() => setActiveTab("car-rental")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "car-rental" ? "border-[#0077B6] text-[#0077B6]" : "border-transparent text-slate-600 hover:text-[#0077B6]"
+              activeTab === "car-rental" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
             Car Rental
@@ -774,12 +774,12 @@ export default function App() {
             title="Accessibility Toolbar"
             id="accessibility-btn"
           >
-            <Accessibility className="w-5 h-5 text-[#0077B6]" />
+            <Accessibility className="w-5 h-5 text-[#0047A1]" />
           </button>
           
           <button
             onClick={() => setActiveTab("map")}
-            className="hidden lg:block bg-[#0077B6] text-white px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-colors"
+            className="hidden lg:block bg-[#0047A1] text-white px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-colors"
           >
             PLAN YOUR TRIP
           </button>
@@ -806,7 +806,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "home" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "home" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Home
@@ -817,7 +817,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "explore" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "explore" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Explore
@@ -828,7 +828,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "attractions" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "attractions" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Attractions
@@ -839,7 +839,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "things-to-do" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "things-to-do" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Things to Do
@@ -850,7 +850,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "hotels" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "hotels" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Resorts
@@ -861,7 +861,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "restaurants" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "restaurants" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Dining
@@ -872,7 +872,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "directory" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "directory" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Directory
@@ -883,7 +883,7 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "car-rental" ? "bg-[#0077B6]/10 text-[#0077B6]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "car-rental" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Car Rental
@@ -896,9 +896,9 @@ export default function App() {
                   setActiveTab("map");
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full bg-[#0077B6] text-white py-3 px-4 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[#0047A1] text-white py-3 px-4 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-all flex items-center justify-center gap-2"
               >
-                <Sparkles className="w-4 h-4 text-[#F4B400] animate-pulse" />
+                <Sparkles className="w-4 h-4 text-[#FB8C00] animate-pulse" />
                 PLAN YOUR TRIP
               </button>
             </div>
@@ -910,11 +910,11 @@ export default function App() {
       {showAccessibilityMenu && (
         <div className="absolute top-20 right-4 md:right-10 z-[60] w-72 glass p-5 rounded-xl shadow-xl border border-gray-200">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-sm text-[#1D3557] flex items-center gap-2">
-              <Accessibility className="w-4 h-4 text-[#0077B6]" />
+            <h3 className="font-bold text-sm text-[#0047A1] flex items-center gap-2">
+              <Accessibility className="w-4 h-4 text-[#0047A1]" />
               Accessibility Assist
             </h3>
-            <button onClick={() => setShowAccessibilityMenu(false)} className="text-slate-400 hover:text-[#1D3557]">
+            <button onClick={() => setShowAccessibilityMenu(false)} className="text-slate-400 hover:text-[#0047A1]">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -924,7 +924,7 @@ export default function App() {
               <button
                 onClick={() => setHighContrast(!highContrast)}
                 className={`w-full py-2 px-3 text-xs rounded-lg font-semibold flex items-center justify-between border ${
-                  highContrast ? "bg-black text-white border-white" : "bg-slate-100 text-[#1D3557] border-gray-200"
+                  highContrast ? "bg-black text-white border-white" : "bg-slate-100 text-[#0047A1] border-gray-200"
                 }`}
               >
                 <span>High Contrast Blackout</span>
@@ -939,7 +939,7 @@ export default function App() {
                     key={sz}
                     onClick={() => setTextSize(sz)}
                     className={`py-1.5 text-xs font-semibold rounded-md border capitalize ${
-                      textSize === sz ? "bg-[#0077B6] text-white border-transparent" : "bg-white text-[#1D3557] border-gray-200"
+                      textSize === sz ? "bg-[#0047A1] text-white border-transparent" : "bg-white text-[#0047A1] border-gray-200"
                     }`}
                   >
                     {sz === "normal" ? "Standard" : sz === "large" ? "Large" : "Extra"}
@@ -952,7 +952,7 @@ export default function App() {
               <button
                 onClick={() => setReducedMotion(!reducedMotion)}
                 className={`w-full py-2 px-3 text-xs rounded-lg font-semibold flex items-center justify-between border ${
-                  reducedMotion ? "bg-[#2A9D8F] text-white border-transparent" : "bg-white text-[#1D3557] border-gray-200"
+                  reducedMotion ? "bg-[#0097A7] text-white border-transparent" : "bg-white text-[#0047A1] border-gray-200"
                 }`}
               >
                 <span>Reduce Motion Effects</span>
@@ -973,7 +973,7 @@ export default function App() {
           <div className="flex flex-col animate-fadeIn">
             
             {/* Cinematic Hero Slider with Water overlay and Floating panel */}
-            <div className="relative w-full h-[640px] md:h-[700px] overflow-hidden bg-[#1D3557]">
+            <div className="relative w-full h-[640px] md:h-[700px] overflow-hidden bg-[#0047A1]">
               {/* Slideshow background */}
               {heroSlides.map((slide, index) => (
                 <div
@@ -986,7 +986,7 @@ export default function App() {
               ))}
 
               {/* Gradient Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#1D3557]/80 via-[#1D3557]/45 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0047A1]/80 via-[#0047A1]/45 to-transparent"></div>
               
               {/* Water Floating Particles / Ripple effect (CSS Animation) */}
               {!reducedMotion && (
@@ -1004,8 +1004,8 @@ export default function App() {
                 className="absolute inset-y-0 left-0 max-w-4xl px-4 md:px-12 lg:px-20 flex flex-col justify-center z-10 text-white"
               >
                 <div className="flex items-center gap-3 mb-4 flex-wrap">
-                  <span className="w-12 h-[2px] bg-[#F4B400] hidden sm:block"></span>
-                  <span className="text-[#F4B400] text-xs font-bold tracking-[0.25em] uppercase">PARADISE UNVEILED</span>
+                  <span className="w-12 h-[2px] bg-[#FB8C00] hidden sm:block"></span>
+                  <span className="text-[#FB8C00] text-xs font-bold tracking-[0.25em] uppercase">NATURE'S WONDER. PEOPLE'S PRIDE.</span>
                   {!loadingWeather && weatherData && (
                     <span className="inline-flex items-center gap-1 bg-white/10 backdrop-blur border border-white/15 px-2.5 py-0.5 rounded-full text-[10px] text-white font-bold md:hidden">
                       {getWeatherIcon(weatherData.weatherCode, weatherData.isDay, 12)}
@@ -1023,13 +1023,13 @@ export default function App() {
                 </h2>
                 
                 <p className="text-white/90 text-sm md:text-lg max-w-xl leading-relaxed mb-8">
-                  Experience the legendary tiered cascades of <strong className="text-white underline decoration-[#F4B400] underline-offset-4">Tinuy-an Falls</strong> and the deep mystical sapphire spring waters of the <strong className="text-white underline decoration-[#2A9D8F] underline-offset-4">Enchanted River</strong> in beautiful Bislig City.
+                  Experience the legendary tiered cascades of <strong className="text-white underline decoration-[#FB8C00] underline-offset-4">Tinuy-an Falls</strong> and the deep mystical sapphire spring waters of the <strong className="text-white underline decoration-[#0097A7] underline-offset-4">Enchanted River</strong> in beautiful Bislig City.
                 </p>
 
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => setActiveTab("attractions")}
-                    className="bg-[#0077B6] hover:bg-[#005F92] text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all"
+                    className="bg-[#0047A1] hover:bg-[#005F92] text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all"
                   >
                     <span>Explore Attractions</span>
                     <ArrowRight className="w-4 h-4" />
@@ -1125,7 +1125,7 @@ export default function App() {
                   <button
                     key={idx}
                     onClick={() => setHeroSlide(idx)}
-                    className={`h-1.5 transition-all ${heroSlide === idx ? "w-10 bg-[#F4B400]" : "w-4 bg-white/40"}`}
+                    className={`h-1.5 transition-all ${heroSlide === idx ? "w-10 bg-[#FB8C00]" : "w-4 bg-white/40"}`}
                     title={`Slide ${idx + 1}`}
                   />
                 ))}
@@ -1133,15 +1133,15 @@ export default function App() {
             </div>
 
             {/* Quick Stats Banner */}
-            <div className="bg-[#1D3557] text-white py-6 px-4 md:px-12 border-t border-white/10 flex flex-wrap justify-between items-center gap-6">
+            <div className="bg-[#0047A1] text-white py-6 px-4 md:px-12 border-t border-white/10 flex flex-wrap justify-between items-center gap-6">
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-[#0077B6]/20 rounded-lg">
+                <div className="p-2 bg-[#0047A1]/20 rounded-lg">
                   {loadingWeather ? (
-                    <Sun className="w-6 h-6 text-[#F4B400] animate-spin" />
+                    <Sun className="w-6 h-6 text-[#FB8C00] animate-spin" />
                   ) : weatherData ? (
                     getWeatherIcon(weatherData.weatherCode, weatherData.isDay, 24)
                   ) : (
-                    <Sun className="w-6 h-6 text-[#F4B400]" />
+                    <Sun className="w-6 h-6 text-[#FB8C00]" />
                   )}
                 </div>
                 <div>
@@ -1153,8 +1153,8 @@ export default function App() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-[#2A9D8F]/20 rounded-lg">
-                  <Clock className="w-6 h-6 text-[#2A9D8F]" />
+                <div className="p-2 bg-[#0097A7]/20 rounded-lg">
+                  <Clock className="w-6 h-6 text-[#0097A7]" />
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Marine Sunrise</p>
@@ -1163,8 +1163,8 @@ export default function App() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-[#F4B400]/20 rounded-lg">
-                  <Globe className="w-6 h-6 text-[#F4B400]" />
+                <div className="p-2 bg-[#FB8C00]/20 rounded-lg">
+                  <Globe className="w-6 h-6 text-[#FB8C00]" />
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Sustainable Tourism</p>
@@ -1173,7 +1173,7 @@ export default function App() {
               </div>
 
               <div className="flex gap-2">
-                <span className="px-3 py-1.5 bg-[#2A9D8F] text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow">
+                <span className="px-3 py-1.5 bg-[#0097A7] text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow">
                   Safe Destination Approved
                 </span>
               </div>
@@ -1186,8 +1186,8 @@ export default function App() {
                 {/* Left side: Curated list of required top spots */}
                 <div className="lg:col-span-7 space-y-8">
                   <div>
-                    <span className="text-[#2A9D8F] text-xs font-bold uppercase tracking-[0.2em] block mb-2">CURATED SELECTION</span>
-                    <h3 className="text-3xl md:text-4xl font-serif text-[#1D3557] font-bold">Featured Iconic Attractions</h3>
+                    <span className="text-[#0097A7] text-xs font-bold uppercase tracking-[0.2em] block mb-2">CURATED SELECTION</span>
+                    <h3 className="text-3xl md:text-4xl font-serif text-[#0047A1] font-bold">Featured Iconic Attractions</h3>
                     <p className="text-slate-600 mt-2 max-w-2xl text-sm md:text-base">
                       These legendary coordinates define the magnificent beauty of Bislig and neighboring areas. Click on any card to explore maps, tips, and fees.
                     </p>
@@ -1199,7 +1199,7 @@ export default function App() {
                       <div
                         key={att.id}
                         onClick={() => setSelectedAttraction(att)}
-                        className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:border-[#0077B6] hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                        className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:border-[#0047A1] hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
                       >
                         <div>
                           <div className="w-full h-44 rounded-lg overflow-hidden bg-slate-200 mb-4 relative">
@@ -1209,7 +1209,7 @@ export default function App() {
                               referrerPolicy="no-referrer"
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
-                            <div className="absolute top-2 right-2 bg-white/95 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-[#0077B6]">
+                            <div className="absolute top-2 right-2 bg-white/95 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-[#0047A1]">
                               {att.category}
                             </div>
                             {!loadingWeather && weatherData && (
@@ -1220,17 +1220,17 @@ export default function App() {
                             )}
                           </div>
                           <div className="flex justify-between items-start mb-1">
-                            <h4 className="font-bold text-[#1D3557] text-base group-hover:text-[#0077B6] transition-colors">{att.name}</h4>
+                            <h4 className="font-bold text-[#0047A1] text-base group-hover:text-[#0047A1] transition-colors">{att.name}</h4>
                           </div>
                           <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{att.description}</p>
                         </div>
 
                         <div className="flex items-center justify-between border-t border-slate-100 pt-3 mt-4">
                           <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 uppercase">
-                            <MapPin className="w-3 h-3 text-[#0077B6]" />
+                            <MapPin className="w-3 h-3 text-[#0047A1]" />
                             {att.distance} from City
                           </span>
-                          <span className="text-[10px] font-bold text-[#2A9D8F] uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#0097A7] uppercase tracking-wide">
                             {att.travelTime}
                           </span>
                         </div>
@@ -1241,7 +1241,7 @@ export default function App() {
                   <div className="text-center md:text-left">
                     <button
                       onClick={() => setActiveTab("attractions")}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0077B6] hover:text-[#005f92] border-b-2 border-[#0077B6] pb-1"
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0047A1] hover:text-[#005f92] border-b-2 border-[#0047A1] pb-1"
                     >
                       <span>View All Attractions</span>
                       <ChevronRight className="w-4 h-4" />
@@ -1252,8 +1252,8 @@ export default function App() {
                 {/* Right side: Interactive Mini-Map Preview Card (mockup reference) */}
                 <div className="lg:col-span-5 bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col justify-between h-full">
                   <div>
-                    <h3 className="text-xl font-serif text-[#1D3557] font-bold mb-1">Interactive Map & Planner</h3>
-                    <p className="text-xs text-[#2A9D8F] font-bold uppercase tracking-wider">24 Active Coordinates</p>
+                    <h3 className="text-xl font-serif text-[#0047A1] font-bold mb-1">Interactive Map & Planner</h3>
+                    <p className="text-xs text-[#0097A7] font-bold uppercase tracking-wider">24 Active Coordinates</p>
                     <p className="text-xs text-slate-500 mt-2">
                       Access our visual geographic explorer. Pinpoint primary waterfalls, eco-resorts, beachheads, and dining hubs with simple toggle filters.
                     </p>
@@ -1271,9 +1271,9 @@ export default function App() {
                   <div className="space-y-4">
                     <button
                       onClick={() => setActiveTab("map")}
-                      className="w-full bg-[#1D3557] text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow hover:bg-slate-800 transition-all"
+                      className="w-full bg-[#0047A1] text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow hover:bg-slate-800 transition-all"
                     >
-                      <MapIcon className="w-4 h-4 text-[#F4B400]" />
+                      <MapIcon className="w-4 h-4 text-[#FB8C00]" />
                       <span>Launch Map Explorer</span>
                     </button>
                   </div>
@@ -1285,8 +1285,8 @@ export default function App() {
             {/* Official Bislig Tourism Video Section */}
             <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#F1F5F9]/50 border-y border-slate-100">
               <div className="max-w-5xl mx-auto text-center">
-                <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.25em] block mb-2">WATCH & DISCOVER</span>
-                <h3 className="text-3xl md:text-4xl font-serif text-[#1D3557] font-extrabold mb-4">Suruyon Ta! (Let's Explore!)</h3>
+                <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.25em] block mb-2">WATCH & DISCOVER</span>
+                <h3 className="text-3xl md:text-4xl font-serif text-[#0047A1] font-extrabold mb-4">Suruyon Ta! (Let's Explore!)</h3>
                 <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
                   Immerse yourself in the breathtaking landscapes, majestic waterfalls, and thriving cultural heritage of Bislig City. Experience our official tourism anthem and visual guide.
                 </p>
@@ -1310,8 +1310,8 @@ export default function App() {
             {/* Why Visit Bislig (Bento Grid Style) */}
             <section className="py-20 px-4 md:px-12 lg:px-20 bg-white">
               <div className="text-center max-w-3xl mx-auto mb-16">
-                <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">EXPLORE MINDANAO</span>
-                <h3 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Why Bislig City Belongs on Your Bucket List</h3>
+                <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">EXPLORE MINDANAO</span>
+                <h3 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Why Bislig City Belongs on Your Bucket List</h3>
                 <p className="text-slate-600 mt-4 text-sm md:text-base">
                   Bislig is more than a destination; it's an authentic encounter with wild nature, ancient tribal heritage, and local culinary masterpieces.
                 </p>
@@ -1319,30 +1319,30 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div className="p-6 bg-[#FAFCFC] rounded-2xl border border-gray-100 hover:shadow-lg transition-all">
-                  <div className="w-12 h-12 bg-[#0077B6]/10 rounded-xl flex items-center justify-center text-[#0077B6] mb-5 font-bold">
+                  <div className="w-12 h-12 bg-[#0047A1]/10 rounded-xl flex items-center justify-center text-[#0047A1] mb-5 font-bold">
                     <Compass className="w-6 h-6" />
                   </div>
-                  <h4 className="font-bold text-lg text-[#1D3557] mb-2">Nature Adventures</h4>
+                  <h4 className="font-bold text-lg text-[#0047A1] mb-2">Nature Adventures</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Hike through centuries-old pristine rainforests, swim in cold spring pools, and kayak down scenic quiet lakes.
                   </p>
                 </div>
 
                 <div className="p-6 bg-[#FAFCFC] rounded-2xl border border-gray-100 hover:shadow-lg transition-all">
-                  <div className="w-12 h-12 bg-[#2A9D8F]/10 rounded-xl flex items-center justify-center text-[#2A9D8F] mb-5 font-bold">
+                  <div className="w-12 h-12 bg-[#0097A7]/10 rounded-xl flex items-center justify-center text-[#0097A7] mb-5 font-bold">
                     <Globe className="w-6 h-6" />
                   </div>
-                  <h4 className="font-bold text-lg text-[#1D3557] mb-2">Sustainable Eco-Tourism</h4>
+                  <h4 className="font-bold text-lg text-[#0047A1] mb-2">Sustainable Eco-Tourism</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Our city has dedicated conservation policies in place to preserve the pristine conditions of waterfalls and marine estuaries.
                   </p>
                 </div>
 
                 <div className="p-6 bg-[#FAFCFC] rounded-2xl border border-gray-100 hover:shadow-lg transition-all">
-                  <div className="w-12 h-12 bg-[#F4B400]/10 rounded-xl flex items-center justify-center text-[#F4B400] mb-5 font-bold">
+                  <div className="w-12 h-12 bg-[#FB8C00]/10 rounded-xl flex items-center justify-center text-[#FB8C00] mb-5 font-bold">
                     <Utensils className="w-6 h-6" />
                   </div>
-                  <h4 className="font-bold text-lg text-[#1D3557] mb-2">Fresh Seafood Platters</h4>
+                  <h4 className="font-bold text-lg text-[#0047A1] mb-2">Fresh Seafood Platters</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Savor world-class Kamayo mud crabs, sweet river oysters, and fresh marine tuna directly from local fishermen's boats.
                   </p>
@@ -1352,7 +1352,7 @@ export default function App() {
                   <div className="w-12 h-12 bg-[#3A7D44]/10 rounded-xl flex items-center justify-center text-[#3A7D44] mb-5 font-bold">
                     <Info className="w-6 h-6" />
                   </div>
-                  <h4 className="font-bold text-lg text-[#1D3557] mb-2">Friendly Kamayo Tribe</h4>
+                  <h4 className="font-bold text-lg text-[#0047A1] mb-2">Friendly Kamayo Tribe</h4>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Experience deep-rooted warm hospitality from our residents who are eager to share local legends, customs, and crafts.
                   </p>
@@ -1361,12 +1361,12 @@ export default function App() {
             </section>
 
             {/* Event Countdown Banner & Tourism Calendar */}
-            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#1D3557] text-white">
+            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#0047A1] text-white">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                 
                 {/* Left countdown widget */}
                 <div className="lg:col-span-5 space-y-4">
-                  <span className="text-[#F4B400] text-xs font-bold uppercase tracking-[0.25em] block">UPCOMING CULTURAL SPECTACLE</span>
+                  <span className="text-[#FB8C00] text-xs font-bold uppercase tracking-[0.25em] block">UPCOMING CULTURAL SPECTACLE</span>
                   <h3 className="text-3xl md:text-4xl font-serif font-bold">Karawasan Festival</h3>
                   <p className="text-slate-300 text-sm max-w-md">
                     Experience the legendary crab harvest dance of the Kamayo tribe. Vibrant street choreographies, indigenous musical instruments, and local feasts.
@@ -1374,15 +1374,15 @@ export default function App() {
 
                   <div className="flex gap-4 pt-4">
                     <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
-                      <p className="text-2xl font-bold text-[#F4B400]">{countdown.days}</p>
+                      <p className="text-2xl font-bold text-[#FB8C00]">{countdown.days}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Days</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
-                      <p className="text-2xl font-bold text-[#F4B400]">{countdown.hours}</p>
+                      <p className="text-2xl font-bold text-[#FB8C00]">{countdown.hours}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Hours</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur p-4 rounded-xl text-center min-w-[70px]">
-                      <p className="text-2xl font-bold text-[#F4B400]">{countdown.mins}</p>
+                      <p className="text-2xl font-bold text-[#FB8C00]">{countdown.mins}</p>
                       <p className="text-[10px] text-slate-300 uppercase font-semibold">Minutes</p>
                     </div>
                   </div>
@@ -1392,13 +1392,13 @@ export default function App() {
                 <div className="lg:col-span-7 space-y-4">
                   <div className="flex justify-between items-center mb-4">
                     <h4 className="font-bold text-sm tracking-widest uppercase text-slate-300">DOT Event Calendar</h4>
-                    <span className="text-xs text-[#F4B400]">September Highlights</span>
+                    <span className="text-xs text-[#FB8C00]">September Highlights</span>
                   </div>
 
                   <div className="space-y-4">
                     {EVENTS.map((evt) => (
                       <div key={evt.id} className="bg-white/5 border border-white/10 hover:border-white/30 rounded-xl p-4 flex gap-4 transition-all">
-                        <div className="bg-[#0077B6] w-12 h-14 rounded-lg flex flex-col items-center justify-center text-center shrink-0">
+                        <div className="bg-[#0047A1] w-12 h-14 rounded-lg flex flex-col items-center justify-center text-center shrink-0">
                           <span className="text-[9px] font-bold tracking-wider text-slate-200">{evt.month}</span>
                           <span className="text-lg font-bold leading-none">{evt.day}</span>
                         </div>
@@ -1422,8 +1422,8 @@ export default function App() {
             {/* Newsletter Subscription */}
             <section className="py-20 px-4 bg-[#FAFCFC] text-center border-t border-gray-100">
               <div className="max-w-2xl mx-auto">
-                <span className="text-[#2A9D8F] text-xs font-bold uppercase tracking-[0.2em] block mb-2">STAY INSPIRED</span>
-                <h3 className="text-2xl md:text-4xl font-serif text-[#1D3557] font-bold">Get Secret Destination Guides</h3>
+                <span className="text-[#0097A7] text-xs font-bold uppercase tracking-[0.2em] block mb-2">STAY INSPIRED</span>
+                <h3 className="text-2xl md:text-4xl font-serif text-[#0047A1] font-bold">Get Secret Destination Guides</h3>
                 <p className="text-slate-500 mt-3 text-xs md:text-sm">
                   Subscribe to receive quarterly curated travel schedules, newly discovered waterfalls, local discount packages, and cultural celebration dates.
                 </p>
@@ -1439,11 +1439,11 @@ export default function App() {
                     type="email"
                     required
                     placeholder="Enter your personal email address"
-                    className="flex-grow px-5 py-3 rounded-full bg-white border border-gray-300 text-xs focus:ring-2 focus:ring-[#0077B6] outline-none shadow-inner"
+                    className="flex-grow px-5 py-3 rounded-full bg-white border border-gray-300 text-xs focus:ring-2 focus:ring-[#0047A1] outline-none shadow-inner"
                   />
                   <button
                     type="submit"
-                    className="bg-[#0077B6] text-white px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider shadow hover:bg-[#005f92] transition-colors shrink-0"
+                    className="bg-[#0047A1] text-white px-6 py-3 rounded-full font-bold text-xs uppercase tracking-wider shadow hover:bg-[#005f92] transition-colors shrink-0"
                   >
                     Subscribe
                   </button>
@@ -1461,8 +1461,8 @@ export default function App() {
         {activeTab === "explore" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">INTRODUCING THE CITY</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">The Golden Paradise of Mindanao</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">INTRODUCING THE CITY</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Nature's Wonder. People's Pride.</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 Bislig City, situated in Surigao del Sur, is blessed with beautiful geographical diversity. It faces the vast Pacific Ocean to the east, producing breathtaking golden sunrises over sprawling coastal islands.
               </p>
@@ -1477,13 +1477,13 @@ export default function App() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div className="absolute bottom-6 left-6 text-white">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[#F4B400]">SURIGAO DEL SUR</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#FB8C00]">SURIGAO DEL SUR</p>
                   <h4 className="text-xl font-bold font-serif">Pristine Waterway Resources</h4>
                 </div>
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-2xl font-serif text-[#1D3557] font-bold">Culture, Heritage & the Kamayo Tribe</h3>
+                <h3 className="text-2xl font-serif text-[#0047A1] font-bold">Culture, Heritage & the Kamayo Tribe</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   The local culture is shaped largely by the **Kamayo tribe**, the original ethnic inhabitants of Bislig and surrounding coastal waters. The Kamayo language is unique, known for its soft intonations and close affinity to classical Visayan dialects.
                 </p>
@@ -1493,11 +1493,11 @@ export default function App() {
 
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
                   <div>
-                    <span className="text-2xl font-bold text-[#0077B6] block">12+</span>
+                    <span className="text-2xl font-bold text-[#0047A1] block">12+</span>
                     <span className="text-xs font-bold text-slate-500 uppercase">Pristine Waterfalls</span>
                   </div>
                   <div>
-                    <span className="text-2xl font-bold text-[#2A9D8F] block">100%</span>
+                    <span className="text-2xl font-bold text-[#0097A7] block">100%</span>
                     <span className="text-xs font-bold text-slate-500 uppercase">Local Tour Guide Guided</span>
                   </div>
                 </div>
@@ -1506,22 +1506,22 @@ export default function App() {
 
             {/* Travel Seasons and Information */}
             <div className="bg-[#F8F6F2] p-8 rounded-2xl border border-gray-100">
-              <h3 className="text-2xl font-serif text-[#1D3557] font-bold mb-6 text-center">Fast Facts for Planning Your Visit</h3>
+              <h3 className="text-2xl font-serif text-[#0047A1] font-bold mb-6 text-center">Fast Facts for Planning Your Visit</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#0077B6] font-bold text-sm block mb-2">Optimal Season</span>
+                  <span className="text-[#0047A1] font-bold text-sm block mb-2">Optimal Season</span>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     **March to October** brings warm sunny skies, making it ideal for coastal beach hopping, forest trekking, cave viewing, and boat rentals.
                   </p>
                 </div>
                 <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#2A9D8F] font-bold text-sm block mb-2">Local Dialects</span>
+                  <span className="text-[#0097A7] font-bold text-sm block mb-2">Local Dialects</span>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     **Kamayo** is native. However, **Cebuano/Visayan**, **Tagalog**, and **English** are universally spoken and understood by locals.
                   </p>
                 </div>
                 <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#F4B400] font-bold text-sm block mb-2">Financial Advice</span>
+                  <span className="text-[#FB8C00] font-bold text-sm block mb-2">Financial Advice</span>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     There are numerous commercial bank ATMs in the city proper. However, carrying cash (Philippine Peso) is highly recommended for entrance fees and local guides.
                   </p>
@@ -1538,8 +1538,8 @@ export default function App() {
         {activeTab === "attractions" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">VISIT THE ICONS</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Majestic Natural Coordinates</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">VISIT THE ICONS</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Majestic Natural Coordinates</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 Explore our waterfalls, spring-fed rivers, quiet caves, and white sand beachheads. Filter and save your favorites to build a dynamic travel plan.
               </p>
@@ -1554,7 +1554,7 @@ export default function App() {
                     onClick={() => setAttractionFilter(cat)}
                     className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
                       attractionFilter === cat
-                        ? "bg-[#0077B6] text-white shadow"
+                        ? "bg-[#0047A1] text-white shadow"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
@@ -1569,7 +1569,7 @@ export default function App() {
                   placeholder="Search key attraction names..."
                   value={searchQuery === " " ? "" : searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 text-xs rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0077B6]"
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0047A1]"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
               </div>
@@ -1582,7 +1582,7 @@ export default function App() {
                 return (
                   <div
                     key={att.id}
-                    className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group hover:border-[#0077B6] transition-all flex flex-col justify-between"
+                    className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group hover:border-[#0047A1] transition-all flex flex-col justify-between"
                   >
                     <div>
                       <div className="h-52 bg-slate-200 relative overflow-hidden">
@@ -1602,7 +1602,7 @@ export default function App() {
                         >
                           <Heart className={`w-4.5 h-4.5 ${isFavorite ? "fill-red-500 text-red-500" : "text-slate-400"}`} />
                         </button>
-                        <span className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-[#0077B6] shadow">
+                        <span className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-[#0047A1] shadow">
                           {att.category}
                         </span>
                         {!loadingWeather && weatherData && (
@@ -1616,7 +1616,7 @@ export default function App() {
 
                       <div className="p-6">
                         <div className="flex justify-between items-center mb-1">
-                          <h3 className="font-bold font-serif text-lg text-[#1D3557] group-hover:text-[#0077B6] transition-colors">
+                          <h3 className="font-bold font-serif text-lg text-[#0047A1] group-hover:text-[#0047A1] transition-colors">
                             {att.name}
                           </h3>
                         </div>
@@ -1627,11 +1627,11 @@ export default function App() {
 
                         <div className="space-y-2 border-t border-slate-50 pt-3 text-[11px] text-slate-400 font-medium">
                           <div className="flex items-center gap-2">
-                            <MapPin className="w-3.5 h-3.5 text-[#0077B6]" />
+                            <MapPin className="w-3.5 h-3.5 text-[#0047A1]" />
                             <span>{att.distance} from City center</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-[#2A9D8F]" />
+                            <Clock className="w-3.5 h-3.5 text-[#0097A7]" />
                             <span>Approx. {att.travelTime} travel time</span>
                           </div>
                         </div>
@@ -1641,7 +1641,7 @@ export default function App() {
                     <div className="p-6 pt-0 flex gap-2">
                       <button
                         onClick={() => setSelectedAttraction(att)}
-                        className="flex-grow bg-slate-100 text-[#1D3557] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
+                        className="flex-grow bg-slate-100 text-[#0047A1] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
                       >
                         Read Visitor Guide
                       </button>
@@ -1649,8 +1649,8 @@ export default function App() {
                         onClick={() => addToItinerary(att, "attraction")}
                         className={`transition-all duration-300 p-2.5 rounded-lg flex items-center justify-center gap-1.5 ${
                           addedFeedback[att.id]
-                            ? "bg-[#2A9D8F] text-white scale-105"
-                            : "bg-[#0077B6] text-white hover:bg-[#005f92]"
+                            ? "bg-[#0097A7] text-white scale-105"
+                            : "bg-[#0047A1] text-white hover:bg-[#005f92]"
                         }`}
                         title={addedFeedback[att.id] ? `Added to Day ${selectedItineraryDay}` : "Add to Custom Itinerary"}
                       >
@@ -1678,8 +1678,8 @@ export default function App() {
         {activeTab === "things-to-do" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">OUTDOOR EXPERIENCES</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Unforgettable Adventures</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">OUTDOOR EXPERIENCES</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Unforgettable Adventures</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 From soaring waterfalls to deep-river cave exploration, Bislig and surrounding nature reserves offer world-class outdoor activities.
               </p>
@@ -1726,10 +1726,10 @@ export default function App() {
               ].map((act, idx) => (
                 <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
                   <span className="text-3xl block mb-4">{act.icon}</span>
-                  <h4 className="font-bold font-serif text-lg text-[#1D3557] mb-2">{act.title}</h4>
+                  <h4 className="font-bold font-serif text-lg text-[#0047A1] mb-2">{act.title}</h4>
                   <p className="text-xs text-slate-500 leading-relaxed mb-4">{act.desc}</p>
                   <div className="bg-[#F8F6F2] p-3 rounded-lg border border-gray-100">
-                    <p className="text-[10px] font-bold text-[#2A9D8F] uppercase">Pro Tip</p>
+                    <p className="text-[10px] font-bold text-[#0097A7] uppercase">Pro Tip</p>
                     <p className="text-[10px] text-slate-600 mt-0.5">{act.tips}</p>
                   </div>
                 </div>
@@ -1747,8 +1747,8 @@ export default function App() {
         {activeTab === "hotels" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">WHERE TO STAY</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Resorts & Eco Lodges</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">WHERE TO STAY</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Resorts & Eco Lodges</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 From cozy coastal surf cabins to quiet forest eco-lodges, locate the perfect base for your Surigao del Sur exploration.
               </p>
@@ -1758,21 +1758,21 @@ export default function App() {
               {ACCOMMODATIONS.map((res) => (
                 <div
                   key={res.id}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#2A9D8F] transition-all flex flex-col justify-between"
+                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#0097A7] transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="h-48 bg-slate-200 relative">
                       <img src={res.image} alt={res.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                      <span className="absolute top-4 left-4 bg-white px-2.5 py-1 rounded text-[10px] font-bold text-[#2A9D8F] shadow">
+                      <span className="absolute top-4 left-4 bg-white px-2.5 py-1 rounded text-[10px] font-bold text-[#0097A7] shadow">
                         {res.category}
                       </span>
                     </div>
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold font-serif text-lg text-[#1D3557]">{res.name}</h3>
+                        <h3 className="font-bold font-serif text-lg text-[#0047A1]">{res.name}</h3>
                       </div>
                       <p className="text-slate-500 text-xs line-clamp-3 leading-relaxed mb-4">{res.description}</p>
-                      <p className="text-xs font-bold text-[#2A9D8F]">{res.priceRange}</p>
+                      <p className="text-xs font-bold text-[#0097A7]">{res.priceRange}</p>
 
                       <div className="flex flex-wrap gap-1.5 mt-4">
                         {res.amenities.slice(0, 3).map((amen, idx) => (
@@ -1787,7 +1787,7 @@ export default function App() {
                   <div className="p-6 pt-0 flex gap-2">
                     <button
                       onClick={() => setSelectedAccommodation(res)}
-                      className="flex-grow bg-slate-100 text-[#1D3557] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
+                      className="flex-grow bg-slate-100 text-[#0047A1] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
                     >
                       View Details & Contact
                     </button>
@@ -1795,8 +1795,8 @@ export default function App() {
                       onClick={() => addToItinerary(res, "hotel")}
                       className={`transition-all duration-300 p-2.5 rounded-lg flex items-center justify-center gap-1.5 ${
                         addedFeedback[res.id]
-                          ? "bg-[#2A9D8F] text-white scale-105"
-                          : "bg-[#2A9D8F] text-white hover:bg-emerald-700"
+                          ? "bg-[#0097A7] text-white scale-105"
+                          : "bg-[#0097A7] text-white hover:bg-emerald-700"
                       }`}
                       title={addedFeedback[res.id] ? `Added to Day ${selectedItineraryDay}` : "Add to Custom Itinerary"}
                     >
@@ -1822,8 +1822,8 @@ export default function App() {
         {activeTab === "restaurants" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">KAMAYO CUISINE</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Restaurants & Cafés</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">KAMAYO CUISINE</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Restaurants & Cafés</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 Discover excellent local culinary experiences, specialized highlands cold brews, and coastal seafood platters.
               </p>
@@ -1833,18 +1833,18 @@ export default function App() {
               {RESTAURANTS.map((rest) => (
                 <div
                   key={rest.id}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#F4B400] transition-all flex flex-col justify-between"
+                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#FB8C00] transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="h-48 bg-slate-200 relative">
                       <img src={rest.image} alt={rest.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                      <span className="absolute top-4 left-4 bg-white px-2.5 py-1 rounded text-[10px] font-bold text-[#0077B6] shadow">
+                      <span className="absolute top-4 left-4 bg-white px-2.5 py-1 rounded text-[10px] font-bold text-[#0047A1] shadow">
                         {rest.category}
                       </span>
                     </div>
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold font-serif text-lg text-[#1D3557]">{rest.name}</h3>
+                        <h3 className="font-bold font-serif text-lg text-[#0047A1]">{rest.name}</h3>
                       </div>
                       <p className="text-slate-500 text-xs line-clamp-3 leading-relaxed mb-4">{rest.description}</p>
                       
@@ -1862,7 +1862,7 @@ export default function App() {
                   <div className="p-6 pt-0 flex gap-2">
                     <button
                       onClick={() => setSelectedRestaurant(rest)}
-                      className="flex-grow bg-slate-100 text-[#1D3557] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
+                      className="flex-grow bg-slate-100 text-[#0047A1] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
                     >
                       Map & Dining Hours
                     </button>
@@ -1870,8 +1870,8 @@ export default function App() {
                       onClick={() => addToItinerary(rest, "restaurant")}
                       className={`transition-all duration-300 p-2.5 rounded-lg flex items-center justify-center gap-1.5 ${
                         addedFeedback[rest.id]
-                          ? "bg-[#2A9D8F] text-white scale-105"
-                          : "bg-[#0077B6] text-white hover:bg-[#005f92]"
+                          ? "bg-[#0097A7] text-white scale-105"
+                          : "bg-[#0047A1] text-white hover:bg-[#005f92]"
                       }`}
                       title={addedFeedback[rest.id] ? `Added to Day ${selectedItineraryDay}` : "Add to Custom Itinerary"}
                     >
@@ -1899,8 +1899,8 @@ export default function App() {
             
             {/* Header / Intro */}
             <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">ITINERARY WORKSHOP</span>
-              <h2 className="text-3xl font-serif text-[#1D3557] font-bold">Geography & Custom Trip Planner</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">ITINERARY WORKSHOP</span>
+              <h2 className="text-3xl font-serif text-[#0047A1] font-bold">Geography & Custom Trip Planner</h2>
               <p className="text-slate-500 text-xs mt-2">
                 Browse coordinates on our interactive map dashboard, select items to build a manual travel itinerary, or use our premium server-side AI travel assistant.
               </p>
@@ -1913,7 +1913,7 @@ export default function App() {
               <div className="lg:col-span-6 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h3 className="font-bold font-serif text-lg text-[#1D3557]">Interactive Coordinate Plotter</h3>
+                    <h3 className="font-bold font-serif text-lg text-[#0047A1]">Interactive Coordinate Plotter</h3>
                     <p className="text-[10px] text-slate-400">Filter by category to view custom pin-points</p>
                   </div>
                   <div className="flex gap-1 bg-[#F8F6F2] p-1 rounded-lg">
@@ -1922,7 +1922,7 @@ export default function App() {
                         key={filt}
                         onClick={() => setMapFilter(filt)}
                         className={`px-2 py-1 text-[9px] font-bold uppercase rounded-md transition-colors ${
-                          mapFilter === filt ? "bg-[#0077B6] text-white" : "text-slate-500 hover:text-[#0077B6]"
+                          mapFilter === filt ? "bg-[#0047A1] text-white" : "text-slate-500 hover:text-[#0047A1]"
                         }`}
                       >
                         {filt === "Waterfalls" ? "Falls" : filt === "Restaurants" ? "Dine" : filt}
@@ -1941,7 +1941,7 @@ export default function App() {
 
                 {/* Quick Help List */}
                 <div className="mt-4 p-4 bg-[#F8F6F2] rounded-xl border border-gray-100 flex items-center gap-3">
-                  <Info className="w-5 h-5 text-[#0077B6] shrink-0" />
+                  <Info className="w-5 h-5 text-[#0047A1] shrink-0" />
                   <p className="text-[10px] text-slate-500 leading-relaxed">
                     **Want to navigate in real life?** Inside the details drawer of any landmark, click the **Open in Google Maps** button to instantly map driving routes in Bislig.
                   </p>
@@ -1954,14 +1954,14 @@ export default function App() {
                 {/* 1. Custom Manual Itinerary Planner */}
                 <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold font-serif text-lg text-[#1D3557]">Your Personalized Trip</h3>
+                    <h3 className="font-bold font-serif text-lg text-[#0047A1]">Your Personalized Trip</h3>
                     <div className="flex gap-1 bg-[#F8F6F2] p-0.5 rounded-lg border border-gray-100">
                       {[1, 2, 3].map((d) => (
                         <button
                           key={d}
                           onClick={() => setSelectedItineraryDay(d)}
                           className={`px-3 py-1 text-xs font-bold rounded-md ${
-                            selectedItineraryDay === d ? "bg-[#0077B6] text-white" : "text-slate-500"
+                            selectedItineraryDay === d ? "bg-[#0047A1] text-white" : "text-slate-500"
                           }`}
                         >
                           Day {d}
@@ -1986,7 +1986,7 @@ export default function App() {
                             <span className="text-[9px] px-2 py-0.5 rounded bg-white text-slate-500 font-bold uppercase border">
                               {item.itineraryType}
                             </span>
-                            <h4 className="font-bold text-xs text-[#1D3557] mt-1">{item.name}</h4>
+                            <h4 className="font-bold text-xs text-[#0047A1] mt-1">{item.name}</h4>
                             <p className="text-[9px] text-slate-400">{item.distance || "City center"}</p>
                           </div>
                           <button
@@ -2005,7 +2005,7 @@ export default function App() {
                   <div className="border-t border-slate-100 pt-4 flex flex-wrap justify-between items-center gap-4">
                     <div>
                       <p className="text-[10px] text-slate-400 font-semibold uppercase">Estimated Travel Expenses</p>
-                      <p className="text-lg font-bold text-[#2A9D8F]">₱{itineraryExpenses.toLocaleString()}.00</p>
+                      <p className="text-lg font-bold text-[#0097A7]">₱{itineraryExpenses.toLocaleString()}.00</p>
                     </div>
 
                     <div className="flex gap-2">
@@ -2033,9 +2033,9 @@ export default function App() {
                 </div>
 
                 {/* 2. Premium AI-Powered Travel assistant (contacts Gemini server API) */}
-                <div className="bg-gradient-to-br from-[#1D3557] to-slate-900 text-white p-6 rounded-2xl shadow-lg border border-white/10">
+                <div className="bg-gradient-to-br from-[#0047A1] to-slate-900 text-white p-6 rounded-2xl shadow-lg border border-white/10">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-5 h-5 text-[#F4B400] animate-pulse" />
+                    <Sparkles className="w-5 h-5 text-[#FB8C00] animate-pulse" />
                     <h3 className="font-bold font-serif text-lg">AI Trip Planner Assistant</h3>
                   </div>
                   <p className="text-slate-300 text-xs mb-5">
@@ -2049,7 +2049,7 @@ export default function App() {
                         <select
                           value={aiDays}
                           onChange={(e) => setAiDays(parseInt(e.target.value))}
-                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#F4B400] text-white outline-none"
+                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#FB8C00] text-white outline-none"
                         >
                           {[1, 2, 3, 4, 5].map((d) => (
                             <option key={d} value={d} className="text-slate-900">
@@ -2064,7 +2064,7 @@ export default function App() {
                         <select
                           value={aiBudget}
                           onChange={(e) => setAiBudget(e.target.value as any)}
-                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#F4B400] text-white outline-none"
+                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#FB8C00] text-white outline-none"
                         >
                           {["Budget", "Mid-range", "Luxury"].map((b) => (
                             <option key={b} value={b} className="text-slate-900">
@@ -2081,7 +2081,7 @@ export default function App() {
                         <select
                           value={aiInterest}
                           onChange={(e) => setAiInterest(e.target.value)}
-                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#F4B400] text-white outline-none"
+                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#FB8C00] text-white outline-none"
                         >
                           <option value="Waterfall Chasing & Adventure" className="text-slate-900">Waterfalls & Trekking</option>
                           <option value="Beaches & Island Hopping" className="text-slate-900">Beaches & Islands</option>
@@ -2095,7 +2095,7 @@ export default function App() {
                         <select
                           value={aiGroupSize}
                           onChange={(e) => setAiGroupSize(e.target.value as any)}
-                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#F4B400] text-white outline-none"
+                          className="w-full bg-white/10 border border-white/20 rounded-lg p-2 text-xs focus:ring-1 focus:ring-[#FB8C00] text-white outline-none"
                         >
                           {["Solo", "Couple", "Family", "Friends"].map((g) => (
                             <option key={g} value={g} className="text-slate-900">
@@ -2109,7 +2109,7 @@ export default function App() {
                     <button
                       type="submit"
                       disabled={isGeneratingAi}
-                      className="w-full bg-[#F4B400] text-slate-900 py-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#d69f00] disabled:opacity-50 transition-colors cursor-pointer"
+                      className="w-full bg-[#FB8C00] text-slate-900 py-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#d69f00] disabled:opacity-50 transition-colors cursor-pointer"
                     >
                       {isGeneratingAi ? (
                         <>
@@ -2135,16 +2135,16 @@ export default function App() {
 
                   {/* AI Generated Itinerary Output Modal/Pane */}
                   {generatedItinerary && (
-                    <div className="mt-6 bg-white text-[#1D3557] rounded-xl p-5 space-y-4 max-h-[500px] overflow-y-auto shadow-inner animate-fadeIn">
+                    <div className="mt-6 bg-white text-[#0047A1] rounded-xl p-5 space-y-4 max-h-[500px] overflow-y-auto shadow-inner animate-fadeIn">
                       <div className="flex justify-between items-start border-b border-slate-100 pb-3 gap-4">
                         <div>
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Your Curated Schedule</p>
-                          <h4 className="font-bold text-sm text-[#0077B6]">{generatedItinerary.itineraryName}</h4>
+                          <h4 className="font-bold text-sm text-[#0047A1]">{generatedItinerary.itineraryName}</h4>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
                             onClick={() => exportItineraryToPdf(generatedItinerary)}
-                            className="p-1.5 px-2.5 bg-[#0077B6] text-white hover:bg-[#005f92] rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all shadow-sm"
+                            className="p-1.5 px-2.5 bg-[#0047A1] text-white hover:bg-[#005f92] rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all shadow-sm"
                             title="Download PDF Itinerary"
                           >
                             <Download className="w-3 h-3" />
@@ -2175,14 +2175,14 @@ export default function App() {
                             <h5 className="font-bold text-xs text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md inline-block">
                               Day {day.dayNumber}: {day.theme}
                             </h5>
-                            <div className="space-y-3 pl-2 border-l border-[#0077B6]/30">
+                            <div className="space-y-3 pl-2 border-l border-[#0047A1]/30">
                               {day.activities.map((act, idx) => (
                                 <div key={idx} className="text-xs">
                                   <div className="flex justify-between items-start">
                                     <span className="font-bold text-[10px] text-slate-400 uppercase tracking-tight">{act.time}</span>
-                                    <span className="text-[9px] font-bold text-[#2A9D8F]">{act.estimatedCost}</span>
+                                    <span className="text-[9px] font-bold text-[#0097A7]">{act.estimatedCost}</span>
                                   </div>
-                                  <p className="font-bold text-[#1D3557] mt-0.5">{act.activityName}</p>
+                                  <p className="font-bold text-[#0047A1] mt-0.5">{act.activityName}</p>
                                   <p className="text-[10px] text-slate-400 italic">@ {act.locationName}</p>
                                   <p className="text-slate-500 text-[10px] mt-0.5 leading-relaxed">{act.description}</p>
                                 </div>
@@ -2194,7 +2194,7 @@ export default function App() {
 
                       {/* Travel Tips */}
                       <div className="bg-[#F8F6F2] p-4 rounded-lg space-y-2 border border-gray-100">
-                        <p className="font-bold text-[10px] text-[#2A9D8F] uppercase tracking-wider">Local Travel Advice</p>
+                        <p className="font-bold text-[10px] text-[#0097A7] uppercase tracking-wider">Local Travel Advice</p>
                         <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3">
                           {generatedItinerary.travelTips.map((tip, i) => (
                             <li key={i}>{tip}</li>
@@ -2213,7 +2213,7 @@ export default function App() {
                         </div>
                         <div className="border-t border-dashed border-slate-200 pt-2 flex justify-between">
                           <span className="font-bold text-slate-700">Total Est Expense:</span>
-                          <span className="font-bold text-[#2A9D8F]">{generatedItinerary.budgetBreakdown.totalEstimated}</span>
+                          <span className="font-bold text-[#0097A7]">{generatedItinerary.budgetBreakdown.totalEstimated}</span>
                         </div>
                       </div>
                     </div>
@@ -2234,8 +2234,8 @@ export default function App() {
         {activeTab === "gallery" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LANDSCAPE CAPTURES</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Immersive Photography</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LANDSCAPE CAPTURES</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Immersive Photography</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 Admire the breathtaking cascades, mystical spring channels, and community festivities captured by local adventurers.
               </p>
@@ -2249,7 +2249,7 @@ export default function App() {
                   onClick={() => setGalleryFilter(cat)}
                   className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
                     galleryFilter === cat
-                      ? "bg-[#0077B6] text-white shadow"
+                      ? "bg-[#0047A1] text-white shadow"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
@@ -2286,7 +2286,7 @@ export default function App() {
 
             {/* Blog Highlight Stories */}
             <div className="mt-20 border-t border-gray-100 pt-16">
-              <h3 className="text-2xl font-serif text-[#1D3557] font-bold text-center mb-10">Department Travel Stories</h3>
+              <h3 className="text-2xl font-serif text-[#0047A1] font-bold text-center mb-10">Department Travel Stories</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {BLOG_POSTS.map((post) => (
                   <div
@@ -2298,17 +2298,17 @@ export default function App() {
                     </div>
                     <div className="p-6 flex flex-col justify-between">
                       <div>
-                        <span className="text-[9px] px-2.5 py-1 bg-[#F8F6F2] rounded-full text-[#0077B6] font-bold uppercase border">
+                        <span className="text-[9px] px-2.5 py-1 bg-[#F8F6F2] rounded-full text-[#0047A1] font-bold uppercase border">
                           {post.category}
                         </span>
-                        <h4 className="font-bold font-serif text-base text-[#1D3557] mt-2 line-clamp-2">{post.title}</h4>
+                        <h4 className="font-bold font-serif text-base text-[#0047A1] mt-2 line-clamp-2">{post.title}</h4>
                         <p className="text-slate-500 text-xs mt-1 line-clamp-2">{post.excerpt}</p>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-slate-400 font-semibold pt-4 border-t border-slate-50 mt-4">
                         <span>{post.date}</span>
                         <button
                           onClick={() => setSelectedBlog(post)}
-                          className="text-[#0077B6] hover:underline"
+                          className="text-[#0047A1] hover:underline"
                         >
                           Read Story
                         </button>
@@ -2331,8 +2331,8 @@ export default function App() {
         {activeTab === "directory" && (
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0077B6] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LOCAL RESOURCES</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#1D3557] font-bold">Bislig City Business & Services Directory</h2>
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LOCAL RESOURCES</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Bislig City Business & Services Directory</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 Discover the best local shopping centers, convenience stores, cafes, sports facilities, surf points, and emergency services around Bislig proper.
               </p>
@@ -2348,7 +2348,7 @@ export default function App() {
                   placeholder="Search establishments by name or location..."
                   value={directorySearchQuery}
                   onChange={(e) => setDirectorySearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#0077B6] focus:ring-1 focus:ring-[#0077B6] transition-all bg-[#FAFAFA]"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-all bg-[#FAFAFA]"
                 />
               </div>
 
@@ -2360,8 +2360,8 @@ export default function App() {
                     onClick={() => setSelectedDirectoryCategory(cat)}
                     className={`px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all border ${
                       selectedDirectoryCategory === cat
-                        ? "bg-[#0077B6] border-[#0077B6] text-white shadow-sm"
-                        : "bg-[#FAFCFC] border-slate-200 text-slate-600 hover:border-[#0077B6] hover:text-[#0077B6]"
+                        ? "bg-[#0047A1] border-[#0047A1] text-white shadow-sm"
+                        : "bg-[#FAFCFC] border-slate-200 text-slate-600 hover:border-[#0047A1] hover:text-[#0047A1]"
                     }`}
                   >
                     {cat}
@@ -2397,7 +2397,7 @@ export default function App() {
                         <span className="text-[10px] text-slate-400 font-semibold">{est.operatingHours}</span>
                       </div>
 
-                      <h3 className="text-lg font-bold font-serif text-[#1D3557] leading-snug line-clamp-1">
+                      <h3 className="text-lg font-bold font-serif text-[#0047A1] leading-snug line-clamp-1">
                         {est.name}
                       </h3>
 
@@ -2413,7 +2413,7 @@ export default function App() {
                       <div className="pt-4 mt-auto">
                         <button
                           onClick={() => setSelectedEstablishment(est)}
-                          className="w-full bg-[#FAFCFC] border border-slate-200 text-[#0077B6] py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-center cursor-pointer hover:bg-[#0077B6] hover:text-white hover:border-[#0077B6] transition-all flex items-center justify-center gap-1.5"
+                          className="w-full bg-[#FAFCFC] border border-slate-200 text-[#0047A1] py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-center cursor-pointer hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all flex items-center justify-center gap-1.5"
                         >
                           <span>View Business Details</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -2435,7 +2435,7 @@ export default function App() {
                     setDirectorySearchQuery("");
                     setSelectedDirectoryCategory("All");
                   }}
-                  className="mt-6 px-5 py-2.5 bg-[#0077B6] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#005f92] transition-all cursor-pointer"
+                  className="mt-6 px-5 py-2.5 bg-[#0047A1] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#005f92] transition-all cursor-pointer"
                 >
                   Clear Filters
                 </button>
@@ -2451,7 +2451,7 @@ export default function App() {
           ================================== */}
       {selectedAttraction && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
-          <div className="bg-[#FAFCFC] text-[#1D3557] w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col relative">
+          <div className="bg-[#FAFCFC] text-[#0047A1] w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col relative">
             {/* STICKY CLOSE BUTTON AT TOP-RIGHT OF MODAL */}
             <button
               onClick={() => setSelectedAttraction(null)}
@@ -2468,10 +2468,10 @@ export default function App() {
                   images={ATTRACTION_PHOTOS[selectedAttraction.id] || [selectedAttraction.image]} 
                   attractionName={selectedAttraction.name}
                 />
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#1D3557]/90 via-[#1D3557]/30 to-transparent pointer-events-none"></div>
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0047A1]/90 via-[#0047A1]/30 to-transparent pointer-events-none"></div>
 
                 <div className="absolute bottom-6 left-6 text-white z-20 pointer-events-none">
-                  <span className="text-[10px] px-2.5 py-1 bg-[#2A9D8F] text-white rounded-full font-bold uppercase shadow-md">
+                  <span className="text-[10px] px-2.5 py-1 bg-[#0097A7] text-white rounded-full font-bold uppercase shadow-md">
                     {selectedAttraction.category}
                   </span>
                   <h2 className="text-2xl md:text-3xl font-serif font-bold mt-2 tracking-tight text-white drop-shadow-md">{selectedAttraction.name}</h2>
@@ -2496,13 +2496,13 @@ export default function App() {
 
                 {/* Weather-Specific Dynamic Travel Tip */}
                 {weatherData && (
-                  <div className="p-4 rounded-xl border flex items-start gap-3 bg-gradient-to-r transition-all duration-300 shadow-sm border-[#0077B6]/15 bg-[#0077B6]/5">
+                  <div className="p-4 rounded-xl border flex items-start gap-3 bg-gradient-to-r transition-all duration-300 shadow-sm border-[#0047A1]/15 bg-[#0047A1]/5">
                     <div className="p-2 bg-white rounded-lg shadow-sm text-lg shrink-0 flex items-center justify-center">
                       {getWeatherIcon(weatherData.weatherCode, weatherData.isDay, 20)}
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#0077B6]">Live Weather Advisory</span>
+                        <span className="text-[10px] font-extrabold tracking-wider uppercase text-[#0047A1]">Live Weather Advisory</span>
                         <span className="text-[10px] text-slate-500 font-semibold">• {weatherData.temperature}°C {weatherData.condition}</span>
                       </div>
                       <p className="text-xs text-slate-700 leading-relaxed font-medium">
@@ -2523,7 +2523,7 @@ export default function App() {
 
                 {/* Traveler Advice Checklist */}
                 <div className="bg-[#F8F6F2] p-5 rounded-xl border border-gray-100 space-y-3">
-                  <h5 className="text-[11px] font-bold text-[#2A9D8F] uppercase tracking-wider">Official Visitor Guidelines</h5>
+                  <h5 className="text-[11px] font-bold text-[#0097A7] uppercase tracking-wider">Official Visitor Guidelines</h5>
                   <ul className="text-xs text-slate-600 space-y-2 list-disc pl-4">
                     {selectedAttraction.travelTips.map((tip, idx) => (
                       <li key={idx}>{tip}</li>
@@ -2533,11 +2533,11 @@ export default function App() {
 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
-                    <h5 className="font-bold text-[#1D3557] mb-1">Nearby Dining</h5>
+                    <h5 className="font-bold text-[#0047A1] mb-1">Nearby Dining</h5>
                     <p className="text-slate-500 text-[11px]">{selectedAttraction.nearbyRestaurants.join(", ")}</p>
                   </div>
                   <div>
-                    <h5 className="font-bold text-[#1D3557] mb-1">Accessibility Support</h5>
+                    <h5 className="font-bold text-[#0047A1] mb-1">Accessibility Support</h5>
                     <p className="text-slate-500 text-[11px]">{selectedAttraction.accessibility}</p>
                   </div>
                 </div>
@@ -2548,7 +2548,7 @@ export default function App() {
                     href={selectedAttraction.mapUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex-grow bg-[#0077B6] text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-[#005f92] transition-colors"
+                    className="flex-grow bg-[#0047A1] text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-[#005f92] transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     <span>Open on Google Maps</span>
@@ -2557,7 +2557,7 @@ export default function App() {
                     onClick={() => addToItinerary(selectedAttraction, "attraction")}
                     className={`px-6 py-3 rounded-lg text-xs font-bold uppercase transition-all duration-300 ${
                       addedFeedback[selectedAttraction.id]
-                        ? "bg-[#2A9D8F] text-white scale-105"
+                        ? "bg-[#0097A7] text-white scale-105"
                         : "bg-[#2D9B8B] text-white hover:bg-emerald-700"
                     }`}
                   >
@@ -2573,7 +2573,7 @@ export default function App() {
       {/* ACCOMMODATION DETAILS MODAL */}
       {selectedAccommodation && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-[#FAFCFC] text-[#1D3557] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-[#FAFCFC] text-[#0047A1] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
             <div className="h-52 bg-slate-300 relative">
               <img src={selectedAccommodation.image} alt={selectedAccommodation.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
               <button
@@ -2583,7 +2583,7 @@ export default function App() {
                 <X className="w-4 h-4" />
               </button>
               <div className="absolute bottom-4 left-4 text-white">
-                <span className="text-[9px] px-2 py-0.5 bg-[#2A9D8F] text-white rounded font-bold uppercase">{selectedAccommodation.category}</span>
+                <span className="text-[9px] px-2 py-0.5 bg-[#0097A7] text-white rounded font-bold uppercase">{selectedAccommodation.category}</span>
                 <h3 className="text-xl font-bold font-serif mt-1">{selectedAccommodation.name}</h3>
               </div>
             </div>
@@ -2593,7 +2593,7 @@ export default function App() {
               <div className="text-xs space-y-1.5 border-t border-b border-slate-100 py-3">
                 <p>💸 Price Range: <strong className="text-emerald-600">{selectedAccommodation.priceRange}</strong></p>
                 <p>📞 Phone/Contact: <strong>{selectedAccommodation.contact}</strong></p>
-                <p>🌐 Site Links: <a href={selectedAccommodation.website} target="_blank" rel="noreferrer" className="text-[#0077B6] underline">{selectedAccommodation.website}</a></p>
+                <p>🌐 Site Links: <a href={selectedAccommodation.website} target="_blank" rel="noreferrer" className="text-[#0047A1] underline">{selectedAccommodation.website}</a></p>
                 <p>⏰ Check-In/Hours: <strong>{selectedAccommodation.operatingHours}</strong></p>
               </div>
 
@@ -2611,7 +2611,7 @@ export default function App() {
                   href={selectedAccommodation.mapUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-[#1D3557] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+                  className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
                   <ExternalLink className="w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
@@ -2625,7 +2625,7 @@ export default function App() {
       {/* RESTAURANT DETAILS MODAL */}
       {selectedRestaurant && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-[#FAFCFC] text-[#1D3557] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-[#FAFCFC] text-[#0047A1] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
             <div className="h-52 bg-slate-300 relative">
               <img src={selectedRestaurant.image} alt={selectedRestaurant.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
               <button
@@ -2646,8 +2646,8 @@ export default function App() {
                 <p>💸 Price Class: <strong className="text-slate-700">{selectedRestaurant.priceRange}</strong></p>
                 <p>⏰ Dining Hours: <strong>{selectedRestaurant.operatingHours}</strong></p>
                 <p>📞 Phone Booking: <strong>{selectedRestaurant.contact}</strong></p>
-                <p>🌐 Social Page: <a href={`https://${selectedRestaurant.socialMedia}`} target="_blank" rel="noreferrer" className="text-[#0077B6] underline">{selectedRestaurant.socialMedia}</a></p>
-                <p>💻 Official Website: <a href={selectedRestaurant.website} target="_blank" rel="noreferrer" className="text-[#0077B6] underline hover:text-[#005f92] transition-colors">{selectedRestaurant.website}</a></p>
+                <p>🌐 Social Page: <a href={`https://${selectedRestaurant.socialMedia}`} target="_blank" rel="noreferrer" className="text-[#0047A1] underline">{selectedRestaurant.socialMedia}</a></p>
+                <p>💻 Official Website: <a href={selectedRestaurant.website} target="_blank" rel="noreferrer" className="text-[#0047A1] underline hover:text-[#005f92] transition-colors">{selectedRestaurant.website}</a></p>
               </div>
 
               <div>
@@ -2664,7 +2664,7 @@ export default function App() {
                   href={selectedRestaurant.mapUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-[#1D3557] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+                  className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
                   <ExternalLink className="w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
@@ -2678,7 +2678,7 @@ export default function App() {
       {/* BLOG STORY READING MODAL */}
       {selectedBlog && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-[#FAFCFC] text-[#1D3557] w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+          <div className="bg-[#FAFCFC] text-[#0047A1] w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div className="h-64 bg-slate-300 relative shrink-0">
               <img src={selectedBlog.image} alt={selectedBlog.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
               <button
@@ -2688,7 +2688,7 @@ export default function App() {
                 <X className="w-4 h-4" />
               </button>
               <div className="absolute bottom-4 left-4 text-white">
-                <span className="text-[9px] px-2 py-0.5 bg-[#0077B6] text-white rounded font-bold uppercase">{selectedBlog.category}</span>
+                <span className="text-[9px] px-2 py-0.5 bg-[#0047A1] text-white rounded font-bold uppercase">{selectedBlog.category}</span>
                 <h3 className="text-xl md:text-2xl font-bold font-serif mt-1">{selectedBlog.title}</h3>
               </div>
             </div>
@@ -2706,7 +2706,7 @@ export default function App() {
       {/* ESTABLISHMENT DETAILS MODAL */}
       {selectedEstablishment && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-[#FAFCFC] text-[#1D3557] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-[#FAFCFC] text-[#0047A1] w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl flex flex-col">
             <div className="h-52 bg-slate-300 relative shrink-0">
               <img src={selectedEstablishment.image} alt={selectedEstablishment.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
               <button
@@ -2716,7 +2716,7 @@ export default function App() {
                 <X className="w-4 h-4" />
               </button>
               <div className="absolute bottom-4 left-4 text-white drop-shadow-md">
-                <span className="text-[9px] px-2 py-0.5 bg-[#0077B6] text-white rounded font-bold uppercase">{selectedEstablishment.category}</span>
+                <span className="text-[9px] px-2 py-0.5 bg-[#0047A1] text-white rounded font-bold uppercase">{selectedEstablishment.category}</span>
                 <h3 className="text-xl font-bold font-serif mt-1 text-white">{selectedEstablishment.name}</h3>
               </div>
             </div>
@@ -2729,29 +2729,29 @@ export default function App() {
 
               <div className="text-xs space-y-2.5 border-t border-b border-slate-100 py-4 text-slate-600">
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#0077B6] shrink-0 mt-0.5" />
+                  <MapPin className="w-3.5 h-3.5 text-[#0047A1] shrink-0 mt-0.5" />
                   <p>📍 Location: <strong className="text-slate-700">{selectedEstablishment.location}</strong></p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-[#0077B6] shrink-0" />
+                  <Clock className="w-3.5 h-3.5 text-[#0047A1] shrink-0" />
                   <p>⏰ Hours: <strong className="text-slate-700">{selectedEstablishment.operatingHours}</strong></p>
                 </div>
                 {selectedEstablishment.contact !== "N/A" && selectedEstablishment.contact !== "N/A (Public Market Authority)" && (
                   <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-[#0077B6] shrink-0" />
+                    <Phone className="w-3.5 h-3.5 text-[#0047A1] shrink-0" />
                     <p>📞 Contact: <strong className="text-slate-700">{selectedEstablishment.contact}</strong></p>
                   </div>
                 )}
                 {selectedEstablishment.socialMedia !== "N/A" && (
                   <div className="flex items-center gap-2">
-                    <Facebook className="w-3.5 h-3.5 text-[#0077B6] shrink-0" />
-                    <p>🌐 Socials: <a href={`https://${selectedEstablishment.socialMedia}`} target="_blank" rel="noreferrer" className="text-[#0077B6] underline hover:text-[#005f92] transition-colors">{selectedEstablishment.socialMedia}</a></p>
+                    <Facebook className="w-3.5 h-3.5 text-[#0047A1] shrink-0" />
+                    <p>🌐 Socials: <a href={`https://${selectedEstablishment.socialMedia}`} target="_blank" rel="noreferrer" className="text-[#0047A1] underline hover:text-[#005f92] transition-colors">{selectedEstablishment.socialMedia}</a></p>
                   </div>
                 )}
                 {selectedEstablishment.website && (
                   <div className="flex items-center gap-2">
-                    <Globe className="w-3.5 h-3.5 text-[#0077B6] shrink-0" />
-                    <p>💻 Website: <a href={selectedEstablishment.website} target="_blank" rel="noreferrer" className="text-[#0077B6] underline hover:text-[#005f92] transition-colors">{selectedEstablishment.website}</a></p>
+                    <Globe className="w-3.5 h-3.5 text-[#0047A1] shrink-0" />
+                    <p>💻 Website: <a href={selectedEstablishment.website} target="_blank" rel="noreferrer" className="text-[#0047A1] underline hover:text-[#005f92] transition-colors">{selectedEstablishment.website}</a></p>
                   </div>
                 )}
               </div>
@@ -2761,7 +2761,7 @@ export default function App() {
                   href={selectedEstablishment.mapUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full bg-[#1D3557] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+                  className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
                   <ExternalLink className="w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
@@ -2789,7 +2789,7 @@ export default function App() {
       {/* ==================================
           BOTTOM UTILITY FOOTER
           ================================== */}
-      <footer className="bg-[#1D3557] px-4 md:px-10 py-10 text-white border-t border-white/10 mt-auto">
+      <footer className="bg-[#0047A1] px-4 md:px-10 py-10 text-white border-t border-white/10 mt-auto">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           
           <div className="space-y-4">
@@ -2804,7 +2804,7 @@ export default function App() {
                     <linearGradient id="footer-logo-water" x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="#38BDF8" />
                       <stop offset="50%" stopColor="#0EA5E9" />
-                      <stop offset="100%" stopColor="#1D3557" />
+                      <stop offset="100%" stopColor="#0047A1" />
                     </linearGradient>
                     <linearGradient id="footer-logo-forest" x1="0%" y1="100%" x2="100%" y2="0%">
                       <stop offset="0%" stopColor="#059669" />
@@ -2833,24 +2833,24 @@ export default function App() {
           <div>
             <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Attractions Quick-Links</h5>
             <ul className="text-xs text-slate-300 space-y-2">
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#F4B400] transition-colors">Tinuy-an Falls</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Rivers"); }} className="hover:text-[#F4B400] transition-colors">Enchanted River</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#F4B400] transition-colors">Kawa-kawa sa Awog</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Beaches"); }} className="hover:text-[#F4B400] transition-colors">Hagonoy Island</button></li>
+              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#FB8C00] transition-colors">Tinuy-an Falls</button></li>
+              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Rivers"); }} className="hover:text-[#FB8C00] transition-colors">Enchanted River</button></li>
+              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#FB8C00] transition-colors">Kawa-kawa sa Awog</button></li>
+              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Beaches"); }} className="hover:text-[#FB8C00] transition-colors">Hagonoy Island</button></li>
             </ul>
           </div>
 
           <div>
             <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Useful Guides</h5>
             <ul className="text-xs text-slate-300 space-y-2">
-              <li><button onClick={() => setActiveTab("explore")} className="hover:text-[#F4B400] transition-colors">Culture & Kamayo Tribe</button></li>
-              <li><button onClick={() => setActiveTab("things-to-do")} className="hover:text-[#F4B400] transition-colors">Adventure Trails</button></li>
-              <li><button onClick={() => setActiveTab("hotels")} className="hover:text-[#F4B400] transition-colors">Resort Directory</button></li>
-              <li><button onClick={() => setActiveTab("directory")} className="hover:text-[#F4B400] transition-colors">Local Establishments</button></li>
-              <li><button onClick={() => setActiveTab("map")} className="hover:text-[#F4B400] transition-colors">AI Itinerary Builder</button></li>
-              <li><button onClick={() => setActiveTab("car-rental")} className="hover:text-[#F4B400] transition-colors">Car Rental & Operators</button></li>
-              <li><button onClick={() => setActiveTab("gallery")} className="hover:text-[#F4B400] transition-colors">Photo Gallery</button></li>
-              <li><button onClick={() => setActiveTab("admin")} className="hover:text-[#F4B400] transition-colors text-slate-400 font-semibold">🔒 Admin Portal</button></li>
+              <li><button onClick={() => setActiveTab("explore")} className="hover:text-[#FB8C00] transition-colors">Culture & Kamayo Tribe</button></li>
+              <li><button onClick={() => setActiveTab("things-to-do")} className="hover:text-[#FB8C00] transition-colors">Adventure Trails</button></li>
+              <li><button onClick={() => setActiveTab("hotels")} className="hover:text-[#FB8C00] transition-colors">Resort Directory</button></li>
+              <li><button onClick={() => setActiveTab("directory")} className="hover:text-[#FB8C00] transition-colors">Local Establishments</button></li>
+              <li><button onClick={() => setActiveTab("map")} className="hover:text-[#FB8C00] transition-colors">AI Itinerary Builder</button></li>
+              <li><button onClick={() => setActiveTab("car-rental")} className="hover:text-[#FB8C00] transition-colors">Car Rental & Operators</button></li>
+              <li><button onClick={() => setActiveTab("gallery")} className="hover:text-[#FB8C00] transition-colors">Photo Gallery</button></li>
+              <li><button onClick={() => setActiveTab("admin")} className="hover:text-[#FB8C00] transition-colors text-slate-400 font-semibold">🔒 Admin Portal</button></li>
             </ul>
           </div>
 

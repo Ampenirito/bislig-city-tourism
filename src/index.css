@@ -5,9 +5,9 @@
   --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   
-  --color-primary: #0077B6;
-  --color-secondary: #2A9D8F;
-  --color-accent: #F4B400;
+  --color-primary: #0047A1;
+  --color-secondary: #0097A7;
+  --color-accent: #FB8C00;
   --color-highlight: #48CAE4;
   --color-soft-white: #FAFCFC;
   --color-light-sand: #F8F6F2;
@@ -24,11 +24,11 @@
   background: #F8F6F2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #0077B633;
+  background: #0047A133;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0077B666;
+  background: #0047A166;
 }
 
 /* Glassmorphism utility */
