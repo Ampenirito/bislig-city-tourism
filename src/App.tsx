@@ -765,7 +765,7 @@ export default function App() {
           
           <button
             onClick={() => setActiveTab("map")}
-            className="hidden lg:block bg-[#0047A1] text-white px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-colors"
+            className="hidden lg:block bg-[#0047A1] text-white px-4 py-2 rounded-full font-bold text-xs tracking-wider uppercase shadow-md hover:bg-[#005F92] transition-colors btn-glow"
           >
             PLAN YOUR TRIP
           </button>
@@ -1105,14 +1105,14 @@ export default function App() {
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => setActiveTab("attractions")}
-                    className="bg-[#0047A1] hover:bg-[#005F92] text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all"
+                    className="bg-[#0047A1] hover:bg-[#005F92] text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all btn-glow"
                   >
                     <span>Explore Attractions</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setActiveTab("map")}
-                    className="bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all"
+                    className="bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white px-8 py-3.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all btn-glow"
                   >
                     Plan Your Itinerary
                   </button>
@@ -1256,7 +1256,13 @@ export default function App() {
             </div>
 
             {/* Top Curated Attractions (The Right Panel design from mockup) */}
-            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#F8F6F2]">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-16 px-4 md:px-12 lg:px-20 bg-[#F8F6F2]"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                 
                 {/* Left side: Curated list of required top spots */}
@@ -1356,10 +1362,16 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* Official Bislig Tourism Video Section */}
-            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#F1F5F9]/50 border-y border-slate-100">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-16 px-4 md:px-12 lg:px-20 bg-[#F1F5F9]/50 border-y border-slate-100"
+            >
               <div className="max-w-5xl mx-auto text-center">
                 <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.25em] block mb-2">WATCH & DISCOVER</span>
                 <h3 className="text-3xl md:text-4xl font-serif text-[#0047A1] font-extrabold mb-4">Suruyon Ta! (Let's Explore!)</h3>
@@ -1381,10 +1393,16 @@ export default function App() {
                   </video>
                 </div>
               </div>
-            </section>
+            </motion.section>
 
             {/* Why Visit Bislig (Bento Grid Style) */}
-            <section className="py-20 px-4 md:px-12 lg:px-20 bg-white">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-20 px-4 md:px-12 lg:px-20 bg-white"
+            >
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">EXPLORE MINDANAO</span>
                 <h3 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Why Bislig City Belongs on Your Bucket List</h3>
@@ -1434,10 +1452,16 @@ export default function App() {
                   </p>
                 </div>
               </div>
-            </section>
+            </motion.section>
 
             {/* Event Countdown Banner & Tourism Calendar */}
-            <section className="py-16 px-4 md:px-12 lg:px-20 bg-[#1D3557] text-white">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-16 px-4 md:px-12 lg:px-20 bg-[#1D3557] text-white"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                 
                 {/* Left countdown widget */}
@@ -1493,10 +1517,16 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* Newsletter Subscription */}
-            <section className="py-20 px-4 bg-[#FAFCFC] text-center border-t border-gray-100">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-20 px-4 bg-[#FAFCFC] text-center border-t border-gray-100"
+            >
               <div className="max-w-2xl mx-auto">
                 <span className="text-[#0097A7] text-xs font-bold uppercase tracking-[0.2em] block mb-2">STAY INSPIRED</span>
                 <h3 className="text-2xl md:text-4xl font-serif text-[#0047A1] font-bold">Get Secret Destination Guides</h3>
@@ -1526,7 +1556,7 @@ export default function App() {
                 </form>
                 <p className="text-[10px] text-slate-400 mt-3">We respect your privacy. Unsubscribe any time.</p>
               </div>
-            </section>
+            </motion.section>
 
           </div>
         )}
@@ -1658,7 +1688,7 @@ export default function App() {
                 return (
                   <div
                     key={att.id}
-                    className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group hover:border-[#0047A1] transition-all flex flex-col justify-between"
+                    className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group hover:border-[#0047A1] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
                       <div className="h-52 bg-slate-200 relative overflow-hidden">
@@ -1834,7 +1864,7 @@ export default function App() {
               {ACCOMMODATIONS.map((res) => (
                 <div
                   key={res.id}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#0097A7] transition-all flex flex-col justify-between"
+                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#0097A7] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
                     <div className="h-48 bg-slate-200 relative">
@@ -1909,7 +1939,7 @@ export default function App() {
               {RESTAURANTS.map((rest) => (
                 <div
                   key={rest.id}
-                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#FB8C00] transition-all flex flex-col justify-between"
+                  className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#FB8C00] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
                     <div className="h-48 bg-slate-200 relative">
@@ -2452,7 +2482,7 @@ export default function App() {
                 {filteredEstablishments.map((est) => (
                   <div
                     key={est.id}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:border-slate-200 transition-all flex flex-col"
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:border-slate-200 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col"
                   >
                     <div className="h-48 bg-slate-100 relative overflow-hidden group shrink-0">
                       <img
@@ -2866,9 +2896,9 @@ export default function App() {
           BOTTOM UTILITY FOOTER
           ================================== */}
       <footer className="bg-[#1D3557] px-4 md:px-10 py-10 text-white border-t border-white/10 mt-auto">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
           
-          <div className="space-y-4">
+          <div className="md:col-span-3 space-y-4">
             <div className="flex items-center">
               <div className="w-16 h-16 relative shrink-0">
                 <img src="/assets/images/logo.jpg" className="w-full h-full object-cover rounded-full border border-white/20 shadow-sm bg-white" alt="Bislig City Tourism Logo" />
@@ -2879,41 +2909,127 @@ export default function App() {
             </p>
           </div>
 
-          <div>
-            <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Attractions Quick-Links</h5>
-            <ul className="text-xs text-slate-300 space-y-2">
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#FB8C00] transition-colors">Tinuy-an Falls</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Rivers"); }} className="hover:text-[#FB8C00] transition-colors">Enchanted River</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} className="hover:text-[#FB8C00] transition-colors">Kawa-kawa sa Awog</button></li>
-              <li><button onClick={() => { setActiveTab("attractions"); setAttractionFilter("Beaches"); }} className="hover:text-[#FB8C00] transition-colors">Hagonoy Island</button></li>
+          <div className="md:col-span-2">
+            <h5 className="font-serif font-bold text-lg text-white mb-4">Quick Links</h5>
+            <ul className="text-xs text-slate-300 space-y-2.5">
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} 
+                  className="hover:text-[#FB8C00] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]/60"></span>
+                  <span>Tinuy-an Falls</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("attractions"); setAttractionFilter("Rivers"); }} 
+                  className="hover:text-[#FB8C00] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]/60"></span>
+                  <span>Enchanted River</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("attractions"); setAttractionFilter("Waterfalls"); }} 
+                  className="hover:text-[#FB8C00] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]/60"></span>
+                  <span>Kawa-kawa sa Awog</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { setActiveTab("attractions"); setAttractionFilter("Beaches"); }} 
+                  className="hover:text-[#FB8C00] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FB8C00]/60"></span>
+                  <span>Hagonoy Island</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveTab("admin")} 
+                  className="hover:text-[#FB8C00] text-slate-400 font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500/60"></span>
+                  <span>🔒 Admin Portal</span>
+                </button>
+              </li>
             </ul>
           </div>
 
-          <div>
-            <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Useful Guides</h5>
-            <ul className="text-xs text-slate-300 space-y-2">
-              <li><button onClick={() => setActiveTab("explore")} className="hover:text-[#FB8C00] transition-colors">Culture & Kamayo Tribe</button></li>
-              <li><button onClick={() => setActiveTab("things-to-do")} className="hover:text-[#FB8C00] transition-colors">Adventure Trails</button></li>
-              <li><button onClick={() => setActiveTab("hotels")} className="hover:text-[#FB8C00] transition-colors">Resort Directory</button></li>
-              <li><button onClick={() => setActiveTab("directory")} className="hover:text-[#FB8C00] transition-colors">Local Establishments</button></li>
-              <li><button onClick={() => setActiveTab("map")} className="hover:text-[#FB8C00] transition-colors">AI Itinerary Builder</button></li>
-              <li><button onClick={() => setActiveTab("car-rental")} className="hover:text-[#FB8C00] transition-colors">Car Rental & Operators</button></li>
-              <li><button onClick={() => setActiveTab("gallery")} className="hover:text-[#FB8C00] transition-colors">Photo Gallery</button></li>
-              <li><button onClick={() => setActiveTab("admin")} className="hover:text-[#FB8C00] transition-colors text-slate-400 font-semibold">🔒 Admin Portal</button></li>
-            </ul>
+          <div className="md:col-span-4">
+            <h5 className="font-serif font-bold text-lg text-white mb-4">Tourism Downloads</h5>
+            <div className="space-y-3">
+              <a 
+                href="#" 
+                onClick={(e) => e.preventDefault()} 
+                className="block border border-white/10 rounded-xl p-3 bg-slate-900/35 hover:bg-slate-900/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="space-y-0.5">
+                    <h6 className="font-sans font-bold text-xs text-white group-hover:text-[#FB8C00] transition-colors">Official Travel Guide</h6>
+                    <p className="text-[10px] text-slate-400 font-mono">PDF &bull; 8.4 MB</p>
+                  </div>
+                  <Download className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                </div>
+              </a>
+              <a 
+                href="#" 
+                onClick={(e) => e.preventDefault()} 
+                className="block border border-white/10 rounded-xl p-3 bg-slate-900/35 hover:bg-slate-900/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="space-y-0.5">
+                    <h6 className="font-sans font-bold text-xs text-white group-hover:text-[#FB8C00] transition-colors">Official GIS City Map</h6>
+                    <p className="text-[10px] text-slate-400 font-mono">PDF &bull; 12.1 MB</p>
+                  </div>
+                  <Download className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                </div>
+              </a>
+              <a 
+                href="#" 
+                onClick={(e) => e.preventDefault()} 
+                className="block border border-white/10 rounded-xl p-3 bg-slate-900/35 hover:bg-slate-900/50 transition-colors group cursor-pointer"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="space-y-0.5">
+                    <h6 className="font-sans font-bold text-xs text-white group-hover:text-[#FB8C00] transition-colors">Festival Brochure</h6>
+                    <p className="text-[10px] text-slate-400 font-mono">PDF &bull; 4.2 MB</p>
+                  </div>
+                  <Download className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                </div>
+              </a>
+            </div>
           </div>
 
-          <div>
-            <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Office Coordinates</h5>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              📍 Tourism Building, Baywalk Park, Brgy. Poblacion, Bislig City, Surigao del Sur
-            </p>
-            <p className="text-xs text-slate-300 mt-2">
-              📞 Hotline: <strong>(086) 853-1234</strong>
-            </p>
-            <p className="text-xs text-slate-300">
-              ✉️ Email: <strong>tourism@bislig.gov.ph</strong>
-            </p>
+          <div className="md:col-span-3">
+            <h5 className="font-serif font-bold text-lg text-white mb-4">Emergency Hotlines</h5>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Phone className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                <div>
+                  <h6 className="font-sans font-bold text-xs text-white">Tourism Office</h6>
+                  <p className="text-[11px] text-slate-300 font-mono mt-0.5">+63 (086) 853-6089</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Phone className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <h6 className="font-sans font-bold text-xs text-white">Tourist Police (PNP)</h6>
+                  <p className="text-[11px] text-slate-300 font-mono mt-0.5">+63 998-598-6754</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Phone className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <h6 className="font-sans font-bold text-xs text-white">City Hospital</h6>
+                  <p className="text-[11px] text-slate-300 font-mono mt-0.5">(086) 853-2214</p>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>

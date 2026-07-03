@@ -90,9 +90,24 @@ body.high-contrast button, body.high-contrast a {
   background-color: #000000 !important;
   color: #FFFFFF !important;
 }
-
 /* --- THEME OVERRIDES --- */
 
+/* Default Original Theme (Sets default Ocean Blue #0047A1 elements to #1D3557 Deep Navy) */
+.bg-\[\#0047A1\] {
+  background-color: #1D3557 !important;
+}
+.text-\[\#0047A1\] {
+  color: #1D3557 !important;
+}
+.border-\[\#0047A1\] {
+  border-color: #1D3557 !important;
+}
+.hover\:bg-\[\#005f92\]:hover,
+.hover\:bg-\[\#005F92\]:hover {
+  background-color: #14263f !important; /* Slightly darker navy for hover state */
+}
+
+/* ========================================== */
 /* ==========================================
    1. Theme: Classic Palette (Classic Blue + Emerald Teal + Gold)
    ========================================== */
@@ -797,4 +812,31 @@ body.theme-premium h2.text-2xl.font-serif {
 
 body.theme-premium h2 span.bg-clip-text {
   background-image: linear-gradient(to right, #1873D9, #18B326, #7BCB00, #F7B500, #F68A14, #F7431C) !important;
+}
+
+/* Premium Button Shimmer Sweep Effect */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: 0.85s cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 0;
+}
+.btn-glow:hover::after {
+  left: 125%;
+  opacity: 1;
 }
