@@ -307,22 +307,7 @@ export default function App() {
     }
   }, [textSize]);
 
-  // Dynamically load Kajabi subscription form on home tab mount
-  useEffect(() => {
-    if (activeTab === "home") {
-      const timer = setTimeout(() => {
-        const container = document.getElementById("kajabi-form-container");
-        if (container) {
-          container.innerHTML = ""; // Clear loader spinner
-          const script = document.createElement("script");
-          script.src = "https://desiree-bastiano-3d5b.mykajabi.com/forms/2149631471/embed.js";
-          script.async = true;
-          container.appendChild(script);
-        }
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [activeTab]);
+
 
   // Save favorites to local storage
   const toggleFavorite = (id: string) => {
@@ -1551,15 +1536,121 @@ export default function App() {
                   Subscribe to receive quarterly curated travel schedules, newly discovered waterfalls, local discount packages, and cultural celebration dates.
                 </p>
 
-                {/* Kajabi Embedded Form Container */}
-                <div 
-                  className="mt-8 max-w-md mx-auto bg-white p-6 rounded-2xl border border-slate-100 shadow-sm transition-all hover:shadow-md min-h-[150px] flex items-center justify-center" 
-                  id="kajabi-form-container"
-                >
-                  <div className="flex flex-col items-center justify-center space-y-2">
-                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#0047A1] border-t-transparent" />
-                    <span className="text-xs text-slate-400">Loading subscription form...</span>
-                  </div>
+                {/* Kajabi Embedded Form Frame */}
+                <div className="mt-8 max-w-md mx-auto bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                  <iframe 
+                    srcDoc="
+                      <!DOCTYPE html>
+                      <html>
+                        <head>
+                          <meta charset='utf-8'>
+                          <link href='//fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet' type='text/css'>
+                          <style>
+                            body { 
+                              margin: 0; 
+                              padding: 0; 
+                              background: transparent; 
+                              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                            }
+                            #kajabi-form {
+                              max-width: 100%;
+                              margin: 0 auto;
+                            }
+                            .kajabi-form__content {
+                              background: transparent !important;
+                              border: none !important;
+                              padding: 0 !important;
+                              box-shadow: none !important;
+                            }
+                            .kajabi-form__title {
+                              color: #0047A1 !important;
+                              font-family: serif !important;
+                              font-size: 22px !important;
+                              font-weight: 800 !important;
+                              margin-bottom: 20px !important;
+                              text-align: center;
+                              letter-spacing: -0.02em;
+                            }
+                            .kajabi-form__form-item input {
+                              width: 100%;
+                              padding: 12px 16px !important;
+                              border-radius: 12px !important;
+                              border: 1px solid #E2E8F0 !important;
+                              font-size: 13px !important;
+                              box-sizing: border-box !important;
+                              margin-bottom: 12px !important;
+                              outline: none !important;
+                              transition: all 0.2s !important;
+                              background-color: #FAFCFC !important;
+                            }
+                            .kajabi-form__form-item input:focus {
+                              border-color: #0047A1 !important;
+                              box-shadow: 0 0 0 3px rgba(0, 71, 161, 0.15) !important;
+                              background-color: #FFFFFF !important;
+                            }
+                            .radio-buttons-field {
+                              margin: 16px 0 !important;
+                              text-align: left !important;
+                            }
+                            .radio-buttons-field > label {
+                              font-size: 12px !important;
+                              color: #475569 !important;
+                              font-weight: 700 !important;
+                              display: block !important;
+                              margin-bottom: 8px !important;
+                            }
+                            .radio {
+                              margin-bottom: 6px !important;
+                              display: flex !important;
+                              align-items: center !important;
+                              font-size: 13px !important;
+                              color: #334155 !important;
+                              cursor: pointer !important;
+                            }
+                            .radio input {
+                              margin-right: 8px !important;
+                              accent-color: #0047A1 !important;
+                              width: 16px !important;
+                              height: 16px !important;
+                              cursor: pointer !important;
+                            }
+                            .kajabi-form__btn {
+                              background-color: #0047A1 !important;
+                              color: white !important;
+                              border: none !important;
+                              padding: 12px 24px !important;
+                              font-size: 13px !important;
+                              font-weight: bold !important;
+                              text-transform: uppercase !important;
+                              letter-spacing: 0.05em !important;
+                              border-radius: 9999px !important;
+                              cursor: pointer !important;
+                              width: 100% !important;
+                              transition: all 0.2s !important;
+                              box-shadow: 0 4px 6px -1px rgba(0, 71, 161, 0.2) !important;
+                            }
+                            .kajabi-form__btn:hover {
+                              background-color: #003680 !important;
+                              box-shadow: 0 6px 12px -2px rgba(0, 71, 161, 0.3) !important;
+                              transform: translateY(-1px);
+                            }
+                            label[for='form_submission_name'], 
+                            label[for='form_submission_custom_3'], 
+                            label[for='form_submission_email'], 
+                            label[for='form_submission_phone_number'],
+                            label[for='form_submission_custom_5'] {
+                              display: none !important;
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          <script src='https://desiree-bastiano-3d5b.mykajabi.com/forms/2149631471/embed.js'></script>
+                        </body>
+                      </html>
+                    "
+                    className="w-full min-h-[580px] border-none overflow-hidden"
+                    title="Kajabi Subscription Form"
+                  />
                 </div>
                 <p className="text-[10px] text-slate-400 mt-3">We respect your privacy. Unsubscribe any time.</p>
               </div>
