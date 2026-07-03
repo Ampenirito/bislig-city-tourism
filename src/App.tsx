@@ -1537,7 +1537,7 @@ export default function App() {
                 </p>
 
                 {/* Kajabi Embedded Form Frame */}
-                <div className="mt-8 max-w-md mx-auto bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                <div className="mt-8 max-w-xl mx-auto bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
                   <iframe 
                     srcDoc="
                       <!DOCTYPE html>
@@ -1546,11 +1546,12 @@ export default function App() {
                           <meta charset='utf-8'>
                           <link href='//fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' rel='stylesheet' type='text/css'>
                           <style>
-                            body { 
+                            html, body { 
                               margin: 0; 
                               padding: 0; 
                               background: transparent; 
                               font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                              overflow: hidden;
                             }
                             #kajabi-form {
                               max-width: 100%;
@@ -1648,7 +1649,8 @@ export default function App() {
                         </body>
                       </html>
                     "
-                    className="w-full min-h-[580px] border-none overflow-hidden"
+                    className="w-full min-h-[680px] border-none overflow-hidden"
+                    scrolling="no"
                     title="Kajabi Subscription Form"
                   />
                 </div>
