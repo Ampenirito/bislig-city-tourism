@@ -334,11 +334,16 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [showNotifBar, setShowNotifBar] = useState<boolean>(true);
   const [showLangMenu, setShowLangMenu] = useState<boolean>(false);
-  const [activeLang, setActiveLang] = useState<string>("en");
+  
+  // Read active language from Google Translate cookie on load
+  const [activeLang, setActiveLang] = useState<string>(() => {
+    const match = document.cookie.match(/googtrans=\/en\/([^;]+)/);
+    return match ? match[1] : "en";
+  });
 
   const LANGUAGES = [
     { code: "en",    flag: "🇺🇸", label: "English"    },
-    { code: "fil",   flag: "🇵🇭", label: "Filipino"   },
+    { code: "tl",    flag: "🇵🇭", label: "Filipino"   }, // 'tl' for Google Translate Tagalog/Filipino
     { code: "zh-CN", flag: "🇨🇳", label: "中文"        },
     { code: "ja",    flag: "🇯🇵", label: "日本語"      },
     { code: "ko",    flag: "🇰🇷", label: "한국어"      },
@@ -350,18 +355,29 @@ export default function App() {
   const changeLang = (code: string) => {
     setActiveLang(code);
     setShowLangMenu(false);
-    if (code === "en") {
-      // Reset to English — remove Google Translate cookie and reload
-      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
-      window.location.reload();
-      return;
+    
+    // Clear existing translation cookies
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
+    
+    const hostParts = window.location.hostname.split('.');
+    if (hostParts.length > 2) {
+      const apexDomain = hostParts.slice(-2).join('.');
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + apexDomain;
     }
-    const select = document.querySelector<HTMLSelectElement>(".goog-te-combo");
-    if (select) {
-      select.value = code;
-      select.dispatchEvent(new Event("change"));
+
+    if (code !== "en") {
+      // Set new translation cookie
+      document.cookie = "googtrans=/en/" + code + "; path=/;";
+      document.cookie = "googtrans=/en/" + code + "; path=/; domain=" + window.location.hostname;
+      if (hostParts.length > 2) {
+        const apexDomain = hostParts.slice(-2).join('.');
+        document.cookie = "googtrans=/en/" + code + "; path=/; domain=." + apexDomain;
+      }
     }
+    
+    // Page reload ensures translation triggers cleanly across all components
+    window.location.reload();
   };
 
   const currentLang = LANGUAGES.find((l) => l.code === activeLang) ?? LANGUAGES[0];
@@ -997,37 +1013,34 @@ export default function App() {
           <div className="relative">
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-700 border border-slate-200"
-              title="Select Language"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-all border border-slate-200/80 shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+              title={`Active Language: ${currentLang.label}`}
             >
-              <span className="text-base leading-none">{currentLang.flag}</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:block">{currentLang.code === "en" ? "EN" : currentLang.code === "zh-CN" ? "ZH" : currentLang.code.toUpperCase()}</span>
-              <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform duration-200 ${showLangMenu ? "rotate-180" : ""}`} />
+              <span className="text-lg leading-none">{currentLang.flag}</span>
             </button>
 
-            {/* Dropdown */}
+            {/* Dropdown Grid */}
             {showLangMenu && (
-              <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[80] animate-fadeIn">
-                <div className="px-3 pt-3 pb-1">
+              <div className="absolute right-0 top-full mt-2 w-44 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-3 z-[80] animate-fadeIn">
+                <div className="text-center mb-2">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Select Language</p>
                 </div>
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => changeLang(lang.code)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                      activeLang === lang.code
-                        ? "bg-[#0047A1]/8 text-[#0047A1]"
-                        : "text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span className="text-xl leading-none">{lang.flag}</span>
-                    <span className="text-xs font-semibold">{lang.label}</span>
-                    {activeLang === lang.code && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#0047A1]" />
-                    )}
-                  </button>
-                ))}
+                <div className="grid grid-cols-4 gap-2">
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => changeLang(lang.code)}
+                      className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all hover:scale-110 active:scale-90 cursor-pointer ${
+                        activeLang === lang.code
+                          ? "bg-[#0047A1]/10 ring-2 ring-[#0047A1]"
+                          : "hover:bg-slate-100"
+                      }`}
+                      title={lang.label}
+                    >
+                      <span className="text-xl leading-none">{lang.flag}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -1186,14 +1199,14 @@ export default function App() {
                   <button
                     key={lang.code}
                     onClick={() => { changeLang(lang.code); setIsMobileMenuOpen(false); }}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+                    className={`flex flex-col items-center justify-center p-2.5 rounded-xl transition-all cursor-pointer ${
                       activeLang === lang.code
-                        ? "bg-[#0047A1]/10 ring-1 ring-[#0047A1]/30"
+                        ? "bg-[#0047A1]/10 ring-2 ring-[#0047A1]"
                         : "bg-slate-50 hover:bg-slate-100"
                     }`}
+                    title={lang.label}
                   >
-                    <span className="text-2xl">{lang.flag}</span>
-                    <span className="text-[9px] font-bold text-slate-600 truncate w-full text-center">{lang.label}</span>
+                    <span className="text-2xl leading-none">{lang.flag}</span>
                   </button>
                 ))}
               </div>
