@@ -49,7 +49,8 @@ import {
   Menu,
   Star,
   Facebook,
-  Mail
+  Mail,
+  ChevronDown
 } from "lucide-react";
 
 import {
@@ -332,6 +333,38 @@ export default function App() {
   const [selectedItineraryDay, setSelectedItineraryDay] = useState<number>(1);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [showNotifBar, setShowNotifBar] = useState<boolean>(true);
+  const [showLangMenu, setShowLangMenu] = useState<boolean>(false);
+  const [activeLang, setActiveLang] = useState<string>("en");
+
+  const LANGUAGES = [
+    { code: "en",    flag: "🇺🇸", label: "English"    },
+    { code: "fil",   flag: "🇵🇭", label: "Filipino"   },
+    { code: "zh-CN", flag: "🇨🇳", label: "中文"        },
+    { code: "ja",    flag: "🇯🇵", label: "日本語"      },
+    { code: "ko",    flag: "🇰🇷", label: "한국어"      },
+    { code: "de",    flag: "🇩🇪", label: "Deutsch"    },
+    { code: "fr",    flag: "🇫🇷", label: "Français"   },
+    { code: "es",    flag: "🇪🇸", label: "Español"    },
+  ];
+
+  const changeLang = (code: string) => {
+    setActiveLang(code);
+    setShowLangMenu(false);
+    if (code === "en") {
+      // Reset to English — remove Google Translate cookie and reload
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
+      window.location.reload();
+      return;
+    }
+    const select = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+    if (select) {
+      select.value = code;
+      select.dispatchEvent(new Event("change"));
+    }
+  };
+
+  const currentLang = LANGUAGES.find((l) => l.code === activeLang) ?? LANGUAGES[0];
 
   // AI Planner State
   const [aiDays, setAiDays] = useState<number>(3);
@@ -958,7 +991,46 @@ export default function App() {
         </div>
 
         {/* Right CTA */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+
+          {/* Language Selector */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-slate-700 border border-slate-200"
+              title="Select Language"
+            >
+              <span className="text-base leading-none">{currentLang.flag}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:block">{currentLang.code === "en" ? "EN" : currentLang.code === "zh-CN" ? "ZH" : currentLang.code.toUpperCase()}</span>
+              <ChevronDown className={`w-3 h-3 text-slate-500 transition-transform duration-200 ${showLangMenu ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Dropdown */}
+            {showLangMenu && (
+              <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[80] animate-fadeIn">
+                <div className="px-3 pt-3 pb-1">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Select Language</p>
+                </div>
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLang(lang.code)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
+                      activeLang === lang.code
+                        ? "bg-[#0047A1]/8 text-[#0047A1]"
+                        : "text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <span className="text-xl leading-none">{lang.flag}</span>
+                    <span className="text-xs font-semibold">{lang.label}</span>
+                    {activeLang === lang.code && (
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#0047A1]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setShowAccessibilityMenu(!showAccessibilityMenu)}
             className="p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors relative"
@@ -986,6 +1058,9 @@ export default function App() {
           </button>
         </div>
       </nav>
+
+      {/* Hidden Google Translate element — powers language switching */}
+      <div id="google_translate_element" className="hidden" aria-hidden="true" />
 
       {/* Mobile Navigation Dropdown */}
       {isMobileMenuOpen && (
@@ -1103,7 +1178,28 @@ export default function App() {
             </button>
 
             
+            {/* Language Selector — Mobile */}
             <div className="pt-4 border-t border-gray-100 mt-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 px-1">🌐 Select Language</p>
+              <div className="grid grid-cols-4 gap-2">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => { changeLang(lang.code); setIsMobileMenuOpen(false); }}
+                    className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+                      activeLang === lang.code
+                        ? "bg-[#0047A1]/10 ring-1 ring-[#0047A1]/30"
+                        : "bg-slate-50 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span className="text-2xl">{lang.flag}</span>
+                    <span className="text-[9px] font-bold text-slate-600 truncate w-full text-center">{lang.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-gray-100">
               <button
                 onClick={() => {
                   setActiveTab("map");

@@ -832,3 +832,32 @@ body.theme-premium h2 span.bg-clip-text {
   60%  { transform: translateX(200%); }
   100% { transform: translateX(200%); }
 }
+
+/* Hide Google Translate original banners and top widget space */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+/* Hide standard Google Translate widget elements */
+.skiptranslate iframe {
+  display: none !important;
+}
+.goog-tooltip {
+  display: none !important;
+}
+.goog-tooltip:hover {
+  display: none !important;
+}
+#google_translate_element {
+  display: none !important;
+}
+
