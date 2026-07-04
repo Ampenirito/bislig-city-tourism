@@ -863,7 +863,7 @@ export const ESTABLISHMENTS: Establishment[] = [
     name: "Ocean View Park Restaurant & Hill",
     description: "A scenic hilltop park with restaurant offering stunning bird's-eye views of Bislig Bay and paper mill towers.",
     longDescription: "Ocean View Park is a celebrated recreational attraction and viewpoint in Bislig. Situated atop a lush hill, visitors climb 100+ steps to be rewarded with panoramic vistas of the Bislig bayfront and the city landscape. Its on-site restaurant serves mouthwatering local Kamayo seafood and native drinks, making it a spectacular sunset dining destination.",
-    category: "Churches & Landmarks",
+    category: "Attractions",
     image: "/assets/images/Ocean View Park.jpg",
     location: "Brgy. Cumawas, Bislig City",
     contact: "+63 86 853 4400",

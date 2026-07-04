@@ -472,11 +472,10 @@ export default function App() {
       const matchesCategory =
         selectedDirectoryCategory === "All" || 
         est.category === selectedDirectoryCategory ||
-        // Ocean View Park cross-categorization (Dining & Cafes, Attractions, Landmarks)
+        // Ocean View Park cross-categorization (Dining & Cafes, Attractions)
         (est.name.toLowerCase().includes("ocean view park") && 
           (selectedDirectoryCategory === "Dining & Cafes" || 
-           selectedDirectoryCategory === "Attractions" || 
-           selectedDirectoryCategory === "Churches & Landmarks"));
+           selectedDirectoryCategory === "Attractions"));
       const matchesSearch =
         est.name.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
         est.location.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
@@ -913,8 +912,7 @@ export default function App() {
   const allAttractionsPageItems = useMemo(() => {
     const items = [...ATTRACTIONS];
     const dirAttractions = ESTABLISHMENTS.filter((e) => 
-      e.category === "Churches & Landmarks" || 
-      e.id === "ace-pickle-yard" || 
+      e.id === "ocean-view-park-directory" || 
       e.id === "lawigan-surf-point"
     );
     dirAttractions.forEach((da) => {
