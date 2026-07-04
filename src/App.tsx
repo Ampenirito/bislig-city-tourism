@@ -685,7 +685,18 @@ export default function App() {
       }
 
       if (itinerary.budgetBreakdown) {
-        checkPageBreak(45);
+        const breakdown = itinerary.budgetBreakdown;
+        
+        // Build items list
+        const budgetItems = [
+          { label: "Accommodation", value: breakdown.accommodation },
+          { label: "Food & Dining", value: breakdown.food },
+          { label: "Tours & Permits", value: breakdown.toursAndEntranceFees },
+          { label: "Transportation", value: breakdown.transportation }
+        ];
+
+        // Check page break dynamically based on maximum expected rows
+        checkPageBreak(55);
         y += 6;
 
         doc.setDrawColor(220, 225, 230);
@@ -699,21 +710,23 @@ export default function App() {
         doc.text("ESTIMATED BUDGET SUMMARY", margin, y);
         y += 7;
 
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9.5);
-        doc.setTextColor(80, 85, 95);
+        // Render each budget item vertically with label and description to prevent overlapping
+        budgetItems.forEach((item) => {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          doc.setTextColor(29, 53, 87);
+          doc.text(`${item.label}:`, margin, y);
 
-        const breakdown = itinerary.budgetBreakdown;
-        const col1X = margin;
-        const col2X = margin + (contentWidth / 2);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(80, 85, 95);
+          // Wrap descriptions dynamically to fit within page margins
+          const wrappedValue = doc.splitTextToSize(item.value, contentWidth - 42);
+          doc.text(wrappedValue, margin + 40, y);
+          
+          y += wrappedValue.length * 4.5 + 1.5;
+        });
 
-        doc.text(`Accommodation: ${breakdown.accommodation}`, col1X, y);
-        doc.text(`Food & Dining: ${breakdown.food}`, col2X, y);
-        y += 5.5;
-
-        doc.text(`Tours & Permits: ${breakdown.toursAndEntranceFees}`, col1X, y);
-        doc.text(`Transportation: ${breakdown.transportation}`, col2X, y);
-        y += 8;
+        y += 3;
 
         doc.setDrawColor(230, 235, 240);
         doc.setFillColor(245, 248, 250);
@@ -721,13 +734,14 @@ export default function App() {
 
         doc.setTextColor(29, 53, 87);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
+        doc.setFontSize(10.5);
         doc.text("Total Estimated Expenses (PHP)", margin + 4, y + 6.5);
 
+        // Right-align total cost value to avoid right-side clipping
         doc.setTextColor(42, 157, 143);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text(breakdown.totalEstimated, pageWidth - margin - 35, y + 6.5);
+        doc.setFontSize(11.5);
+        doc.text(breakdown.totalEstimated, pageWidth - margin - 4, y + 6.5, { align: "right" });
       }
 
       const totalPages = doc.internal.pages.length - 1;
