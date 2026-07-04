@@ -48,7 +48,7 @@ export default function AiChatbot() {
     {
       id: "initial",
       sender: "bot",
-      text: "Ayu-ayu! welcome to Bislig City Tourism! 🌴 I am your **Kamayo AI Concierge**.\n\nI have complete local knowledge of our pristine waterfalls, deep sapphire spring rivers, beach resorts, dining gems, and Kamayo heritage.\n\nHow can I help you plan your dream adventure today? Or select one of the quick tourism guide playbooks below!",
+      text: "Ayu-ayu! Welcome to Bislig City Tourism! 🌴 I'm Romeo, here to help you discover the best of Bislig.\n\nI have complete local knowledge of our pristine waterfalls, deep sapphire spring rivers, beach resorts, dining gems, and Kamayo heritage.\n\nHow can I help you plan your dream adventure today? Or select one of the quick tourism guide playbooks below!",
       timestamp: new Date()
     }
   ]);
@@ -121,7 +121,7 @@ export default function AiChatbot() {
       {
         id: "initial",
         sender: "bot",
-        text: "Ayu-ayu! welcome to Bislig City Tourism! 🌴 I am your **Kamayo AI Concierge**.\n\nHow can I help you plan your dream adventure today? Choose a playbook below to start!",
+        text: "Ayu-ayu! Welcome to Bislig City Tourism! 🌴 I'm Romeo, here to help you discover the best of Bislig.\n\nHow can I help you plan your dream adventure today? Choose a playbook below to start!",
         timestamp: new Date()
       }
     ]);
@@ -216,7 +216,7 @@ export default function AiChatbot() {
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0047A1]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold tracking-wide font-serif">Kamayo AI Concierge</h3>
+                  <h3 className="text-sm font-bold tracking-wide font-serif">Romeo</h3>
                   <p className="text-[10px] text-[#A5F3FC] font-semibold uppercase tracking-widest flex items-center gap-1">
                     <span>● Online</span>
                     <span>•</span>

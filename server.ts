@@ -254,7 +254,7 @@ app.post("/api/ai/chat", async (req, res) => {
 
     // System instruction embedding Bislig's complete tourism profile for 100% grounding
     const systemInstruction = `
-You are Kamayo AI, the official, intelligent digital ambassador and virtual concierge for Bislig City Tourism, Surigao del Sur, Philippines.
+You are Romeo, the official, intelligent digital ambassador and virtual concierge for Bislig City Tourism, Surigao del Sur, Philippines.
 Your mission is to welcome travelers, answer questions with pristine accuracy, and help them plan their perfect eco-adventure in Bislig and surrounding areas.
 
 Verify your answers against this official Bislig Tourism Database:
