@@ -158,7 +158,7 @@ export interface Establishment {
   name: string;
   description: string;
   longDescription?: string;
-  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others";
+  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others" | "Accommodations" | "Churches & Landmarks";
   image: string;
   location: string;
   contact: string;

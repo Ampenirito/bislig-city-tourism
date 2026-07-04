@@ -334,6 +334,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [showNotifBar, setShowNotifBar] = useState<boolean>(true);
   const [showLangMenu, setShowLangMenu] = useState<boolean>(false);
+  const [showDirectoryDropdown, setShowDirectoryDropdown] = useState<boolean>(false);
   
   // Read active language from Google Translate cookie on load
   const [activeLang, setActiveLang] = useState<string>(() => {
@@ -987,7 +988,7 @@ export default function App() {
               activeTab === "hotels" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
-            Resorts
+            Accommodations
           </button>
           <button
             onClick={() => setActiveTab("restaurants")}
@@ -997,14 +998,62 @@ export default function App() {
           >
             Dining
           </button>
-          <button
-            onClick={() => setActiveTab("directory")}
-            className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "directory" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
-            }`}
+          {/* Dropdown Directory Tab */}
+          <div
+            className="relative"
+            onMouseEnter={() => setShowDirectoryDropdown(true)}
+            onMouseLeave={() => setShowDirectoryDropdown(false)}
           >
-            Directory
-          </button>
+            <button
+              onClick={() => {
+                setActiveTab("directory");
+                setSelectedDirectoryCategory("All");
+              }}
+              className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all flex items-center gap-1 ${
+                activeTab === "directory" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
+              }`}
+            >
+              <span>Directory</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {showDirectoryDropdown && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-52 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-2.5 z-[80] animate-fadeIn">
+                <div className="px-2.5 py-1.5 border-b border-slate-100 mb-1">
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#0047A1]">Categories</p>
+                </div>
+                {[
+                  { label: "All Directory", value: "All" },
+                  { label: "Accommodations", value: "Accommodations" },
+                  { label: "Dining & Cafes", value: "Dining & Cafes" },
+                  { label: "Shops & Malls", value: "Shops & Malls" },
+                  { label: "Sports & Recreation", value: "Sports & Recreation" },
+                  { label: "Churches & Landmarks", value: "Churches & Landmarks" },
+                  { label: "Surfing & Beaches", value: "Surfing & Beaches" },
+                  { label: "Services & Others", value: "Services & Others" }
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => {
+                      setActiveTab("directory");
+                      setSelectedDirectoryCategory(item.value);
+                      setShowDirectoryDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-between ${
+                      selectedDirectoryCategory === item.value && activeTab === "directory"
+                        ? "bg-[#0047A1]/10 text-[#0047A1]"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-[#0047A1]"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {selectedDirectoryCategory === item.value && activeTab === "directory" && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#0047A1]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setActiveTab("car-rental")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
@@ -1159,7 +1208,7 @@ export default function App() {
                 activeTab === "hotels" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Resorts
+              Accommodations
             </button>
             <button
               onClick={() => {
@@ -1175,6 +1224,7 @@ export default function App() {
             <button
               onClick={() => {
                 setActiveTab("directory");
+                setSelectedDirectoryCategory("All");
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
@@ -1183,6 +1233,36 @@ export default function App() {
             >
               Directory
             </button>
+            
+            {activeTab === "directory" && (
+              <div className="pl-6 pr-2 py-1 space-y-1.5 flex flex-col border-l border-slate-100 ml-4 animate-fadeIn">
+                {[
+                  { label: "All Directory", value: "All" },
+                  { label: "Accommodations", value: "Accommodations" },
+                  { label: "Dining & Cafes", value: "Dining & Cafes" },
+                  { label: "Shops & Malls", value: "Shops & Malls" },
+                  { label: "Sports & Recreation", value: "Sports & Recreation" },
+                  { label: "Churches & Landmarks", value: "Churches & Landmarks" },
+                  { label: "Surfing & Beaches", value: "Surfing & Beaches" },
+                  { label: "Services & Others", value: "Services & Others" }
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    onClick={() => {
+                      setSelectedDirectoryCategory(item.value);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`text-xs font-semibold text-left py-1.5 px-3 rounded-lg transition-all ${
+                      selectedDirectoryCategory === item.value
+                        ? "bg-[#0047A1]/10 text-[#0047A1]"
+                        : "text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    • {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <button
               onClick={() => {
                 setActiveTab("car-rental");
@@ -2233,7 +2313,7 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">WHERE TO STAY</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Resorts & Eco Lodges</h2>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Accommodations & Resorts</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
                 From cozy coastal surf cabins to quiet forest eco-lodges, locate the perfect base for your Surigao del Sur exploration.
               </p>
@@ -2820,7 +2900,7 @@ export default function App() {
               <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LOCAL RESOURCES</span>
               <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Bislig City Business & Services Directory</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
-                Discover the best local shopping centers, convenience stores, cafes, sports facilities, surf points, and emergency services around Bislig proper.
+                Discover the best local accommodations, dining spots, shopping centers, convenience stores, sports facilities, churches, landmarks, and emergency services around Bislig proper.
               </p>
             </div>
 
@@ -2840,7 +2920,7 @@ export default function App() {
 
               {/* Category Filter Tabs */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {["All", "Shops & Malls", "Convenience Stores", "Dining & Cafes", "Sports & Recreation", "Surfing & Beaches", "Services & Others"].map((cat) => (
+                {["All", "Accommodations", "Dining & Cafes", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedDirectoryCategory(cat)}
