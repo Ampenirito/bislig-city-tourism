@@ -530,8 +530,16 @@ export default function App() {
   };
 
   // Export personalized/AI itinerary to PDF
-  const exportItineraryToPdf = (itinerary: GeneratedItinerary) => {
+  const exportItineraryToPdf = async (itinerary: GeneratedItinerary) => {
     try {
+      // Load official logo image asynchronously
+      const logoImg = await new Promise<HTMLImageElement | null>((resolve) => {
+        const img = new Image();
+        img.src = "/assets/images/logo.jpg";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
+
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -565,15 +573,20 @@ export default function App() {
 
       doc.setTextColor(29, 53, 87);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
+      doc.setFontSize(20);
       doc.text("BISLIG CITY TRAVEL GUIDE", margin, y);
       y += 8;
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(8.5);
       doc.setTextColor(115, 120, 130);
-      doc.text(`Official Curated AI Itinerary  |  Generated on ${new Date().toLocaleDateString()}`, margin, y);
+      doc.text(`Kamayo Heritage Custom Guide  |  Official Bislig City Tourism Planner  |  ${new Date().toLocaleDateString()}`, margin, y);
       y += 5;
+
+      // Draw official logo image on the top right
+      if (logoImg) {
+        doc.addImage(logoImg, "JPEG", pageWidth - margin - 16, 17, 16, 16);
+      }
 
       doc.setDrawColor(220, 225, 230);
       doc.setLineWidth(0.5);
