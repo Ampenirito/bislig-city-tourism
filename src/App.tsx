@@ -470,7 +470,13 @@ export default function App() {
   const filteredEstablishments = useMemo(() => {
     return allEstablishments.filter((est) => {
       const matchesCategory =
-        selectedDirectoryCategory === "All" || est.category === selectedDirectoryCategory;
+        selectedDirectoryCategory === "All" || 
+        est.category === selectedDirectoryCategory ||
+        // Ocean View Park cross-categorization (Dining & Cafes, Attractions, Landmarks)
+        (est.name.toLowerCase().includes("ocean view park") && 
+          (selectedDirectoryCategory === "Dining & Cafes" || 
+           selectedDirectoryCategory === "Attractions" || 
+           selectedDirectoryCategory === "Churches & Landmarks"));
       const matchesSearch =
         est.name.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
         est.location.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
@@ -903,16 +909,106 @@ export default function App() {
     return () => clearInterval(id);
   }, []);
 
+  // 1. All Attractions Page Items (merge ATTRACTIONS + directory landmarks)
+  const allAttractionsPageItems = useMemo(() => {
+    const items = [...ATTRACTIONS];
+    const dirAttractions = ESTABLISHMENTS.filter((e) => 
+      e.category === "Churches & Landmarks" || 
+      e.id === "ace-pickle-yard" || 
+      e.id === "lawigan-surf-point"
+    );
+    dirAttractions.forEach((da) => {
+      if (!items.some((i) => i.name.toLowerCase() === da.name.toLowerCase())) {
+        items.push({
+          id: da.id,
+          name: da.name,
+          description: da.description,
+          longDescription: da.longDescription || da.description,
+          category: da.id === "saint-vincent-parish" || da.id === "iglesia-ni-cristo-directory" ? "Culture" : "Parks",
+          image: da.image,
+          distance: da.name.includes("Falls") ? "18 km" : "Local",
+          travelTime: "10-20 mins",
+          difficulty: "Easy",
+          bestTime: "Daylight hours",
+          entranceFee: "Free",
+          openingHours: da.operatingHours,
+          travelTips: ["Wear comfortable walking shoes.", "Bring your camera for photography."],
+          nearbyAttractions: [],
+          nearbyRestaurants: [],
+          accessibility: "Paved entrance.",
+          coordinates: da.coordinates,
+          mapUrl: da.mapUrl,
+          rating: da.rating
+        });
+      }
+    });
+    return items;
+  }, []);
+
+  // 2. All Accommodations Page Items (merge ACCOMMODATIONS + directory accommodations)
+  const allAccommodationsPageItems = useMemo(() => {
+    const items = [...ACCOMMODATIONS];
+    const dirAccommodations = ESTABLISHMENTS.filter((e) => e.category === "Accommodations");
+    dirAccommodations.forEach((da) => {
+      if (!items.some((i) => i.name.toLowerCase() === da.name.toLowerCase())) {
+        items.push({
+          id: da.id,
+          name: da.name,
+          description: da.description,
+          category: da.name.toLowerCase().includes("resort") ? "Beachfront" : "Mid-range",
+          image: da.image,
+          priceRange: da.id === "citi-side-inn" ? "₱1,000 - ₱1,800 per night" : "₱1,500 - ₱3,500 per night",
+          amenities: ["Free WiFi", "Air Conditioning", "Private Bathrooms", "Cable TV", "24/7 Desk"],
+          contact: da.contact,
+          socialMedia: da.socialMedia,
+          website: da.website,
+          operatingHours: da.operatingHours,
+          coordinates: da.coordinates,
+          mapUrl: da.mapUrl,
+          rating: da.rating
+        });
+      }
+    });
+    return items;
+  }, []);
+
+  // 3. All Restaurants Page Items (merge RESTAURANTS + directory dining)
+  const allRestaurantsPageItems = useMemo(() => {
+    const items = [...RESTAURANTS];
+    const dirRestaurants = ESTABLISHMENTS.filter((e) => e.category === "Dining & Cafes");
+    dirRestaurants.forEach((dr) => {
+      if (!items.some((i) => i.name.toLowerCase() === dr.name.toLowerCase())) {
+        items.push({
+          id: dr.id,
+          name: dr.name,
+          description: dr.description,
+          category: dr.name.toLowerCase().includes("cafe") ? "Cafe" : "Local Cuisine",
+          image: dr.image,
+          specialty: ["Local Seafood Delicacies", "Traditional Favorites", "Cold Drinks"],
+          priceRange: "₱150 - ₱450 per person",
+          contact: dr.contact,
+          socialMedia: dr.socialMedia,
+          website: dr.website,
+          operatingHours: dr.operatingHours,
+          coordinates: dr.coordinates,
+          mapUrl: dr.mapUrl,
+          rating: dr.rating
+        });
+      }
+    });
+    return items;
+  }, []);
+
   // Search filtered items
   const filteredAttractions = useMemo(() => {
-    return ATTRACTIONS.filter((att) => {
+    return allAttractionsPageItems.filter((att) => {
       const matchesCategory = attractionFilter === "All" || att.category === attractionFilter;
       const matchesSearch =
         att.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         att.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [attractionFilter, searchQuery]);
+  }, [allAttractionsPageItems, attractionFilter, searchQuery]);
 
   // AI Trip Planner generation trigger
   const handleGenerateAiItinerary = async (e: React.FormEvent) => {
@@ -2386,7 +2482,7 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {ACCOMMODATIONS.map((res) => (
+              {allAccommodationsPageItems.map((res) => (
                 <div
                   key={res.id}
                   className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#0097A7] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
@@ -2461,7 +2557,7 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {RESTAURANTS.map((rest) => (
+              {allRestaurantsPageItems.map((rest) => (
                 <div
                   key={rest.id}
                   className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:border-[#FB8C00] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
