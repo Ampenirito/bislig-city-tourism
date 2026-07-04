@@ -1281,14 +1281,7 @@ export default function App() {
           >
             Events
           </button>
-          <button
-            onClick={() => setActiveTab("contact")}
-            className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "contact" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
-            }`}
-          >
-            Contact Us
-          </button>
+
 
 
         </div>
@@ -1497,17 +1490,7 @@ export default function App() {
             >
               Events
             </button>
-            <button
-              onClick={() => {
-                setActiveTab("contact");
-                setIsMobileMenuOpen(false);
-              }}
-              className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "contact" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              Contact Us
-            </button>
+
 
             
             {/* Language Selector — Mobile */}
