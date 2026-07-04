@@ -475,7 +475,11 @@ export default function App() {
         // Ocean View Park cross-categorization (Dining & Cafes, Attractions)
         (est.name.toLowerCase().includes("ocean view park") && 
           (selectedDirectoryCategory === "Dining & Cafes" || 
-           selectedDirectoryCategory === "Attractions"));
+           selectedDirectoryCategory === "Attractions")) ||
+        // I Love Bislig cross-categorization (Attractions, Churches & Landmarks)
+        (est.id === "i-love-bislig" && 
+          (selectedDirectoryCategory === "Attractions" || 
+           selectedDirectoryCategory === "Churches & Landmarks"));
       const matchesSearch =
         est.name.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
         est.location.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
@@ -914,7 +918,8 @@ export default function App() {
     const items = [...ATTRACTIONS];
     const dirAttractions = ESTABLISHMENTS.filter((e) => 
       e.id === "ocean-view-park-directory" || 
-      e.id === "lawigan-surf-point"
+      e.id === "lawigan-surf-point" ||
+      e.id === "i-love-bislig"
     );
     dirAttractions.forEach((da) => {
       if (!items.some((i) => i.name.toLowerCase() === da.name.toLowerCase())) {

@@ -937,5 +937,21 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2140, lng: 126.3550 },
     mapUrl: "https://www.google.com/maps/search/Iglesia+ni+Cristo+Bislig",
     rating: 4.6
+  },
+  {
+    id: "i-love-bislig",
+    name: "I Love Bislig Sign & Baywalk",
+    description: "The iconic colorful landmark sign along the scenic Bislig Baywalk, perfect for souvenir photos and evening walks.",
+    longDescription: "The 'I Love Bislig' sign is a vibrant and popular local landmark located along the picturesque Bislig City Baywalk. Featuring large, colorful illuminated letters, it serves as the ultimate welcoming emblem for visitors. The surrounding baywalk offers cool ocean breezes, sunset vistas over the bay, and stalls selling street food and native snacks, making it a favorite social hub for both locals and tourists alike.",
+    category: "Attractions",
+    image: "/assets/images/i love bislig.webp",
+    location: "Bislig City Baywalk, Poblacion, Bislig City",
+    contact: "Tourism Office: +63 86 853 6000",
+    socialMedia: "facebook.com/bisligcitytourism",
+    website: "",
+    operatingHours: "Open 24/7 (best visited at sunset/evening for lighting)",
+    coordinates: { lat: 8.2135, lng: 126.3570 },
+    mapUrl: "https://www.google.com/maps/search/I+Love+Bislig+Sign+Baywalk",
+    rating: 4.8
   }
 ];
