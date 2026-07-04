@@ -468,7 +468,7 @@ export default function App() {
   }, []);
 
   const filteredEstablishments = useMemo(() => {
-    return allEstablishments.filter((est) => {
+    const list = allEstablishments.filter((est) => {
       const matchesCategory =
         selectedDirectoryCategory === "All" || 
         est.category === selectedDirectoryCategory ||
@@ -482,6 +482,7 @@ export default function App() {
         est.description.toLowerCase().includes(directorySearchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
+    return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [allEstablishments, selectedDirectoryCategory, directorySearchQuery]);
 
   // Filters
@@ -940,7 +941,7 @@ export default function App() {
         });
       }
     });
-    return items;
+    return items.sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
   // 2. All Accommodations Page Items (merge ACCOMMODATIONS + directory accommodations)
@@ -967,7 +968,7 @@ export default function App() {
         });
       }
     });
-    return items;
+    return items.sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
   // 3. All Restaurants Page Items (merge RESTAURANTS + directory dining)
@@ -994,7 +995,7 @@ export default function App() {
         });
       }
     });
-    return items;
+    return items.sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
   // Search filtered items
