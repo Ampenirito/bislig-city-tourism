@@ -690,7 +690,14 @@ export default function App() {
 
         day.activities.forEach((act) => {
           const descLines = doc.splitTextToSize(act.description, contentWidth - 10);
-          const actHeight = 15 + (descLines.length * 4.5);
+          
+          let costLines: string[] = [];
+          if (act.estimatedCost) {
+            costLines = doc.splitTextToSize(`Cost: ${act.estimatedCost}`, contentWidth - 10);
+          }
+          
+          const costHeight = costLines.length * 4.5;
+          const actHeight = 16 + (descLines.length * 4.5) + costHeight;
           
           checkPageBreak(actHeight);
 
@@ -706,12 +713,6 @@ export default function App() {
           doc.setFontSize(9);
           doc.text(act.time, margin + 8, y + 1);
 
-          if (act.estimatedCost) {
-            doc.setTextColor(42, 157, 143);
-            const costText = act.estimatedCost.length > 22 ? act.estimatedCost.substring(0, 20) + "…" : act.estimatedCost;
-            doc.text(costText, pageWidth - margin, y + 1, { align: "right" });
-          }
-
           y += 5.5;
 
           doc.setTextColor(29, 53, 87);
@@ -724,7 +725,17 @@ export default function App() {
           doc.setFont("helvetica", "italic");
           doc.setFontSize(8.5);
           doc.text(`@ ${act.locationName}`, margin + 8, y);
-          y += 5;
+          y += 4.5;
+
+          if (act.estimatedCost) {
+            doc.setTextColor(42, 157, 143);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            costLines.forEach((line) => {
+              doc.text(line, margin + 8, y);
+              y += 4.5;
+            });
+          }
 
           doc.setTextColor(80, 85, 95);
           doc.setFont("helvetica", "normal");
@@ -816,20 +827,55 @@ export default function App() {
 
         y += 3;
 
+        const totalText = breakdown.totalEstimated;
+        let amountPart = totalText;
+        let notesPart = "";
+        
+        const parenIndex = totalText.indexOf("(");
+        if (parenIndex !== -1) {
+          amountPart = totalText.substring(0, parenIndex).trim();
+          notesPart = totalText.substring(parenIndex).trim();
+        }
+
+        // Calculate height of the summary box dynamically
+        let summaryBoxHeight = 11;
+        let wrappedNotes: string[] = [];
+        if (notesPart) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          wrappedNotes = doc.splitTextToSize(notesPart, contentWidth - 8);
+          summaryBoxHeight += (wrappedNotes.length * 4.5) + 2;
+        }
+
         doc.setDrawColor(230, 235, 240);
         doc.setFillColor(245, 248, 250);
-        doc.rect(margin, y, contentWidth, 10, "FD");
+        doc.rect(margin, y, contentWidth, summaryBoxHeight, "FD");
 
+        // Draw Left Label
         doc.setTextColor(29, 53, 87);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(10.5);
-        doc.text("Total Estimated Expenses (PHP)", margin + 4, y + 6.5);
+        doc.setFontSize(10);
+        doc.text("Total Estimated Expenses (PHP)", margin + 4, y + 7);
 
-        // Right-align total cost value to avoid right-side clipping
+        // Draw Right Amount (short, will not overlap)
         doc.setTextColor(42, 157, 143);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(11.5);
-        doc.text(breakdown.totalEstimated, pageWidth - margin - 4, y + 6.5, { align: "right" });
+        doc.setFontSize(10.5);
+        doc.text(amountPart, pageWidth - margin - 4, y + 7, { align: "right" });
+
+        // Draw Notes below if present
+        if (notesPart) {
+          doc.setTextColor(115, 120, 130);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          let notesY = y + 12;
+          wrappedNotes.forEach((line) => {
+            doc.text(line, margin + 4, notesY);
+            notesY += 4.5;
+          });
+        }
+        
+        y += summaryBoxHeight + 5;
       }
 
       const totalPages = doc.internal.pages.length - 1;
