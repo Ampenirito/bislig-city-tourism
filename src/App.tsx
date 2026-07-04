@@ -403,8 +403,72 @@ export default function App() {
   const [selectedDirectoryCategory, setSelectedDirectoryCategory] = useState<string>("All");
   const [directorySearchQuery, setDirectorySearchQuery] = useState<string>("");
 
+  // Merge Attractions, Accommodations, and Restaurants dynamically into Directory items
+  const allEstablishments = useMemo(() => {
+    // 1. Map Attractions
+    const mappedAttractions: Establishment[] = ATTRACTIONS.map((att) => ({
+      id: att.id,
+      name: att.name,
+      description: att.description,
+      longDescription: att.longDescription,
+      category: "Attractions",
+      image: att.image,
+      location: att.distance ? `${att.distance} from city proper` : "Bislig City",
+      contact: "Tourism Office: +63 86 853 6000",
+      socialMedia: "facebook.com/bisligcitytourism",
+      website: "",
+      operatingHours: att.openingHours,
+      coordinates: att.coordinates,
+      mapUrl: att.mapUrl,
+      rating: att.rating
+    }));
+
+    // 2. Map Accommodations
+    const mappedAccommodations: Establishment[] = ACCOMMODATIONS.map((acc) => ({
+      id: acc.id,
+      name: acc.name,
+      description: acc.description,
+      category: "Accommodations",
+      image: acc.image,
+      location: "Bislig / Surigao del Sur",
+      contact: acc.contact || "N/A",
+      socialMedia: acc.socialMedia || "",
+      website: acc.website || "",
+      operatingHours: acc.operatingHours || "24/7",
+      coordinates: acc.coordinates,
+      mapUrl: acc.mapUrl,
+      rating: acc.rating
+    }));
+
+    // 3. Map Restaurants
+    const mappedRestaurants: Establishment[] = RESTAURANTS.map((rest) => ({
+      id: rest.id,
+      name: rest.name,
+      description: rest.description,
+      category: "Dining & Cafes",
+      image: rest.image,
+      location: "Bislig City proper",
+      contact: rest.contact || "N/A",
+      socialMedia: rest.socialMedia || "",
+      website: rest.website || "",
+      operatingHours: rest.operatingHours || "10:00 AM - 09:00 PM",
+      coordinates: rest.coordinates,
+      mapUrl: rest.mapUrl,
+      rating: rest.rating
+    }));
+
+    // Prevent duplicates (e.g. Ocean View Park which is defined in both Attractions and Establishments)
+    const estNames = new Set(ESTABLISHMENTS.map((e) => e.name.toLowerCase()));
+    
+    const uniqueAttractions = mappedAttractions.filter((a) => !estNames.has(a.name.toLowerCase()));
+    const uniqueAccommodations = mappedAccommodations.filter((a) => !estNames.has(a.name.toLowerCase()));
+    const uniqueRestaurants = mappedRestaurants.filter((a) => !estNames.has(a.name.toLowerCase()));
+
+    return [...ESTABLISHMENTS, ...uniqueAttractions, ...uniqueAccommodations, ...uniqueRestaurants];
+  }, []);
+
   const filteredEstablishments = useMemo(() => {
-    return ESTABLISHMENTS.filter((est) => {
+    return allEstablishments.filter((est) => {
       const matchesCategory =
         selectedDirectoryCategory === "All" || est.category === selectedDirectoryCategory;
       const matchesSearch =
@@ -413,7 +477,7 @@ export default function App() {
         est.description.toLowerCase().includes(directorySearchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedDirectoryCategory, directorySearchQuery]);
+  }, [allEstablishments, selectedDirectoryCategory, directorySearchQuery]);
 
   // Filters
   const [attractionFilter, setAttractionFilter] = useState<string>("All");
@@ -1026,6 +1090,7 @@ export default function App() {
                   { label: "All Directory", value: "All" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
+                  { label: "Attractions", value: "Attractions" },
                   { label: "Shops & Malls", value: "Shops & Malls" },
                   { label: "Sports & Recreation", value: "Sports & Recreation" },
                   { label: "Churches & Landmarks", value: "Churches & Landmarks" },
@@ -1240,6 +1305,7 @@ export default function App() {
                   { label: "All Directory", value: "All" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
+                  { label: "Attractions", value: "Attractions" },
                   { label: "Shops & Malls", value: "Shops & Malls" },
                   { label: "Sports & Recreation", value: "Sports & Recreation" },
                   { label: "Churches & Landmarks", value: "Churches & Landmarks" },
@@ -2920,7 +2986,7 @@ export default function App() {
 
               {/* Category Filter Tabs */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {["All", "Accommodations", "Dining & Cafes", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
+                {["All", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedDirectoryCategory(cat)}
