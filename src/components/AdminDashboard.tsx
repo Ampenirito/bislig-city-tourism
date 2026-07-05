@@ -600,7 +600,7 @@ Based on survey responses across multiple departments and local businesses, we i
     try {
       // Load official logo image asynchronously
       const logoImg = await new Promise<HTMLImageElement | null>((resolve) => {
-        const img = new Image();
+        const img = new window.Image();
         img.src = "/assets/images/logo.jpg";
         img.onload = () => resolve(img);
         img.onerror = () => resolve(null);
