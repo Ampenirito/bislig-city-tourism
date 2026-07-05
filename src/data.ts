@@ -1049,5 +1049,21 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2070, lng: 126.3532 },
     mapUrl: "https://www.google.com/maps/search/Botica+Leosala+Mangagoy+Bislig",
     rating: 4.6
+  },
+  {
+    id: "aqua-x-water",
+    name: "Aqua X Refilling Station",
+    description: "A modern water purification and refilling station offering high-quality purified drinking water with fast local deliveries.",
+    longDescription: "Aqua X Refilling Station is a modern water refilling depot dedicated to serving Mangagoy, Bislig City with safe, multi-stage purified drinking water. Utilizing automated sanitary refilling nozzles and strict quality assurance checks, they guarantee premium drinking water. They offer fast local delivery options and wholesale refills for corporate offices, homes, and events.",
+    category: "Services & Others",
+    image: "/assets/images/Aqua X.jpg",
+    location: "Barreda St., Brgy. Mangagoy, Bislig City",
+    contact: "+63 920 123 4567",
+    socialMedia: "facebook.com/aquaxrefilling",
+    website: "",
+    operatingHours: "08:00 AM - 05:00 PM daily",
+    coordinates: { lat: 8.2102, lng: 126.3538 },
+    mapUrl: "https://www.google.com/maps/search/Aqua+X+Refilling+Station+Bislig",
+    rating: 4.8
   }
 ];
