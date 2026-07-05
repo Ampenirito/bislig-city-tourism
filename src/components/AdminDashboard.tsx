@@ -84,6 +84,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [activeAdminTab, setActiveAdminTab] = useState<"analytics" | "consulting">("analytics");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileTextContent, setFileTextContent] = useState<string>("");
+  const [binaryBase64, setBinaryBase64] = useState<string>("");
   const [fileMimeType, setFileMimeType] = useState<string>("text/plain");
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [isAnalyzingFile, setIsAnalyzingFile] = useState<boolean>(false);
@@ -419,13 +420,15 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       resolvedMime = "application/pdf";
     }
 
+    setFileMimeType(resolvedMime || "text/plain");
+
     if (resolvedMime === "application/pdf" || isImage) {
       reader.onload = (event) => {
         const result = event.target?.result as string;
         // Extract base64 representation from DataURL
         const base64 = result.split(",")[1] || "";
-        setFileTextContent(base64);
-        setFileMimeType(resolvedMime || (isImage ? "image/png" : "application/pdf"));
+        setBinaryBase64(base64);
+        setFileTextContent(""); // clear direct text input to avoid base64 code rendering
       };
       reader.onerror = () => {
         setAnalysisError(`Failed to read the ${isImage ? "image" : "PDF"} file. Please try again.`);
@@ -435,7 +438,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       reader.onload = (event) => {
         const text = event.target?.result as string;
         setFileTextContent(text);
-        setFileMimeType(resolvedMime || "text/plain");
+        setBinaryBase64(""); // clear binary
       };
       reader.onerror = () => {
         setAnalysisError("Failed to read the file. Please try again.");
@@ -446,7 +449,9 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
   // Run File Analysis trigger
   const runFileAnalysis = async () => {
-    const dataToAnalyze = fileTextContent.trim();
+    const isBinary = fileMimeType === "application/pdf" || fileMimeType.startsWith("image/");
+    const dataToAnalyze = isBinary ? binaryBase64 : fileTextContent.trim();
+
     if (!dataToAnalyze) {
       setAnalysisError("Please upload a file or paste some data to analyze.");
       return;
@@ -1445,27 +1450,65 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               )}
             </div>
 
-            {/* Text Area for Direct Data Entry */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Or Paste Raw Data Directly</label>
-                {fileTextContent && (
+            {/* Text Area or Binary File Preview Container */}
+            {uploadedFile && (fileMimeType === "application/pdf" || fileMimeType.startsWith("image/")) ? (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">File Payload Preview</label>
                   <button 
-                    onClick={() => { setUploadedFile(null); setFileTextContent(""); }}
-                    className="text-[9px] text-rose-500 hover:underline font-bold"
+                    onClick={() => { setUploadedFile(null); setBinaryBase64(""); setFileMimeType("text/plain"); }}
+                    className="text-[9px] text-rose-500 hover:underline font-bold cursor-pointer"
                   >
-                    Clear Data
+                    Remove File
                   </button>
+                </div>
+                
+                {binaryBase64 && fileMimeType.startsWith("image/") && (
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center shadow-inner">
+                    <img 
+                      src={`data:${fileMimeType};base64,${binaryBase64}`} 
+                      alt="Uploaded preview" 
+                      className="max-h-48 rounded-xl object-contain border border-slate-200/80 shadow-md animate-fadeIn"
+                    />
+                    <span className="text-[9px] font-black uppercase tracking-wider text-sky-600 mt-3 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                      Image loaded for BFO analysis
+                    </span>
+                  </div>
+                )}
+
+                {fileMimeType === "application/pdf" && (
+                  <div className="p-4 bg-rose-50/40 border border-rose-100 rounded-2xl flex items-center gap-3">
+                    <FileText className="w-8 h-8 text-rose-500 shrink-0" />
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-rose-600">Document Loaded</span>
+                      <p className="text-xs font-bold text-slate-700">PDF Document ready for BFO analysis</p>
+                    </div>
+                  </div>
                 )}
               </div>
-              <textarea
-                value={fileTextContent}
-                onChange={(e) => setFileTextContent(e.target.value)}
-                placeholder="Paste surveys responses, review columns, list of challenges, or client feedback here..."
-                rows={6}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-colors resize-none placeholder-slate-400"
-              />
-            </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Or Paste Raw Data Directly</label>
+                  {fileTextContent && (
+                    <button 
+                      onClick={() => { setUploadedFile(null); setFileTextContent(""); }}
+                      className="text-[9px] text-rose-500 hover:underline font-bold"
+                    >
+                      Clear Data
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  value={fileTextContent}
+                  onChange={(e) => setFileTextContent(e.target.value)}
+                  placeholder="Paste surveys responses, review columns, list of challenges, or client feedback here..."
+                  rows={6}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-colors resize-none placeholder-slate-400"
+                />
+              </div>
+            )}
 
             {/* Step 2: Custom Prompt/Directive (Optional) */}
             <div className="space-y-2.5 pt-4 border-t border-slate-100">
@@ -1491,7 +1534,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             {/* Submit Trigger Button */}
             <button
               onClick={runFileAnalysis}
-              disabled={isAnalyzingFile || !fileTextContent.trim()}
+              disabled={isAnalyzingFile || !(fileMimeType === "application/pdf" || fileMimeType.startsWith("image/") ? binaryBase64 : fileTextContent.trim())}
               className="w-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] hover:opacity-90 disabled:opacity-40 text-white font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg shadow-sky-500/10 flex items-center justify-center gap-2"
             >
               {isAnalyzingFile ? (
