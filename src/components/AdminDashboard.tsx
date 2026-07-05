@@ -1933,30 +1933,31 @@ Based on survey responses across multiple departments and local businesses, we i
 }
 
 // ============================================================================
-// BFO ROI CALCULATOR COMPONENT
+// BFO ROI CALCULATOR COMPONENT (SMALL BUSINESS FOCUS)
 // ============================================================================
 function BfoRoiCalculator() {
-  const [bfoTool, setBfoTool] = useState<"portal" | "chatbot" | "crm" | "suite">("portal");
-  const [monthlyVolume, setMonthlyVolume] = useState<number>(2500);
-  const [manualTime, setManualTime] = useState<number>(20);
-  const [employeeWage, setEmployeeWage] = useState<number>(150);
-  const [monthlyCost, setMonthlyCost] = useState<number>(5000);
-  const [oneTimeInvestment, setOneTimeInvestment] = useState<number>(50000);
+  const [businessType, setBusinessType] = useState<"retail" | "hospitality" | "dining" | "services">("hospitality");
+  const [solutionFocus, setSolutionFocus] = useState<"chatbot" | "booking" | "pos" | "suite">("chatbot");
+  const [monthlyVolume, setMonthlyVolume] = useState<number>(1500);
+  const [manualTime, setManualTime] = useState<number>(15);
+  const [employeeWage, setEmployeeWage] = useState<number>(120);
+  const [monthlyCost, setMonthlyCost] = useState<number>(3000);
+  const [oneTimeInvestment, setOneTimeInvestment] = useState<number>(25000);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [strategyReport, setStrategyReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Efficiency factor based on tool selection
+  // Efficiency factor based on solution focus
   const efficiency = useMemo(() => {
-    switch (bfoTool) {
-      case "portal": return 0.75;
+    switch (solutionFocus) {
       case "chatbot": return 0.85;
-      case "crm": return 0.60;
+      case "booking": return 0.75;
+      case "pos": return 0.65;
       case "suite": return 0.80;
     }
-  }, [bfoTool]);
+  }, [solutionFocus]);
 
   // Real-time calculations
   const hoursSaved = useMemo(() => {
@@ -2010,21 +2011,22 @@ function BfoRoiCalculator() {
     return () => clearInterval(interval);
   }, [isGenerating]);
 
-  // Call BFO Intelligence to generate full strategic report
+  // Call BFO Intelligence to generate business strategic roadmap
   const generateAiReport = async () => {
     setIsGenerating(true);
     setError(null);
     setStrategyReport(null);
 
     const prompt = `
-Generate a highly detailed, professional BFO digital transformation ROI strategy audit for Bislig City.
+Generate a highly detailed, professional BFO Digital Transformation ROI Strategic Roadmap for a local small business in Bislig City.
 Use these input parameters:
-- Implemented System: BFO ${bfoTool.toUpperCase()} (Efficiency Gain: ${efficiency * 100}%)
-- Monthly Requests/Transactions: ${monthlyVolume} transactions
-- Avg. Manual Time: ${manualTime} minutes per transaction
-- Average Staff Hourly Wage: ₱${employeeWage} PHP/hour
-- BFO Monthly Licensing/Support: ₱${monthlyCost} PHP/month
-- One-Time Setup & Training Cost: ₱${oneTimeInvestment} PHP
+- Business Sector: ${businessType.toUpperCase()} (e.g. hospitality, retail, local dining, or family service shop)
+- Digital Solution Implemented: BFO ${solutionFocus.toUpperCase()} (Efficiency Gain: ${efficiency * 100}%)
+- Monthly Customer Inquiries / Order Volume: ${monthlyVolume} orders/inquiries
+- Avg. Manual Response/Processing Time per Inquiry/Order: ${manualTime} minutes
+- Avg. staff hourly wage: ₱${employeeWage} PHP/hour
+- BFO Software Licensing / Subscription Support Cost: ₱${monthlyCost} PHP/month
+- One-Time Digital Setup & Onboarding Investment: ₱${oneTimeInvestment} PHP
 
 Calculations:
 - Monthly Hours Reclaimed: ${hoursSaved} hours
@@ -2032,11 +2034,11 @@ Calculations:
 - Payback Period: ${paybackPeriod} months
 - Year 1 Net ROI: ${year1Roi}%
 
-Generate a comprehensive 4-section report formatted in standard clean markdown:
-1. Executive Summary: Explain the organizational significance of adopting the BFO ${bfoTool} suite for Bislig City, focusing on modern citizen service delivery.
-2. Financial Feasibility Analysis: Detail why the payback period of ${paybackPeriod} months is highly viable and evaluate the 5-year savings projection.
-3. Operational Restructuring & Reinvestment: Reclaiming ${hoursSaved} hours/month frees up extensive staff time. Suggest exactly how to upskill or reallocate these staff hours to high-value community projects.
-4. 5-Year Strategic Scale Roadmap: Provide a chronological guide (Year 1 to Year 5) to expand these systems across all local services.
+Generate a comprehensive 4-section consulting report formatted in standard clean markdown:
+1. Executive Summary: Analyze the digital maturity shift for a small business operating in Bislig City adopting BFO ${solutionFocus}. Highlight how modern automated channels improve local competitiveness.
+2. Financial Feasibility & Cost-Benefit Analysis: Detail the payback period of ${paybackPeriod} months and evaluate the 5-year savings trend.
+3. Operational Restructuring & Staff Reinvestment: Freeing up ${hoursSaved} staff hours/month allows a small business to redirect labor. Suggest concrete strategies to redeploy these hours toward customer experience, marketing, local tour partnerships, or service scaling rather than layoffs.
+4. 5-Year Business Growth & Scaling Roadmap: Provide Year-1 to Year-5 milestones for expanding digital channels, scaling customer loyalty, and capturing tourists arriving from Tinuy-an Falls and Enchanted River.
 `;
 
     try {
@@ -2065,32 +2067,58 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
       {/* Left Input Configuration Panel (5 cols) */}
       <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
         <div>
-          <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">CONFIGURATION CONTROL</span>
+          <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">BUSINESS ROI WORKBENCH</span>
           <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO ROI Parameters</h2>
-          <p className="text-[11px] text-slate-500">Adjust the inputs below to calculate real-time savings and productivity gains.</p>
+          <p className="text-[11px] text-slate-500">Configure your local business profile and BFO solution focus to calculate financial benefits.</p>
         </div>
 
-        {/* BFO Tool Selection */}
+        {/* Business Sector */}
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">1. Select BFO Digital Solution</label>
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">1. Select Business Sector</label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { id: "portal", label: "BFO Portal", desc: "Citizen Portal (75% speedup)" },
-              { id: "chatbot", label: "BFO Chatbot", desc: "AI Concierge (85% speedup)" },
-              { id: "crm", label: "BFO CRM", desc: "Feedback Desk (60% speedup)" },
-              { id: "suite", label: "Custom Suite", desc: "Complete Suite (80% speedup)" }
-            ].map((tool) => (
+              { id: "hospitality", label: "🏨 Hospitality & Tourism", desc: "Resorts, hotels, homestays" },
+              { id: "dining", label: "☕ Food & Beverage", desc: "Restaurants, cafes, bakeries" },
+              { id: "retail", label: "🛍️ Retail & Shops", desc: "Grocers, boutiques, markets" },
+              { id: "services", label: "💧 Services & Others", desc: "Water refilling, local logistics" }
+            ].map((sector) => (
               <button
-                key={tool.id}
-                onClick={() => setBfoTool(tool.id as any)}
+                key={sector.id}
+                onClick={() => setBusinessType(sector.id as any)}
                 className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
-                  bfoTool === tool.id
+                  businessType === sector.id
                     ? "border-[#0047A1] ring-2 ring-[#0047A1]/20 bg-white"
                     : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-300"
                 }`}
               >
-                <span className="font-extrabold text-xs text-slate-800">{tool.label}</span>
-                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{tool.desc}</span>
+                <span className="font-extrabold text-xs text-slate-800">{sector.label}</span>
+                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{sector.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Digital Solution Focus */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">2. Select BFO Digital Solution</label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: "chatbot", label: "BFO Chatbot", desc: "Automate booking & Qs (85%)" },
+              { id: "booking", label: "BFO Reservation", desc: "Menus & bookings (75%)" },
+              { id: "pos", label: "BFO Inventory POS", desc: "Sales & stock tracker (65%)" },
+              { id: "suite", label: "BFO Business Suite", desc: "Complete integration (80%)" }
+            ].map((solution) => (
+              <button
+                key={solution.id}
+                onClick={() => setSolutionFocus(solution.id as any)}
+                className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
+                  solutionFocus === solution.id
+                    ? "border-[#0047A1] ring-2 ring-[#0047A1]/20 bg-white"
+                    : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-300"
+                }`}
+              >
+                <span className="font-extrabold text-xs text-slate-800">{solution.label}</span>
+                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{solution.desc}</span>
               </button>
             ))}
           </div>
@@ -2099,8 +2127,8 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         {/* Volume Slider */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">2. Monthly Transaction Volume</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{monthlyVolume.toLocaleString()} requests</span>
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">3. Monthly Customer Volume / Orders</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{monthlyVolume.toLocaleString()} inputs</span>
           </div>
           <input
             type="range"
@@ -2121,7 +2149,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         {/* Manual Time Slider */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">3. Avg. Time per Request (Manual)</label>
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">4. Avg. Manual Processing Time per Order/Inquiry</label>
             <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{manualTime} mins</span>
           </div>
           <input
@@ -2143,7 +2171,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         {/* Staff Hourly Wage Slider */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">4. Average Employee Hourly Wage</label>
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">5. Average Staff Hourly Wage</label>
             <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{employeeWage} / hr</span>
           </div>
           <input
@@ -2165,7 +2193,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         {/* Monthly Licensing Cost */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">5. BFO Monthly Licensing Cost</label>
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">6. BFO Support / Subscription Cost</label>
             <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{monthlyCost.toLocaleString()} / mo</span>
           </div>
           <input
@@ -2187,7 +2215,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         {/* One-Time setup Investment */}
         <div className="space-y-1.5">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">6. One-Time Setup & Training Investment</label>
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">7. One-Time Setup & Onboarding Investment</label>
             <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{oneTimeInvestment.toLocaleString()}</span>
           </div>
           <input
@@ -2242,7 +2270,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
         <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
           <div>
             <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">FINANCIAL TIMELINE</span>
-            <h4 className="font-bold text-xs text-slate-800">5-Year Cumulative Profit/Savings Trend</h4>
+            <h4 className="font-bold text-xs text-slate-800">5-Year Cumulative Savings & Profit Trend</h4>
           </div>
 
           <div className="h-64 flex flex-col justify-between border-b border-slate-100 pb-2">
@@ -2333,8 +2361,8 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
               <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold font-serif text-lg text-white">BFO AI Strategic Financial Audit</h3>
-              <p className="text-[10px] text-slate-400">Generate a custom 5-year digital transformation roadmap based on these metrics</p>
+              <h3 className="font-bold font-serif text-lg text-white">BFO AI Small Business Strategic Report</h3>
+              <p className="text-[10px] text-slate-400">Generate a custom 5-year digital growth roadmap based on your business metrics</p>
             </div>
           </div>
 
@@ -2347,7 +2375,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
                 />
               </div>
               <span className="text-xs font-mono font-bold text-slate-300">
-                BFO Intelligence modeling strategy... {progress}%
+                BFO Intelligence modeling growth strategy... {progress}%
               </span>
             </div>
           ) : strategyReport ? (
@@ -2388,19 +2416,20 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
                   onClick={() => {
                     const doc = new jsPDF();
                     doc.setFont("Helvetica", "bold");
-                    doc.text("BFO Digital Transformation ROI Audit", 20, 20);
+                    doc.text("BFO Small Business ROI Strategy Audit", 20, 20);
                     doc.setFontSize(10);
                     doc.setFont("Helvetica", "normal");
-                    doc.text(`Solution Type: BFO ${bfoTool.toUpperCase()}`, 20, 30);
-                    doc.text(`Monthly Volume: ${monthlyVolume.toLocaleString()} requests`, 20, 35);
-                    doc.text(`Hours Reclaimed: ${hoursSaved} hrs/mo`, 20, 40);
-                    doc.text(`Net Monthly Savings: PHP ${netMonthlySavings.toLocaleString()}`, 20, 45);
-                    doc.text(`Year 1 Net ROI: ${year1Roi}%`, 20, 50);
+                    doc.text(`Sector: ${businessType.toUpperCase()}`, 20, 30);
+                    doc.text(`Solution Focus: BFO ${solutionFocus.toUpperCase()}`, 20, 35);
+                    doc.text(`Monthly Volume: ${monthlyVolume.toLocaleString()} transactions`, 20, 40);
+                    doc.text(`Hours Reclaimed: ${hoursSaved} hrs/mo`, 20, 45);
+                    doc.text(`Net Monthly Savings: PHP ${netMonthlySavings.toLocaleString()}`, 20, 50);
+                    doc.text(`Year 1 Net ROI: ${year1Roi}%`, 20, 55);
 
                     // Add content line by line
-                    let y = 65;
+                    let y = 70;
                     doc.setFont("Helvetica", "bold");
-                    doc.text("Strategic Audit Recommendations:", 20, 60);
+                    doc.text("Business Growth Audit Recommendations:", 20, 65);
                     doc.setFont("Helvetica", "normal");
                     const lines = doc.splitTextToSize(strategyReport || "", 170);
                     lines.forEach((line: string) => {
@@ -2411,7 +2440,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
                       doc.text(line, 20, y);
                       y += 6;
                     });
-                    doc.save(`BFO_ROI_Strategy_${bfoTool}.pdf`);
+                    doc.save(`BFO_SmallBusiness_ROI_${solutionFocus}.pdf`);
                   }}
                   className="bg-[#FB8C00] text-slate-900 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#d69f00] transition-all cursor-pointer"
                 >
@@ -2429,7 +2458,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
               )}
               
               <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
-                Run BFO intelligence to generate a full, executive strategic analysis on operational upskilling routes, budget allocations, and year-by-year scaling milestones.
+                Run BFO intelligence to generate a full, executive strategic analysis on operational labor redeployment, customer experience optimizations, tourist capture plans, and year-by-year scaling milestones.
               </p>
 
               <button
@@ -2437,7 +2466,7 @@ Generate a comprehensive 4-section report formatted in standard clean markdown:
                 className="w-full bg-[#FB8C00] text-slate-900 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#e68000] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-orange-500/10"
               >
                 <Sparkles className="w-4 h-4 animate-pulse" />
-                <span>Generate BFO Strategic Financial Report</span>
+                <span>Generate BFO Strategic Business Report</span>
               </button>
             </div>
           )}
