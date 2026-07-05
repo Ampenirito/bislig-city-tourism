@@ -460,7 +460,7 @@ Analyze this data and return the results in the requested JSON structure.
     res.json(analysis);
   } catch (error: any) {
     console.error("AI File Analysis error:", error);
-    res.status(500).json({ error: "Failed to analyze file data. Please try again." });
+    res.status(500).json({ error: error.message || "Failed to analyze file data. Please try again." });
   }
 });
 

@@ -474,7 +474,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       });
 
       if (!response.ok) {
-        throw new Error("Failed to parse analysis from Gemini.");
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || "Failed to parse analysis from Gemini.");
       }
 
       const result = await response.json();
