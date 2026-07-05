@@ -344,16 +344,16 @@ If a custom prompt or question is provided, you MUST focus your summary or recom
 `;
 
     let userPrompt: any;
-    if (mimeType === "application/pdf") {
+    if (mimeType === "application/pdf" || mimeType.startsWith("image/")) {
       userPrompt = [
         {
           inlineData: {
-            mimeType: "application/pdf",
+            mimeType: mimeType,
             data: fileContent
           }
         },
         {
-          text: `Analyze this PDF document and generate the requested JSON structure. ${
+          text: `Analyze this document/image and generate the requested JSON structure. ${
             customPrompt ? `Focus on this custom instruction/directive: "${customPrompt}"` : ""
           }`
         }

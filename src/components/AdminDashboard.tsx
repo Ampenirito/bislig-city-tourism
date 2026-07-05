@@ -3,7 +3,7 @@ import {
   Lock, Eye, EyeOff, BarChart2, Users, MapPin, Globe, Sparkles, 
   Search, RefreshCw, Terminal, Activity, ArrowUpRight, TrendingUp,
   UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check,
-  FileSpreadsheet, UploadCloud, FileText, CheckCircle
+  FileSpreadsheet, UploadCloud, FileText, CheckCircle, Image
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
@@ -397,23 +397,25 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setAnalysisError("");
 
     const reader = new FileReader();
-    if (file.type === "application/pdf") {
+    const isImage = file.type.startsWith("image/");
+    
+    if (file.type === "application/pdf" || isImage) {
       reader.onload = (event) => {
         const result = event.target?.result as string;
         // Extract base64 representation from DataURL
         const base64 = result.split(",")[1] || "";
         setFileTextContent(base64);
-        setFileMimeType("application/pdf");
+        setFileMimeType(file.type || (isImage ? "image/png" : "application/pdf"));
       };
       reader.onerror = () => {
-        setAnalysisError("Failed to read the PDF file. Please try again.");
+        setAnalysisError(`Failed to read the ${isImage ? "image" : "PDF"} file. Please try again.`);
       };
       reader.readAsDataURL(file);
     } else {
       reader.onload = (event) => {
         const text = event.target?.result as string;
         setFileTextContent(text);
-        setFileMimeType("text/plain");
+        setFileMimeType(file.type || "text/plain");
       };
       reader.onerror = () => {
         setAnalysisError("Failed to read the file. Please try again.");
@@ -1392,7 +1394,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             <div className="relative border-2 border-dashed border-slate-200 hover:border-[#0047A1]/40 rounded-2xl p-6 transition-all bg-slate-50/50 hover:bg-[#0047A1]/5 flex flex-col items-center justify-center text-center group cursor-pointer">
               <input
                 type="file"
-                accept=".csv,.xlsx,.xls,.txt,.json,.pdf"
+                accept=".csv,.xlsx,.xls,.txt,.json,.pdf,.png,.jpg,.jpeg,.webp"
                 onChange={handleFileChange}
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
               />
@@ -1401,6 +1403,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
                 ) : uploadedFile?.name.endsWith(".pdf") ? (
                   <FileText className="w-8 h-8 text-rose-500" />
+                ) : uploadedFile?.type.startsWith("image/") ? (
+                  <Image className="w-8 h-8 text-sky-500" />
                 ) : uploadedFile ? (
                   <FileText className="w-8 h-8 text-[#0047A1]" />
                 ) : (
@@ -1416,7 +1420,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               ) : (
                 <div>
                   <p className="text-xs font-bold text-slate-700">Choose File or Drag Here</p>
-                  <p className="text-[9px] text-slate-400 mt-0.5">Supports CSV, Excel (.xlsx, .xls), PDF, TXT, JSON</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Supports CSV, Excel, PDF, Images (PNG, JPG, WebP), TXT, JSON</p>
                 </div>
               )}
             </div>
