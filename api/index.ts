@@ -328,7 +328,7 @@ PERSONALITY & TONE:
 // AI File Analysis (Executive Summary & Recommendation Engine) Endpoint
 app.post("/api/admin/analyze-file", async (req, res) => {
   try {
-    const { fileContent, customPrompt } = req.body;
+    const { fileContent, mimeType, customPrompt } = req.body;
 
     if (!fileContent) {
       return res.status(400).json({ error: "Missing file content." });
@@ -336,12 +336,28 @@ app.post("/api/admin/analyze-file", async (req, res) => {
 
     const systemInstruction = `
 You are a top-tier digital transformation consultant and business analyst. 
-Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, or text files) and generate a high-impact, professional Executive Summary and an actionable digital Solutions Recommendation Engine.
+Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, PDFs, or text files) and generate a high-impact, professional Executive Summary and an actionable digital Solutions Recommendation Engine.
 
 If a custom prompt or question is provided, you MUST focus your summary or recommendations on answering or addressing that specific prompt/question.
 `;
 
-    const userPrompt = `
+    let userPrompt: any;
+    if (mimeType === "application/pdf") {
+      userPrompt = [
+        {
+          inlineData: {
+            mimeType: "application/pdf",
+            data: fileContent
+          }
+        },
+        {
+          text: `Analyze this PDF document and generate the requested JSON structure. ${
+            customPrompt ? `Focus on this custom instruction/directive: "${customPrompt}"` : ""
+          }`
+        }
+      ];
+    } else {
+      userPrompt = `
 Here is the uploaded file data to analyze:
 ----
 ${fileContent}
@@ -351,6 +367,7 @@ ${customPrompt ? `The user also provided this custom question or analysis direct
 
 Analyze this data and return the results in the requested JSON structure.
 `;
+    }
 
     const response = await generateContentWithFallback({
       contents: userPrompt,

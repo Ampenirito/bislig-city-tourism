@@ -5,6 +5,7 @@ import {
   UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check,
   FileSpreadsheet, UploadCloud, FileText, CheckCircle
 } from "lucide-react";
+import { jsPDF } from "jspdf";
 
 // Types for analytics
 interface VisitorLog {
@@ -83,6 +84,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [activeAdminTab, setActiveAdminTab] = useState<"analytics" | "consulting">("analytics");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileTextContent, setFileTextContent] = useState<string>("");
+  const [fileMimeType, setFileMimeType] = useState<string>("text/plain");
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [isAnalyzingFile, setIsAnalyzingFile] = useState<boolean>(false);
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
@@ -312,14 +314,29 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setAnalysisError("");
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setFileTextContent(text);
-    };
-    reader.onerror = () => {
-      setAnalysisError("Failed to read the file. Please try again.");
-    };
-    reader.readAsText(file);
+    if (file.type === "application/pdf") {
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        // Extract base64 representation from DataURL
+        const base64 = result.split(",")[1] || "";
+        setFileTextContent(base64);
+        setFileMimeType("application/pdf");
+      };
+      reader.onerror = () => {
+        setAnalysisError("Failed to read the PDF file. Please try again.");
+      };
+      reader.readAsDataURL(file);
+    } else {
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        setFileTextContent(text);
+        setFileMimeType("text/plain");
+      };
+      reader.onerror = () => {
+        setAnalysisError("Failed to read the file. Please try again.");
+      };
+      reader.readAsText(file);
+    }
   };
 
   // Run File Analysis trigger
@@ -341,6 +358,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
         },
         body: JSON.stringify({
           fileContent: dataToAnalyze,
+          mimeType: fileMimeType,
           customPrompt: customPrompt.trim(),
         }),
       });
@@ -354,9 +372,209 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       localStorage.setItem("bfo_file_analysis_result", JSON.stringify(result));
     } catch (err: any) {
       console.error(err);
-      setAnalysisError(err.message || "An unexpected error occurred during AI analysis.");
+      setAnalysisError(err.message || "An unexpected error occurred during BFO analysis.");
     } finally {
       setIsAnalyzingFile(false);
+    }
+  };
+
+  // Export Results to CSV format
+  const exportToCsv = () => {
+    if (!analysisResult) return;
+    
+    // Construct CSV rows
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Type,Topic/Problem,Recommended Solutions,Expected Benefit/Impact\n";
+    
+    // Add Executive Summary row
+    const escapedSummary = analysisResult.executiveSummary.replace(/"/g, '""');
+    csvContent += `Executive Summary,"General Synthesis","N/A","${escapedSummary}"\n`;
+    
+    // Add Recommendations rows
+    analysisResult.recommendations?.forEach((rec: any) => {
+      const escapedProblem = rec.problem.replace(/"/g, '""');
+      const escapedSolutions = rec.solutions.join(" | ").replace(/"/g, '""');
+      const escapedBenefits = rec.benefits.replace(/"/g, '""');
+      csvContent += `Recommendation,"${escapedProblem}","${escapedSolutions}","${escapedBenefits}"\n`;
+    });
+    
+    // Trigger download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `BFO_Consulting_Report_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Export Results to modern, clean PDF format with logo
+  const exportToPdf = async () => {
+    if (!analysisResult) return;
+    
+    try {
+      // Load official logo image asynchronously
+      const logoImg = await new Promise<HTMLImageElement | null>((resolve) => {
+        const img = new Image();
+        img.src = "/assets/images/logo.jpg";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let y = 15;
+
+      const checkPageBreak = (heightNeeded: number) => {
+        if (y + heightNeeded > pageHeight - 15) {
+          doc.addPage();
+          y = 15;
+          // Draw header line on new page
+          doc.setDrawColor(0, 71, 161);
+          doc.setLineWidth(0.8);
+          doc.line(15, y, pageWidth - 15, y);
+          y += 8;
+        }
+      };
+
+      // Header Banner
+      doc.setFillColor(15, 23, 42); // slate-900
+      doc.rect(0, 0, pageWidth, 40, "F");
+
+      // Draw Logo
+      if (logoImg) {
+        // Draw round logo background
+        doc.setFillColor(255, 255, 255);
+        doc.circle(28, 20, 12, "F");
+        doc.addImage(logoImg, "JPEG", 17, 9, 22, 22);
+      }
+
+      // Title
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 20, { align: "right" });
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(251, 140, 0); // Orange subtext
+      doc.text("Automated Executive Summary & Digital Recommendations", pageWidth - 15, 26, { align: "right" });
+
+      y = 48;
+
+      // 1. Executive Summary Section
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("🥇 Executive Summary", 15, y);
+      y += 6;
+
+      // Draw background card for Executive Summary
+      const summaryLines = doc.splitTextToSize(analysisResult.executiveSummary, pageWidth - 38);
+      const cardHeight = summaryLines.length * 4.5 + 8;
+      
+      doc.setFillColor(250, 250, 250); // slate-50
+      doc.setDrawColor(241, 140, 0); // orange border
+      doc.setLineWidth(0.5);
+      doc.roundedRect(15, y, pageWidth - 30, cardHeight, 3, 3, "FD");
+
+      // Write Summary text inside card
+      doc.setTextColor(51, 65, 85);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9.5);
+      
+      let textY = y + 6;
+      summaryLines.forEach((line: string) => {
+        doc.text(line, 19, textY);
+        textY += 4.5;
+      });
+
+      y += cardHeight + 12;
+
+      // 2. Solutions Recommendations
+      checkPageBreak(25);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("🥈 Solution Recommendations Plan", 15, y);
+      y += 8;
+
+      // Loop through recommendations
+      analysisResult.recommendations?.forEach((rec: any, idx: number) => {
+        const probText = `Problem #${idx + 1}: ${rec.problem}`;
+        const solText = `Recommended Solutions: ${rec.solutions.join(", ")}`;
+        const benText = `Expected Benefit: ${rec.benefits}`;
+
+        const probLines = doc.splitTextToSize(probText, pageWidth - 38);
+        const solLines = doc.splitTextToSize(solText, pageWidth - 38);
+        const benLines = doc.splitTextToSize(benText, pageWidth - 38);
+
+        const recHeight = (probLines.length + solLines.length + benLines.length) * 4.5 + 14;
+
+        checkPageBreak(recHeight);
+
+        // Draw Recommendation card
+        doc.setFillColor(248, 250, 252); // sky-50/50
+        doc.setDrawColor(226, 232, 240); // slate-200
+        doc.setLineWidth(0.3);
+        doc.roundedRect(15, y, pageWidth - 30, recHeight, 3, 3, "FD");
+
+        let insideY = y + 6;
+
+        // Draw problem heading
+        doc.setTextColor(225, 29, 72); // rose-600
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        probLines.forEach((line: string) => {
+          doc.text(line, 19, insideY);
+          insideY += 4.5;
+        });
+
+        // Draw solutions
+        doc.setTextColor(30, 41, 59); // slate-800
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        solLines.forEach((line: string) => {
+          doc.text(line, 19, insideY);
+          insideY += 4.5;
+        });
+
+        // Draw benefits
+        doc.setTextColor(3, 105, 161); // sky-700
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        benLines.forEach((line: string) => {
+          doc.text(line, 19, insideY);
+          insideY += 4.5;
+        });
+
+        y += recHeight + 6;
+      });
+
+      // Draw footers on all pages
+      const totalPages = doc.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(15, pageHeight - 14, pageWidth - 15, pageHeight - 14);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(148, 163, 184);
+        doc.text("Bislig City Tourism Office (BFO) Diagnostic Portal · Confidential Report", 15, pageHeight - 9);
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - 15, pageHeight - 9, { align: "right" });
+      }
+
+      doc.save(`BFO_Consulting_Diagnostics_${Date.now()}.pdf`);
+    } catch (error) {
+      console.error("PDF generation error:", error);
     }
   };
 
@@ -544,7 +762,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             }`}
           >
             <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-            <span>AI Consulting Analyst (Demo)</span>
+            <span>BFO Consulting Analyst (Demo)</span>
           </button>
         </div>
 
@@ -746,7 +964,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                 <Sparkles className="w-4 h-4 text-[#FB8C00] animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#FB8C00]">GEMINI TRAVEL INTELLIGENCE</span>
               </div>
-              <h3 className="text-xl md:text-2xl font-serif font-bold">AI Geographic Demographic Analyzer</h3>
+              <h3 className="text-xl md:text-2xl font-serif font-bold">BFO Geographic Demographic Analyzer</h3>
               <p className="text-xs text-slate-400 mt-1">
                 Dynamically scans local & international visitor IP distributions to generate automated travel market summaries.
               </p>
@@ -765,7 +983,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               ) : (
                 <>
                   <RefreshCw className="w-4 h-4" />
-                  <span>{aiReport ? "Recalculate AI Report" : "Generate AI Analysis"}</span>
+                  <span>{aiReport ? "Recalculate BFO Report" : "Generate BFO Analysis"}</span>
                 </>
               )}
             </button>
@@ -782,7 +1000,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               <div className="border-t border-white/10 pt-6">
                 <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
                   <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Ask AI Analytics Assistant</span>
+                  <span>Ask BFO Analytics Assistant</span>
                 </h4>
                 
                 <form onSubmit={handleAskAi} className="flex gap-2 bg-white/5 p-1.5 rounded-xl border border-white/10">
@@ -941,11 +1159,11 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span className="text-[10px] font-black tracking-wider uppercase text-slate-400">AI CONSULTING WORKBENCH</span>
+              <span className="text-[10px] font-black tracking-wider uppercase text-slate-400">BFO CONSULTING WORKBENCH</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-serif font-black">AI Executive Summary & Recommendations</h1>
+            <h1 className="text-2xl md:text-3xl font-serif font-black">BFO Executive Summary & Recommendations</h1>
             <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
-              Upload survey responses, spreadsheets, or business reports to instantly extract high-impact executive summaries and digital solution recommendations.
+              Upload survey responses, spreadsheets, PDFs, or business reports to instantly extract high-impact executive summaries and digital solution recommendations.
             </p>
           </div>
           {analysisResult && (
@@ -965,20 +1183,22 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
           <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
             <div>
               <h3 className="font-bold font-serif text-base mb-1.5">Step 1: Input Data Source</h3>
-              <p className="text-[10px] text-slate-400">Upload a spreadsheet (CSV, Excel), text file, or paste text directly.</p>
+              <p className="text-[10px] text-slate-400">Upload a spreadsheet (CSV, Excel), PDF, text file, or paste text directly.</p>
             </div>
 
             {/* Drag and Drop File Area */}
             <div className="relative border-2 border-dashed border-slate-200 hover:border-[#0047A1]/40 rounded-2xl p-6 transition-all bg-slate-50/50 hover:bg-[#0047A1]/5 flex flex-col items-center justify-center text-center group cursor-pointer">
               <input
                 type="file"
-                accept=".csv,.xlsx,.xls,.txt,.json"
+                accept=".csv,.xlsx,.xls,.txt,.json,.pdf"
                 onChange={handleFileChange}
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
               />
               <div className="p-3 bg-white border border-slate-200 rounded-xl mb-3 text-slate-400 group-hover:text-[#0047A1] group-hover:scale-110 transition-all shadow-sm">
                 {uploadedFile?.name.endsWith(".xlsx") || uploadedFile?.name.endsWith(".xls") ? (
                   <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+                ) : uploadedFile?.name.endsWith(".pdf") ? (
+                  <FileText className="w-8 h-8 text-rose-500" />
                 ) : uploadedFile ? (
                   <FileText className="w-8 h-8 text-[#0047A1]" />
                 ) : (
@@ -994,7 +1214,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               ) : (
                 <div>
                   <p className="text-xs font-bold text-slate-700">Choose File or Drag Here</p>
-                  <p className="text-[9px] text-slate-400 mt-0.5">Supports CSV, Excel (.xlsx, .xls), TXT, JSON</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Supports CSV, Excel (.xlsx, .xls), PDF, TXT, JSON</p>
                 </div>
               )}
             </div>
@@ -1024,7 +1244,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             {/* Step 2: Custom Prompt/Directive (Optional) */}
             <div className="space-y-2.5 pt-4 border-t border-slate-100">
               <div>
-                <h3 className="font-bold font-serif text-base mb-1">Step 2: AI Directive (Optional)</h3>
+                <h3 className="font-bold font-serif text-base mb-1">Step 2: BFO Directive (Optional)</h3>
                 <p className="text-[10px] text-slate-400">Guide the Gemini model or ask a question regarding the dataset.</p>
               </div>
               <textarea
@@ -1088,6 +1308,30 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             ) : analysisResult ? (
               <div className="space-y-6 animate-fadeIn">
                 
+                {/* Export Toolbar */}
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 px-6 rounded-3xl border border-slate-200/60 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" />
+                    <span className="text-xs font-bold text-slate-800">Diagnostics Generated</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      onClick={exportToCsv}
+                      className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition-all cursor-pointer shadow-sm border border-slate-200"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export CSV</span>
+                    </button>
+                    <button
+                      onClick={exportToPdf}
+                      className="flex items-center gap-1.5 bg-[#0047A1] hover:bg-[#003c8f] text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-md shadow-blue-500/10"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export PDF Report</span>
+                    </button>
+                  </div>
+                </div>
+
                 {/* Executive Summary Card */}
                 <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full" />
@@ -1095,7 +1339,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-xl">🥇</span>
                     <div>
-                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">AI Executive Summary</h3>
+                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">BFO Executive Summary</h3>
                       <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Insights</p>
                     </div>
                   </div>
@@ -1110,7 +1354,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-xl">🥈</span>
                     <div>
-                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">AI Solution Recommendations</h3>
+                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">BFO Solution Recommendations</h3>
                       <p className="text-[9px] font-bold text-sky-600 uppercase tracking-widest mt-1">Custom Digital Blueprints</p>
                     </div>
                   </div>
