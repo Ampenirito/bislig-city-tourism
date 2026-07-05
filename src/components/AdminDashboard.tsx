@@ -134,7 +134,17 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [selectedOfficeIdx, setSelectedOfficeIdx] = useState<number>(0);
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
-    return saved ? JSON.parse(saved) : {
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.overallSummary) {
+          return parsed;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return {
       documentTitle: "Digital Service Readiness & Administrative Efficiency Diagnostic Report",
       overallSummary: `### Executive Overview
 Based on survey responses across multiple departments and local businesses, we identified shared bottlenecks in manual administrative workflows and response times. The BFO Diagnostics Workbench recommends division-specific online forms, QR-coded permit verification systems, and print cue scheduling tools to streamline local operations.
@@ -783,9 +793,9 @@ Based on survey responses across multiple departments and local businesses, we i
         y += 5;
 
         off.recommendations?.forEach((rec: any, recIdx: number) => {
-          const probText = `Problem #${recIdx + 1}: ${rec.problem}`;
-          const solText = `Recommended Solutions: ${rec.solutions.join(", ")}`;
-          const benText = `Expected Benefit: ${rec.benefits}`;
+          const probText = `Problem #${recIdx + 1}: ${rec.problem || ""}`;
+          const solText = `Recommended Solutions: ${(rec.solutions || []).join(", ")}`;
+          const benText = `Expected Benefit: ${rec.benefits || ""}`;
 
           const probLines = doc.splitTextToSize(probText, pageWidth - 38);
           const solLines = doc.splitTextToSize(solText, pageWidth - 38);
@@ -845,8 +855,9 @@ Based on survey responses across multiple departments and local businesses, we i
       }
 
       doc.save(`BFO_Consulting_Diagnostics_${Date.now()}.pdf`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("PDF generation error:", error);
+      alert("PDF Export Error: " + (error?.message || error) + "\nStack: " + (error?.stack || "No stack trace"));
     }
   };
 
