@@ -90,23 +90,36 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
     return saved ? JSON.parse(saved) : {
-      organizationName: "Bislig Local Enterprise Survey Group",
-      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
+      organizationName: "Bislig City Local Government Unit",
+      targetOffice: "Public Information & Tourism Operations",
+      respondentCount: 27,
+      analysisScope: "Digital Service Readiness & Administrative Efficiency",
+      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most departments are willing to adopt digital tools (85%) but cite budget (60%) and training (40%) as primary barriers.",
+      bottlenecks: [
+        { name: "Manual Data Entry & Paper Filing", percentage: 74 },
+        { name: "Slow Response in Frontline Inquiries", percentage: 53 },
+        { name: "Lack of Centralized Records Management", percentage: 41 }
+      ],
+      digitalMaturityKPIs: {
+        willingness: 85,
+        trainingNeed: 40,
+        budgetBarrier: 60
+      },
       recommendations: [
         {
           problem: "Slow customer response",
-          solutions: ["AI Chatbot", "CRM", "Auto Reply"],
+          solutions: ["BFO Citizen Chatbot", "Public CRM System", "Auto Reply Desk"],
           benefits: "Improve response time by up to 90%."
         },
         {
           problem: "Manual administrative work",
-          solutions: ["Zapier Automation", "Google Workspace", "Invoice Generator"],
-          benefits: "Saves up to 15 hours of manual data entry per week."
+          solutions: ["Zapier Cloud Automation", "Google Workspace Migration", "Digital Form Hub"],
+          benefits: "Saves up to 15 hours of manual work per week."
         },
         {
           problem: "Limited marketing reach",
-          solutions: ["Social Media Scheduler", "Email Marketing Tool", "SEO Basics"],
-          benefits: "Increases online visibility and local organic traffic by 40%."
+          solutions: ["Tourism Promotion Scheduler", "Targeted Tourist Campaigns", "SEO Optimizations"],
+          benefits: "Increases tourism inquiries and organic traffic by 40%."
         }
       ]
     };
@@ -448,44 +461,41 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setFillColor(15, 23, 42); // slate-900
       doc.rect(0, 0, pageWidth, 40, "F");
 
-      // Draw Logo clipped inside a circle
+      // Draw Logo centered inside a circle
       if (logoImg) {
         // Draw white circle background
         doc.setFillColor(255, 255, 255);
-        doc.circle(28, 20, 11, "F");
-        
-        // Circular clipping mask for image
-        doc.saveGraphicsState();
-        doc.circle(28, 20, 10.5);
-        doc.clip();
-        doc.addImage(logoImg, "JPEG", 17.5, 9.5, 21, 21);
-        doc.restoreGraphicsState();
+        doc.circle(25, 20, 12, "F");
+        // Center the 16x16 image inside the 24mm diameter circle
+        doc.addImage(logoImg, "JPEG", 17, 12, 16, 16);
       }
 
       // Title
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(15);
-      doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 17, { align: "right" });
+      doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 15, { align: "right" });
       
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(251, 140, 0); // Orange subtext
-      doc.text("Automated Executive Summary & Digital Recommendations", pageWidth - 15, 22, { align: "right" });
-
-      doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
+      doc.setTextColor(251, 140, 0); // Orange subtext
+      doc.text("Automated Executive Summary & Digital Recommendations", pageWidth - 15, 20, { align: "right" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
       doc.setTextColor(156, 163, 175); // gray-400
-      doc.text(`Target Org: ${analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}`, pageWidth - 15, 27, { align: "right" });
+      doc.text(`Organization: ${analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}`, pageWidth - 15, 25, { align: "right" });
+      doc.text(`Office/Dept: ${analysisResult.targetOffice || "Public Information & Tourism Operations"}`, pageWidth - 15, 29, { align: "right" });
+      doc.text(`Scope: ${analysisResult.analysisScope || "Operational Efficiency"}  |  Sample: ${analysisResult.respondentCount || 27} responses`, pageWidth - 15, 33, { align: "right" });
 
       y = 48;
 
       // 1. Executive Summary Section
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.text("BFO Executive Summary", 15, y);
-      y += 6;
+      y += 5;
 
       // Draw background card for Executive Summary
       const summaryLines = doc.splitTextToSize(analysisResult.executiveSummary, pageWidth - 38);
@@ -507,15 +517,73 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
         textY += 4.5;
       });
 
-      y += cardHeight + 12;
+      y += cardHeight + 8;
+
+      // New Section: Detailed Diagnostic Metrics & Infographics
+      checkPageBreak(42);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("Operational Diagnostics & Digital Maturity", 15, y);
+      y += 5;
+
+      // Bottlenecks card (Left)
+      const graphWidth = 90;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(15, y, graphWidth, 34, 3, 3, "FD");
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.text("Top Operational Bottlenecks", 19, y + 6);
+
+      let barY = y + 13;
+      analysisResult.bottlenecks?.forEach((item: any) => {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(71, 85, 105);
+        doc.text(`${item.name} (${item.percentage}%)`, 19, barY);
+        
+        // Background track
+        doc.setFillColor(226, 232, 240);
+        doc.rect(19, barY + 1.8, 80, 2, "F");
+        
+        // Fill bar
+        doc.setFillColor(0, 71, 161);
+        doc.rect(19, barY + 1.8, 80 * (item.percentage / 100), 2, "F");
+        
+        barY += 8;
+      });
+
+      // Digital Readiness card (Right)
+      const metricsWidth = 85;
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(110, y, metricsWidth, 34, 3, 3, "FD");
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.text("Digital Readiness Indicators", 114, y + 6);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(51, 65, 85);
+      
+      doc.text(` Willingness to Adopt Tools:      ${analysisResult.digitalMaturityKPIs?.willingness}%`, 114, y + 14);
+      doc.text(` Needs Digital Training:            ${analysisResult.digitalMaturityKPIs?.trainingNeed}%`, 114, y + 21);
+      doc.text(` Cites Budget Barrier:              ${analysisResult.digitalMaturityKPIs?.budgetBarrier}%`, 114, y + 28);
+
+      y += 42;
 
       // 2. Solutions Recommendations
       checkPageBreak(25);
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.text("BFO Solution Recommendations Plan", 15, y);
-      y += 8;
+      y += 6;
 
       // Loop through recommendations
       analysisResult.recommendations?.forEach((rec: any, idx: number) => {
@@ -597,23 +665,36 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setCustomPrompt("");
     setAnalysisError("");
     const defaultData = {
-      organizationName: "Bislig Local Enterprise Survey Group",
-      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
+      organizationName: "Bislig City Local Government Unit",
+      targetOffice: "Public Information & Tourism Operations",
+      respondentCount: 27,
+      analysisScope: "Digital Service Readiness & Administrative Efficiency",
+      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most departments are willing to adopt digital tools (85%) but cite budget (60%) and training (40%) as primary barriers.",
+      bottlenecks: [
+        { name: "Manual Data Entry & Paper Filing", percentage: 74 },
+        { name: "Slow Response in Frontline Inquiries", percentage: 53 },
+        { name: "Lack of Centralized Records Management", percentage: 41 }
+      ],
+      digitalMaturityKPIs: {
+        willingness: 85,
+        trainingNeed: 40,
+        budgetBarrier: 60
+      },
       recommendations: [
         {
           problem: "Slow customer response",
-          solutions: ["AI Chatbot", "CRM", "Auto Reply"],
+          solutions: ["BFO Citizen Chatbot", "Public CRM System", "Auto Reply Desk"],
           benefits: "Improve response time by up to 90%."
         },
         {
           problem: "Manual administrative work",
-          solutions: ["Zapier Automation", "Google Workspace", "Invoice Generator"],
-          benefits: "Saves up to 15 hours of manual data entry per week."
+          solutions: ["Zapier Cloud Automation", "Google Workspace Migration", "Digital Form Hub"],
+          benefits: "Saves up to 15 hours of manual work per week."
         },
         {
           problem: "Limited marketing reach",
-          solutions: ["Social Media Scheduler", "Email Marketing Tool", "SEO Basics"],
-          benefits: "Increases online visibility and local organic traffic by 40%."
+          solutions: ["Tourism Promotion Scheduler", "Targeted Tourist Campaigns", "SEO Optimizations"],
+          benefits: "Increases tourism inquiries and organic traffic by 40%."
         }
       ]
     };
@@ -1346,16 +1427,84 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                 </div>
 
                 {/* Organization Details Panel */}
-                <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-3xl flex items-center justify-between gap-4">
-                  <div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-0.5">Target Organization / Dataset</span>
-                    <h2 className="text-sm font-bold text-slate-800">
-                      {analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}
-                    </h2>
+                <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl space-y-4">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-4">
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#0047A1] block mb-0.5">Target Organization / Entity</span>
+                      <h2 className="text-base font-black text-slate-800">
+                        {analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}
+                      </h2>
+                    </div>
+                    <div className="bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1.5 shrink-0 border border-emerald-100 shadow-sm self-start md:self-auto">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>Active Diagnostics</span>
+                    </div>
                   </div>
-                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 shrink-0 border border-emerald-100 shadow-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Active Diagnostics</span>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Office / Department</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.targetOffice || "Public Information & Tourism"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Analysis Scope</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.analysisScope || "Operational Efficiency"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Dataset Size</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.respondentCount || 27} Responses processed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diagnostics Infographics Panel */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+                  {/* Top Bottlenecks Bar Graph (7 cols) */}
+                  <div className="md:col-span-7 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Operational Metrics</span>
+                      <h4 className="font-bold text-xs text-slate-800">Top Operational Bottlenecks</h4>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {analysisResult.bottlenecks?.map((item: any, idx: number) => (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
+                            <span className="truncate max-w-[200px]">{item.name}</span>
+                            <span className="text-[#0047A1] font-mono">{item.percentage}%</span>
+                          </div>
+                          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] rounded-full transition-all duration-500" 
+                              style={{ width: `${item.percentage}%` }} 
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Digital Maturity Indicator Blocks (5 cols) */}
+                  <div className="md:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between gap-4">
+                    <div>
+                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Readiness Check</span>
+                      <h4 className="font-bold text-xs text-slate-800">Digital Maturity KPIs</h4>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between bg-emerald-50/40 border border-emerald-100 p-2 px-3 rounded-xl">
+                        <span className="text-[10px] font-bold text-slate-600">Willingness to Adopt</span>
+                        <span className="text-xs font-black text-emerald-700">{analysisResult.digitalMaturityKPIs?.willingness}%</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-amber-50/40 border border-amber-100 p-2 px-3 rounded-xl">
+                        <span className="text-[10px] font-bold text-slate-600">Training Needed</span>
+                        <span className="text-xs font-black text-amber-700">{analysisResult.digitalMaturityKPIs?.trainingNeed}%</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-rose-50/40 border border-rose-100 p-2 px-3 rounded-xl">
+                        <span className="text-[10px] font-bold text-slate-600">Budget Barrier</span>
+                        <span className="text-xs font-black text-rose-700">{analysisResult.digitalMaturityKPIs?.budgetBarrier}%</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

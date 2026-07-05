@@ -361,35 +361,78 @@ Analyze this data and return the results in the requested JSON structure.
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
-          required: ["organizationName", "executiveSummary", "recommendations"],
+          required: [
+            "organizationName", 
+            "targetOffice", 
+            "respondentCount", 
+            "analysisScope", 
+            "executiveSummary", 
+            "bottlenecks", 
+            "digitalMaturityKPIs", 
+            "recommendations"
+          ],
           properties: {
             organizationName: {
               type: Type.STRING,
-              description: "The name of the company or organization identified in the dataset, or 'Various Local SMEs' if not explicitly found."
+              description: "The name of the company, local government unit, or department identified in the dataset."
+            },
+            targetOffice: {
+              type: Type.STRING,
+              description: "The specific division, office, or sector analyzed (e.g. Tourism Operations, Customer Relations, IT Support)."
+            },
+            respondentCount: {
+              type: Type.INTEGER,
+              description: "The number of survey responses or records analyzed."
+            },
+            analysisScope: {
+              type: Type.STRING,
+              description: "The main focus/scope of the dataset (e.g., Digital Tool Adoption, Frontline Services Readiness, Operational Efficiency)."
             },
             executiveSummary: {
               type: Type.STRING,
-              description: "A comprehensive executive summary of the file data (e.g. summarizing surveys, feedback, challenges, key findings). It should be about 2-3 sentences long, highly professional, with specific stats if found."
+              description: "A comprehensive executive summary of the file data. It should be 2-3 sentences long, highly professional, with specific stats if found."
+            },
+            bottlenecks: {
+              type: Type.ARRAY,
+              description: "Top 3 operational bottlenecks with their percentage impact values.",
+              items: {
+                type: Type.OBJECT,
+                required: ["name", "percentage"],
+                properties: {
+                  name: { type: Type.STRING, description: "Bottleneck description (e.g. Manual Data Entry)." },
+                  percentage: { type: Type.INTEGER, description: "Percentage value from 0 to 100." }
+                }
+              }
+            },
+            digitalMaturityKPIs: {
+              type: Type.OBJECT,
+              description: "Key digital maturity metric percentages.",
+              required: ["willingness", "trainingNeed", "budgetBarrier"],
+              properties: {
+                willingness: { type: Type.INTEGER, description: "Percentage of willingness to adopt digital tools." },
+                trainingNeed: { type: Type.INTEGER, description: "Percentage of training resources required." },
+                budgetBarrier: { type: Type.INTEGER, description: "Percentage citing budget as primary barrier." }
+              }
             },
             recommendations: {
               type: Type.ARRAY,
-              description: "A list of actionable AI recommendations for the challenges/problems identified in the file.",
+              description: "A list of actionable BFO recommendations for the challenges/problems identified in the file.",
               items: {
                 type: Type.OBJECT,
                 required: ["problem", "solutions", "benefits"],
                 properties: {
                   problem: {
                     type: Type.STRING,
-                    description: "The specific operational challenge or pain point identified (e.g., 'Slow customer response time')."
+                    description: "The specific operational challenge or pain point identified."
                   },
                   solutions: {
                     type: Type.ARRAY,
                     items: { type: Type.STRING },
-                    description: "List of recommended digital tools or solutions (e.g., ['AI Chatbot', 'CRM Integration', 'Auto Reply Message'])."
+                    description: "List of recommended digital tools or solutions."
                   },
                   benefits: {
                     type: Type.STRING,
-                    description: "The expected benefit or why this solution works (e.g., 'Improves response time by up to 90% and captures more leads')."
+                    description: "The expected benefit or why this solution works."
                   }
                 }
               }
