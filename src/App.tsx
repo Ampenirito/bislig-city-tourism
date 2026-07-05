@@ -4231,7 +4231,7 @@ export default function App() {
       </footer>
 
       {/* Floating Interactive AI Chatbot Concierge */}
-      <AiChatbot />
+      <AiChatbot weatherData={weatherData} />
     </div>
   );
 }

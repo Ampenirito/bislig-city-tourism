@@ -21,6 +21,11 @@ const PLAYBOOK_PROMPTS = [
     text: "What are the recommended accommodations or eco-resorts in Bislig and nearby Hinatuan?"
   },
   {
+    id: "surf",
+    label: "🏄 Surf Conditions Today",
+    text: "Is it a good day to surf today in Lawigan?"
+  },
+  {
     id: "events",
     label: "🦀 Cultural Festivals",
     text: "What cultural festivals and eco-sports events happen in Bislig City?"
@@ -42,7 +47,7 @@ const PLAYBOOK_PROMPTS = [
   }
 ];
 
-export default function AiChatbot() {
+export default function AiChatbot({ weatherData }: { weatherData: any }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -90,7 +95,8 @@ export default function AiChatbot() {
           messages: [...messages, userMessage].map((m) => ({
             sender: m.sender,
             text: m.text
-          }))
+          })),
+          weatherContext: weatherData
         })
       });
 

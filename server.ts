@@ -271,7 +271,7 @@ Draft a complete JSON response according to the requested schema. Generate exact
 // AI Chatbot Concierge Endpoint
 app.post("/api/ai/chat", async (req, res) => {
   try {
-    const { messages } = req.body;
+    const { messages, weatherContext } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "Invalid or missing messages array." });
@@ -283,10 +283,26 @@ app.post("/api/ai/chat", async (req, res) => {
       parts: [{ text: m.text || "" }]
     }));
 
+    let liveConditionsText = "";
+    if (weatherContext) {
+      liveConditionsText = `
+[LIVE WEATHER & SURF CONDITIONS (REAL-TIME ADVISORY)]
+- Current Weather: ${weatherContext.temperature}°C, ${weatherContext.condition}
+- Humidity: ${weatherContext.humidity}%
+- Wind Speed: ${weatherContext.windSpeed} km/h
+- Lawigan Waves Height: ${weatherContext.waveHeight || "0.8"}m
+- Lawigan Surf Status: ${weatherContext.surfStatus || "Optimal Swells"}
+- Lawigan Surf Advice: ${weatherContext.surfAdvice || ""}
+- Instructions for Surfing/Weather Queries: Refer to this live data to answer any questions about weather, wind force, wave height, or surfing feasibility in Lawigan today. Always match this data in your replies.
+`;
+    }
+
     // System instruction embedding Bislig's complete tourism profile for 100% grounding
     const systemInstruction = `
 You are Romeo, the official, intelligent digital ambassador and virtual concierge for Bislig City Tourism, Surigao del Sur, Philippines.
 Your mission is to welcome travelers, answer questions with pristine accuracy, and help them plan their perfect eco-adventure in Bislig and surrounding areas.
+
+${liveConditionsText}
 
 Verify your answers against this official Bislig Tourism Database:
 
@@ -298,6 +314,9 @@ Verify your answers against this official Bislig Tourism Database:
 5. Hinayagan Cave: Limestone cave with spectacular ceiling skylight letting sunbeams pierce through at 11:00 AM - 1:00 PM, illuminating a green underground pool. Stalactites & stalagmites. Location: Brgy. San Jose, 12km (20 mins). Fee: ₱30.00 (includes safety helmet and local guide). Hours: 8:00 AM - 4:00 PM.
 6. Lake 77: Tranquil mirror-like eco-lake bordered by lush forest canopy. Kayaking (₱100/hr) and peaceful floating bamboo cottages. Location: Brgy. Sibaroy, 15km (25 mins). Fee: ₱30.00. Hours: 7:00 AM - 5:00 PM.
 
+[LAWIGAN SURF POINT]
+Location: Barangay Lawigan, Bislig City. A premier surfing spot facing the Pacific Ocean. Features beautiful right-hand reef breaks and clean glassy swells. Best months for surfing: November to April (Amihan monsoon season), though surfable waves roll in year-round. Surfboard rental is around ₱200/hour, with friendly local instructors available. Excellent beach vibe and local surfing community.
+
 [DINING & CAFES]
 - Food in a Box: Seafood, garlic-butter mud crabs, squid sisig, tuna sashimi. Price: ₱250 - ₱600/person. Hours: 10 AM - 10 PM.
 - Brew Side Cafe: Specialty cold brews, artisan pastries, tablea lava cake. Price: ₱120 - ₱250/person. Hours: 8 AM - 11 PM.
@@ -308,6 +327,11 @@ Verify your answers against this official Bislig Tourism Database:
 - Hinatuan Cold Spring Resort: Freshwater spring resort, overnight cabins. Price: ₱1,200 - ₱3,500/night.
 - Kawa-Kawa Jungle Bath & Lodge: Rainforest lodge with traditional hot stone kawa baths. Price: ₱1,800 - ₱4,000/night.
 - Paper Country Inn: Well-known central business hotel in Bislig proper.
+
+[ESTABLISHMENTS & SERVICES]
+- Mangagoy Terminal: The main transport hub in Bislig City.
+- Gaisano Capital Bislig: Main shopping mall in the city.
+- Bislig City Baywalk: Scenic waterfront park, perfect for evening walks, street food, and viewing the sunrise.
 
 [EVENTS & FESTIVALS]
 - Karawasan Festival (Sept 17 - 18): Cultural dance representing the Kamayo tribe's appreciation of crab abundance (Karawasan means crabs).
