@@ -87,39 +87,108 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [fileMimeType, setFileMimeType] = useState<string>("text/plain");
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [isAnalyzingFile, setIsAnalyzingFile] = useState<boolean>(false);
+  const [selectedOfficeIdx, setSelectedOfficeIdx] = useState<number>(0);
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
     return saved ? JSON.parse(saved) : {
       organizationName: "Bislig City Local Government Unit",
-      targetOffice: "Public Information & Tourism Operations",
-      respondentCount: 27,
       analysisScope: "Digital Service Readiness & Administrative Efficiency",
-      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most departments are willing to adopt digital tools (85%) but cite budget (60%) and training (40%) as primary barriers.",
-      bottlenecks: [
-        { name: "Manual Data Entry & Paper Filing", percentage: 74 },
-        { name: "Slow Response in Frontline Inquiries", percentage: 53 },
-        { name: "Lack of Centralized Records Management", percentage: 41 }
-      ],
-      digitalMaturityKPIs: {
-        willingness: 85,
-        trainingNeed: 40,
-        budgetBarrier: 60
-      },
-      recommendations: [
+      executiveSummary: "Based on survey responses across multiple departments and local businesses, we identified shared bottlenecks in manual administrative workflows and response times. The BFO Diagnostics Workbench recommends division-specific online forms, QR-coded permit verification systems, and print cue scheduling tools to streamline local operations.",
+      offices: [
         {
-          problem: "Slow customer response",
-          solutions: ["BFO Citizen Chatbot", "Public CRM System", "Auto Reply Desk"],
-          benefits: "Improve response time by up to 90%."
+          officeName: "Bislig City Chamber of Commerce & Industry",
+          bottlenecks: [
+            { name: "Manual Member Registration & Invoicing", percentage: 78 },
+            { name: "Delayed Business Coordination Updates", percentage: 55 }
+          ],
+          digitalMaturityKPIs: {
+            willingness: 90,
+            trainingNeed: 35,
+            budgetBarrier: 50
+          },
+          recommendations: [
+            {
+              problem: "Manual Member Registration & Paper Billing",
+              solutions: ["Online Chamber Portal", "Automated Invoice Billing", "Consolidated Directory Search"],
+              benefits: "Saves up to 15 hours per week of volunteer administrative tracking and speeds up member applications."
+            }
+          ]
         },
         {
-          problem: "Manual administrative work",
-          solutions: ["Zapier Cloud Automation", "Google Workspace Migration", "Digital Form Hub"],
-          benefits: "Saves up to 15 hours of manual work per week."
+          officeName: "CVA Printing Services",
+          bottlenecks: [
+            { name: "Manual Order Queue Tracking", percentage: 70 },
+            { name: "Paper-based Billing & Invoice Handshake", percentage: 65 }
+          ],
+          digitalMaturityKPIs: {
+            willingness: 80,
+            trainingNeed: 50,
+            budgetBarrier: 70
+          },
+          recommendations: [
+            {
+              problem: "Manual Order Intake Tracking",
+              solutions: ["Print Job Board System", "SMS Automatic Notification Gateway"],
+              benefits: "Increases printing order processing speed by 40% and keeps clients informed of order status."
+            }
+          ]
         },
         {
-          problem: "Limited marketing reach",
-          solutions: ["Tourism Promotion Scheduler", "Targeted Tourist Campaigns", "SEO Optimizations"],
-          benefits: "Increases tourism inquiries and organic traffic by 40%."
+          officeName: "City Veterinary Services Office",
+          bottlenecks: [
+            { name: "Paper Animal Health Permits & Clearances", percentage: 85 },
+            { name: "Manual Consultation Scheduling & Filing", percentage: 60 }
+          ],
+          digitalMaturityKPIs: {
+            willingness: 85,
+            trainingNeed: 45,
+            budgetBarrier: 55
+          },
+          recommendations: [
+            {
+              problem: "Paper Animal Health Permits",
+              solutions: ["Online Veterinary Permit App", "QR Code Security Verification"],
+              benefits: "Cuts permit issuance time from days to minutes and facilitates instant authenticity inspections."
+            }
+          ]
+        },
+        {
+          officeName: "NEX-GEN Realty",
+          bottlenecks: [
+            { name: "Scattered Property Listing Records", percentage: 72 },
+            { name: "Slow Lead Response via Social Channels", percentage: 58 }
+          ],
+          digitalMaturityKPIs: {
+            willingness: 95,
+            trainingNeed: 30,
+            budgetBarrier: 40
+          },
+          recommendations: [
+            {
+              problem: "Scattered Property Records",
+              solutions: ["Centralized MLS Database", "Real Estate CRM Suite"],
+              benefits: "Speeds up client matches and property searches by 60%."
+            }
+          ]
+        },
+        {
+          officeName: "City Information Office - IT Division",
+          bottlenecks: [
+            { name: "Manual IT Support Ticketing", percentage: 82 },
+            { name: "Lack of Consolidated Asset Tracking", percentage: 68 }
+          ],
+          digitalMaturityKPIs: {
+            willingness: 95,
+            trainingNeed: 20,
+            budgetBarrier: 65
+          },
+          recommendations: [
+            {
+              problem: "Manual Support Ticketing",
+              solutions: ["Automated Service Desk", "Knowledge Base Portal"],
+              benefits: "Resolves IT service requests 3x faster and cuts phone calls."
+            }
+          ]
         }
       ]
     };
@@ -383,6 +452,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
       const result = await response.json();
       setAnalysisResult(result);
+      setSelectedOfficeIdx(0);
       localStorage.setItem("bfo_file_analysis_result", JSON.stringify(result));
     } catch (err: any) {
       console.error(err);
@@ -398,18 +468,25 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     
     // Construct CSV rows
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Type,Topic/Problem,Recommended Solutions,Expected Benefit/Impact\n";
+    csvContent += "Office/Department,Type,Topic/Problem,Recommended Solutions,Expected Benefit/Impact\n";
     
     // Add Executive Summary row
     const escapedSummary = analysisResult.executiveSummary.replace(/"/g, '""');
-    csvContent += `Executive Summary,"General Synthesis","N/A","${escapedSummary}"\n`;
+    csvContent += `Overall,Executive Summary,"General Synthesis","N/A","${escapedSummary}"\n`;
     
-    // Add Recommendations rows
-    analysisResult.recommendations?.forEach((rec: any) => {
-      const escapedProblem = rec.problem.replace(/"/g, '""');
-      const escapedSolutions = rec.solutions.join(" | ").replace(/"/g, '""');
-      const escapedBenefits = rec.benefits.replace(/"/g, '""');
-      csvContent += `Recommendation,"${escapedProblem}","${escapedSolutions}","${escapedBenefits}"\n`;
+    // Add Recommendations for each office
+    analysisResult.offices?.forEach((off: any) => {
+      const escapedOffice = off.officeName.replace(/"/g, '""');
+      
+      // Add maturity metrics as rows
+      csvContent += `"${escapedOffice}",Maturity Metrics,"Willingness: ${off.digitalMaturityKPIs?.willingness}% | Training: ${off.digitalMaturityKPIs?.trainingNeed}%","Budget Barrier: ${off.digitalMaturityKPIs?.budgetBarrier}%","N/A"\n`;
+      
+      off.recommendations?.forEach((rec: any) => {
+        const escapedProblem = rec.problem.replace(/"/g, '""');
+        const escapedSolutions = rec.solutions.join(" | ").replace(/"/g, '""');
+        const escapedBenefits = rec.benefits.replace(/"/g, '""');
+        csvContent += `"${escapedOffice}",Recommendation,"${escapedProblem}","${escapedSolutions}","${escapedBenefits}"\n`;
+      });
     });
     
     // Trigger download
@@ -485,19 +562,17 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setFontSize(7.5);
       doc.setTextColor(156, 163, 175); // gray-400
       doc.text(`Organization: ${analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}`, pageWidth - 15, 25, { align: "right" });
-      doc.text(`Office/Dept: ${analysisResult.targetOffice || "Public Information & Tourism Operations"}`, pageWidth - 15, 29, { align: "right" });
-      doc.text(`Scope: ${analysisResult.analysisScope || "Operational Efficiency"}  |  Sample: ${analysisResult.respondentCount || 27} responses`, pageWidth - 15, 33, { align: "right" });
+      doc.text(`Scope: ${analysisResult.analysisScope || "Operational Efficiency"}`, pageWidth - 15, 29, { align: "right" });
 
       y = 48;
 
-      // 1. Executive Summary Section
+      // 1. Overall Executive Summary Section (on page 1)
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text("BFO Executive Summary", 15, y);
+      doc.text("BFO Overall Executive Summary", 15, y);
       y += 5;
 
-      // Draw background card for Executive Summary
       const summaryLines = doc.splitTextToSize(analysisResult.executiveSummary, pageWidth - 38);
       const cardHeight = summaryLines.length * 4.5 + 8;
       
@@ -506,135 +581,168 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setLineWidth(0.5);
       doc.roundedRect(15, y, pageWidth - 30, cardHeight, 3, 3, "FD");
 
-      // Write Summary text inside card
       doc.setTextColor(51, 65, 85);
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9.5);
-      
       let textY = y + 6;
       summaryLines.forEach((line: string) => {
         doc.text(line, 19, textY);
         textY += 4.5;
       });
 
-      y += cardHeight + 8;
+      y += cardHeight + 12;
 
-      // New Section: Detailed Diagnostic Metrics & Infographics
-      checkPageBreak(42);
-      doc.setTextColor(15, 23, 42);
+      // Draw overall project scope
+      doc.setTextColor(71, 85, 105);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text("Operational Diagnostics & Digital Maturity", 15, y);
-      y += 5;
-
-      // Bottlenecks card (Left)
-      const graphWidth = 90;
-      doc.setFillColor(248, 250, 252);
-      doc.setDrawColor(226, 232, 240);
-      doc.setLineWidth(0.3);
-      doc.roundedRect(15, y, graphWidth, 34, 3, 3, "FD");
-
-      doc.setTextColor(15, 23, 42);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.text("Top Operational Bottlenecks", 19, y + 6);
-
-      let barY = y + 13;
-      analysisResult.bottlenecks?.forEach((item: any) => {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(7.5);
-        doc.setTextColor(71, 85, 105);
-        doc.text(`${item.name} (${item.percentage}%)`, 19, barY);
-        
-        // Background track
-        doc.setFillColor(226, 232, 240);
-        doc.rect(19, barY + 1.8, 80, 2, "F");
-        
-        // Fill bar
-        doc.setFillColor(0, 71, 161);
-        doc.rect(19, barY + 1.8, 80 * (item.percentage / 100), 2, "F");
-        
-        barY += 8;
-      });
-
-      // Digital Readiness card (Right)
-      const metricsWidth = 85;
-      doc.setFillColor(248, 250, 252);
-      doc.roundedRect(110, y, metricsWidth, 34, 3, 3, "FD");
-
-      doc.setTextColor(15, 23, 42);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.text("Digital Readiness Indicators", 114, y + 6);
-
+      doc.setFontSize(9);
+      doc.text("Consulting Project Parameters:", 15, y);
+      y += 6;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(51, 65, 85);
-      
-      doc.text(` Willingness to Adopt Tools:      ${analysisResult.digitalMaturityKPIs?.willingness}%`, 114, y + 14);
-      doc.text(` Needs Digital Training:            ${analysisResult.digitalMaturityKPIs?.trainingNeed}%`, 114, y + 21);
-      doc.text(` Cites Budget Barrier:              ${analysisResult.digitalMaturityKPIs?.budgetBarrier}%`, 114, y + 28);
+      doc.text(`• LGU Entity / Client: ${analysisResult.organizationName || "Bislig City LGU"}`, 18, y);
+      doc.text(`• Project Scope Focus: ${analysisResult.analysisScope || "Operational Diagnostics"}`, 18, y + 4.5);
+      doc.text(`• Departments Analyzed: ${analysisResult.offices?.length || 0} Offices / Businesses`, 18, y + 9);
 
-      y += 42;
+      // 2. Loop through each office and draw its page
+      analysisResult.offices?.forEach((off: any, idx: number) => {
+        doc.addPage();
+        
+        // Draw Header Banner on new page
+        doc.setFillColor(15, 23, 42);
+        doc.rect(0, 0, pageWidth, 28, "F");
 
-      // 2. Solutions Recommendations
-      checkPageBreak(25);
-      doc.setTextColor(15, 23, 42);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text("BFO Solution Recommendations Plan", 15, y);
-      y += 6;
+        // Small circular logo
+        if (logoImg) {
+          doc.setFillColor(255, 255, 255);
+          doc.circle(22, 14, 8, "F");
+          doc.addImage(logoImg, "JPEG", 16.5, 8.5, 11, 11);
+        }
 
-      // Loop through recommendations
-      analysisResult.recommendations?.forEach((rec: any, idx: number) => {
-        const probText = `Problem #${idx + 1}: ${rec.problem}`;
-        const solText = `Recommended Solutions: ${rec.solutions.join(", ")}`;
-        const benText = `Expected Benefit: ${rec.benefits}`;
+        // Header Title
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 12, { align: "right" });
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(251, 140, 0);
+        doc.text(`Department Diagnostic: ${off.officeName}`, pageWidth - 15, 17, { align: "right" });
+        doc.setTextColor(156, 163, 175);
+        doc.text(`Part ${idx + 1} of ${analysisResult.offices.length}  |  Bislig City LGU`, pageWidth - 15, 21, { align: "right" });
 
-        const probLines = doc.splitTextToSize(probText, pageWidth - 38);
-        const solLines = doc.splitTextToSize(solText, pageWidth - 38);
-        const benLines = doc.splitTextToSize(benText, pageWidth - 38);
+        y = 36;
 
-        const recHeight = (probLines.length + solLines.length + benLines.length) * 4.5 + 14;
+        // Bottlenecks & Digital Readiness charts (side-by-side)
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10.5);
+        doc.text("Operational Diagnostics & Digital Maturity", 15, y);
+        y += 5;
 
-        checkPageBreak(recHeight);
-
-        // Draw Recommendation card
-        doc.setFillColor(248, 250, 252); // sky-50/50
-        doc.setDrawColor(226, 232, 240); // slate-200
+        // Bottlenecks card (Left)
+        const graphWidth = 90;
+        doc.setFillColor(248, 250, 252);
+        doc.setDrawColor(226, 232, 240);
         doc.setLineWidth(0.3);
-        doc.roundedRect(15, y, pageWidth - 30, recHeight, 3, 3, "FD");
+        doc.roundedRect(15, y, graphWidth, 34, 3, 3, "FD");
 
-        let insideY = y + 6;
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.text("Top Operational Bottlenecks", 19, y + 5.5);
 
-        // Draw problem heading
-        doc.setTextColor(225, 29, 72); // rose-600
+        let barY = y + 12;
+        off.bottlenecks?.forEach((item: any) => {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7);
+          doc.setTextColor(71, 85, 105);
+          doc.text(`${item.name} (${item.percentage}%)`, 19, barY);
+          
+          // Background track
+          doc.setFillColor(226, 232, 240);
+          doc.rect(19, barY + 1.8, 80, 1.8, "F");
+          
+          // Fill bar
+          doc.setFillColor(0, 71, 161);
+          doc.rect(19, barY + 1.8, 80 * (item.percentage / 100), 1.8, "F");
+          
+          barY += 7.5;
+        });
+
+        // Digital Readiness card (Right)
+        const metricsWidth = 85;
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(110, y, metricsWidth, 34, 3, 3, "FD");
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.text("Digital Readiness Indicators", 114, y + 5.5);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(51, 65, 85);
+        
+        doc.text(` Willingness to Adopt Tools:      ${off.digitalMaturityKPIs?.willingness}%`, 114, y + 13);
+        doc.text(` Needs Digital Training:            ${off.digitalMaturityKPIs?.trainingNeed}%`, 114, y + 20);
+        doc.text(` Cites Budget Barrier:              ${off.digitalMaturityKPIs?.budgetBarrier}%`, 114, y + 27);
+
+        y += 41;
+
+        // Recommendations List for this Office
+        doc.setTextColor(15, 23, 42);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
-        probLines.forEach((line: string) => {
-          doc.text(line, 19, insideY);
-          insideY += 4.5;
-        });
+        doc.text("Recommended Digital Solutions Plan", 15, y);
+        y += 5;
 
-        // Draw solutions
-        doc.setTextColor(30, 41, 59); // slate-800
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        solLines.forEach((line: string) => {
-          doc.text(line, 19, insideY);
-          insideY += 4.5;
-        });
+        off.recommendations?.forEach((rec: any, recIdx: number) => {
+          const probText = `Problem #${recIdx + 1}: ${rec.problem}`;
+          const solText = `Recommended Solutions: ${rec.solutions.join(", ")}`;
+          const benText = `Expected Benefit: ${rec.benefits}`;
 
-        // Draw benefits
-        doc.setTextColor(3, 105, 161); // sky-700
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        benLines.forEach((line: string) => {
-          doc.text(line, 19, insideY);
-          insideY += 4.5;
-        });
+          const probLines = doc.splitTextToSize(probText, pageWidth - 38);
+          const solLines = doc.splitTextToSize(solText, pageWidth - 38);
+          const benLines = doc.splitTextToSize(benText, pageWidth - 38);
 
-        y += recHeight + 6;
+          const recHeight = (probLines.length + solLines.length + benLines.length) * 4 + 11;
+
+          checkPageBreak(recHeight);
+
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(226, 232, 240);
+          doc.roundedRect(15, y, pageWidth - 30, recHeight, 3, 3, "FD");
+
+          let insideY = y + 5.5;
+          doc.setTextColor(225, 29, 72);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9);
+          probLines.forEach((line: string) => {
+            doc.text(line, 19, insideY);
+            insideY += 4;
+          });
+
+          doc.setTextColor(30, 41, 59);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          solLines.forEach((line: string) => {
+            doc.text(line, 19, insideY);
+            insideY += 4;
+          });
+
+          doc.setTextColor(3, 105, 161);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8);
+          benLines.forEach((line: string) => {
+            doc.text(line, 19, insideY);
+            insideY += 4;
+          });
+
+          y += recHeight + 5;
+        });
       });
 
       // Draw footers on all pages
@@ -1441,69 +1549,14 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Office / Department</span>
-                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.targetOffice || "Public Information & Tourism"}</span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Analysis Scope</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Analysis Scope Focus</span>
                       <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.analysisScope || "Operational Efficiency"}</span>
                     </div>
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Dataset Size</span>
-                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.respondentCount || 27} Responses processed</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diagnostics Infographics Panel */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-                  {/* Top Bottlenecks Bar Graph (7 cols) */}
-                  <div className="md:col-span-7 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
-                    <div>
-                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Operational Metrics</span>
-                      <h4 className="font-bold text-xs text-slate-800">Top Operational Bottlenecks</h4>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {analysisResult.bottlenecks?.map((item: any, idx: number) => (
-                        <div key={idx} className="space-y-1">
-                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
-                            <span className="truncate max-w-[200px]">{item.name}</span>
-                            <span className="text-[#0047A1] font-mono">{item.percentage}%</span>
-                          </div>
-                          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] rounded-full transition-all duration-500" 
-                              style={{ width: `${item.percentage}%` }} 
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Digital Maturity Indicator Blocks (5 cols) */}
-                  <div className="md:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between gap-4">
-                    <div>
-                      <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Readiness Check</span>
-                      <h4 className="font-bold text-xs text-slate-800">Digital Maturity KPIs</h4>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-between bg-emerald-50/40 border border-emerald-100 p-2 px-3 rounded-xl">
-                        <span className="text-[10px] font-bold text-slate-600">Willingness to Adopt</span>
-                        <span className="text-xs font-black text-emerald-700">{analysisResult.digitalMaturityKPIs?.willingness}%</span>
-                      </div>
-                      <div className="flex items-center justify-between bg-amber-50/40 border border-amber-100 p-2 px-3 rounded-xl">
-                        <span className="text-[10px] font-bold text-slate-600">Training Needed</span>
-                        <span className="text-xs font-black text-amber-700">{analysisResult.digitalMaturityKPIs?.trainingNeed}%</span>
-                      </div>
-                      <div className="flex items-center justify-between bg-rose-50/40 border border-rose-100 p-2 px-3 rounded-xl">
-                        <span className="text-[10px] font-bold text-slate-600">Budget Barrier</span>
-                        <span className="text-xs font-black text-rose-700">{analysisResult.digitalMaturityKPIs?.budgetBarrier}%</span>
-                      </div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Scope Size</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.offices?.length || 0} Distinct Offices Analyzed</span>
                     </div>
                   </div>
                 </div>
@@ -1516,7 +1569,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                     <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-100">01</div>
                     <div>
                       <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Executive Summary</h3>
-                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Insights</p>
+                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Synthesis</p>
                     </div>
                   </div>
 
@@ -1525,55 +1578,139 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   </div>
                 </div>
 
-                {/* Recommendation Engine Card */}
-                <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 border border-sky-100">02</div>
-                    <div>
-                      <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Solution Recommendations</h3>
-                      <p className="text-[9px] font-bold text-sky-600 uppercase tracking-widest mt-1">Custom Digital Blueprints</p>
-                    </div>
+                {/* Office Breakdown Selector Tab bar */}
+                <div className="space-y-2">
+                  <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block px-1">Select Office/Department Diagnostics</span>
+                  <div className="bg-white p-2 rounded-2xl border border-slate-200/60 shadow-sm flex flex-wrap gap-1.5">
+                    {analysisResult.offices?.map((off: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedOfficeIdx(idx)}
+                        className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                          selectedOfficeIdx === idx
+                            ? "bg-[#0047A1] text-white shadow-md shadow-blue-500/10"
+                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                        }`}
+                      >
+                        {off.officeName}
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="space-y-5">
-                    {analysisResult.recommendations?.map((rec: any, idx: number) => (
-                      <div key={idx} className="p-5 bg-slate-50 border border-slate-200/50 rounded-2xl space-y-4 hover:border-[#0047A1]/20 transition-all hover:bg-white hover:shadow-md">
-                        
-                        {/* Identified Problem */}
-                        <div>
-                          <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Identified Problem</span>
-                          <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                            <span>{rec.problem}</span>
-                          </span>
-                        </div>
-
-                        {/* Recommended Solutions */}
-                        <div>
-                          <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-2">Recommended Digital Solutions</span>
-                          <div className="flex flex-wrap gap-2">
-                            {rec.solutions?.map((sol: string, sIdx: number) => (
-                              <span key={sIdx} className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                                <Check className="w-3 h-3 text-emerald-600" />
-                                <span>{sol}</span>
-                              </span>
+                {(() => {
+                  const activeOffice = analysisResult.offices?.[selectedOfficeIdx] || analysisResult.offices?.[0];
+                  if (!activeOffice) return null;
+                  
+                  return (
+                    <>
+                      {/* Diagnostics Infographics Panel for Active Office */}
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 animate-fadeIn">
+                        {/* Top Bottlenecks Bar Graph (7 cols) */}
+                        <div className="md:col-span-7 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
+                          <div>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">
+                              {activeOffice.officeName} Metrics
+                            </span>
+                            <h4 className="font-bold text-xs text-slate-800">Top Operational Bottlenecks</h4>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            {activeOffice.bottlenecks?.map((item: any, idx: number) => (
+                              <div key={idx} className="space-y-1">
+                                <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
+                                  <span className="truncate max-w-[200px]">{item.name}</span>
+                                  <span className="text-[#0047A1] font-mono">{item.percentage}%</span>
+                                </div>
+                                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] rounded-full transition-all duration-500" 
+                                    style={{ width: `${item.percentage}%` }} 
+                                  />
+                                </div>
+                              </div>
                             ))}
                           </div>
                         </div>
 
-                        {/* Expected Benefits */}
-                        <div className="bg-sky-50/50 border border-sky-100 p-3.5 rounded-xl text-slate-600 flex items-start gap-2.5">
-                          <TrendingUp className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+                        {/* Digital Maturity Indicator Blocks (5 cols) */}
+                        <div className="md:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col justify-between gap-4">
                           <div>
-                            <span className="text-[9px] font-black uppercase tracking-wider text-sky-700 block mb-0.5">Expected Benefit</span>
-                            <p className="text-xs font-semibold text-slate-700">{rec.benefits}</p>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Readiness Check</span>
+                            <h4 className="font-bold text-xs text-slate-800">Digital Maturity KPIs</h4>
+                          </div>
+
+                          <div className="space-y-2.5">
+                            <div className="flex items-center justify-between bg-emerald-50/40 border border-emerald-100 p-2 px-3 rounded-xl">
+                              <span className="text-[10px] font-bold text-slate-600">Willingness to Adopt</span>
+                              <span className="text-xs font-black text-emerald-700">{activeOffice.digitalMaturityKPIs?.willingness}%</span>
+                            </div>
+                            <div className="flex items-center justify-between bg-amber-50/40 border border-amber-100 p-2 px-3 rounded-xl">
+                              <span className="text-[10px] font-bold text-slate-600">Training Needed</span>
+                              <span className="text-xs font-black text-amber-700">{activeOffice.digitalMaturityKPIs?.trainingNeed}%</span>
+                            </div>
+                            <div className="flex items-center justify-between bg-rose-50/40 border border-rose-100 p-2 px-3 rounded-xl">
+                              <span className="text-[10px] font-bold text-slate-600">Budget Barrier</span>
+                              <span className="text-xs font-black text-rose-700">{activeOffice.digitalMaturityKPIs?.budgetBarrier}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Recommendation Engine Card */}
+                      <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm">
+                        <div className="flex items-center gap-3 mb-5">
+                          <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 border border-sky-100">02</div>
+                          <div>
+                            <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Solution Recommendations</h3>
+                            <p className="text-[9px] font-bold text-sky-600 uppercase tracking-widest mt-1">
+                              Custom Blueprints for {activeOffice.officeName}
+                            </p>
                           </div>
                         </div>
 
+                        <div className="space-y-5">
+                          {activeOffice.recommendations?.map((rec: any, idx: number) => (
+                            <div key={idx} className="p-5 bg-slate-50 border border-slate-200/50 rounded-2xl space-y-4 hover:border-[#0047A1]/20 transition-all hover:bg-white hover:shadow-md animate-fadeIn">
+                              
+                              {/* Identified Problem */}
+                              <div>
+                                <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Identified Problem</span>
+                                <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                  <span>{rec.problem}</span>
+                                </span>
+                              </div>
+
+                              {/* Recommended Solutions */}
+                              <div>
+                                <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-2">Recommended Digital Solutions</span>
+                                <div className="flex flex-wrap gap-2">
+                                  {rec.solutions?.map((sol: string, sIdx: number) => (
+                                    <span key={sIdx} className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                                      <Check className="w-3 h-3 text-emerald-600" />
+                                      <span>{sol}</span>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Expected Benefits */}
+                              <div className="bg-sky-50/50 border border-sky-100 p-3.5 rounded-xl text-slate-600 flex items-start gap-2.5">
+                                <TrendingUp className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+                                <div>
+                                  <span className="text-[9px] font-black uppercase tracking-wider text-sky-700 block mb-0.5">Expected Benefit</span>
+                                  <p className="text-xs font-semibold text-slate-700">{rec.benefits}</p>
+                                </div>
+                              </div>
+
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </>
+                  );
+                })()}
 
               </div>
             ) : (

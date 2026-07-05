@@ -323,6 +323,8 @@ app.post("/api/admin/analyze-file", async (req, res) => {
 You are a top-tier digital transformation consultant and business analyst. 
 Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, PDFs, or text files) and generate a high-impact, professional Executive Summary and an actionable digital Solutions Recommendation Engine.
 
+IMPORTANT: The uploaded dataset contains records from multiple distinct offices, departments, or businesses (under columns such as 'Office / Department / Organization / Business Name'). You MUST identify each unique office/department/business and provide a detailed diagnostic breakdown (including bottlenecks, digital maturity KPIs, and custom solution recommendations) FOR EACH INDIVIDUAL OFFICE/DEPARTMENT/BUSINESS in the 'offices' array.
+
 If a custom prompt or question is provided, you MUST focus your summary or recommendations on answering or addressing that specific prompt/question.
 `;
 
@@ -363,76 +365,72 @@ Analyze this data and return the results in the requested JSON structure.
           type: Type.OBJECT,
           required: [
             "organizationName", 
-            "targetOffice", 
-            "respondentCount", 
             "analysisScope", 
             "executiveSummary", 
-            "bottlenecks", 
-            "digitalMaturityKPIs", 
-            "recommendations"
+            "offices"
           ],
           properties: {
             organizationName: {
               type: Type.STRING,
-              description: "The name of the company, local government unit, or department identified in the dataset."
-            },
-            targetOffice: {
-              type: Type.STRING,
-              description: "The specific division, office, or sector analyzed (e.g. Tourism Operations, Customer Relations, IT Support)."
-            },
-            respondentCount: {
-              type: Type.INTEGER,
-              description: "The number of survey responses or records analyzed."
+              description: "The name of the company or parent LGU identified in the dataset."
             },
             analysisScope: {
               type: Type.STRING,
-              description: "The main focus/scope of the dataset (e.g., Digital Tool Adoption, Frontline Services Readiness, Operational Efficiency)."
+              description: "The main focus/scope of the dataset."
             },
             executiveSummary: {
               type: Type.STRING,
-              description: "A comprehensive executive summary of the file data. It should be 2-3 sentences long, highly professional, with specific stats if found."
+              description: "A comprehensive executive summary synthesizing all records. It should be 2-3 sentences long, highly professional, with specific stats if found."
             },
-            bottlenecks: {
+            offices: {
               type: Type.ARRAY,
-              description: "Top 3 operational bottlenecks with their percentage impact values.",
+              description: "Detailed analysis broken down per office/department/business found in the dataset.",
               items: {
                 type: Type.OBJECT,
-                required: ["name", "percentage"],
+                required: [
+                  "officeName", 
+                  "bottlenecks", 
+                  "digitalMaturityKPIs", 
+                  "recommendations"
+                ],
                 properties: {
-                  name: { type: Type.STRING, description: "Bottleneck description (e.g. Manual Data Entry)." },
-                  percentage: { type: Type.INTEGER, description: "Percentage value from 0 to 100." }
-                }
-              }
-            },
-            digitalMaturityKPIs: {
-              type: Type.OBJECT,
-              description: "Key digital maturity metric percentages.",
-              required: ["willingness", "trainingNeed", "budgetBarrier"],
-              properties: {
-                willingness: { type: Type.INTEGER, description: "Percentage of willingness to adopt digital tools." },
-                trainingNeed: { type: Type.INTEGER, description: "Percentage of training resources required." },
-                budgetBarrier: { type: Type.INTEGER, description: "Percentage citing budget as primary barrier." }
-              }
-            },
-            recommendations: {
-              type: Type.ARRAY,
-              description: "A list of actionable BFO recommendations for the challenges/problems identified in the file.",
-              items: {
-                type: Type.OBJECT,
-                required: ["problem", "solutions", "benefits"],
-                properties: {
-                  problem: {
+                  officeName: {
                     type: Type.STRING,
-                    description: "The specific operational challenge or pain point identified."
+                    description: "The name of the specific department, office, or business (e.g. City Veterinary Services Office)."
                   },
-                  solutions: {
+                  bottlenecks: {
                     type: Type.ARRAY,
-                    items: { type: Type.STRING },
-                    description: "List of recommended digital tools or solutions."
+                    description: "Top 2-3 operational bottlenecks for this specific office.",
+                    items: {
+                      type: Type.OBJECT,
+                      required: ["name", "percentage"],
+                      properties: {
+                        name: { type: Type.STRING },
+                        percentage: { type: Type.INTEGER }
+                      }
+                    }
                   },
-                  benefits: {
-                    type: Type.STRING,
-                    description: "The expected benefit or why this solution works."
+                  digitalMaturityKPIs: {
+                    type: Type.OBJECT,
+                    required: ["willingness", "trainingNeed", "budgetBarrier"],
+                    properties: {
+                      willingness: { type: Type.INTEGER },
+                      trainingNeed: { type: Type.INTEGER },
+                      budgetBarrier: { type: Type.INTEGER }
+                    }
+                  },
+                  recommendations: {
+                    type: Type.ARRAY,
+                    description: "A list of actionable BFO recommendations for this specific office.",
+                    items: {
+                      type: Type.OBJECT,
+                      required: ["problem", "solutions", "benefits"],
+                      properties: {
+                        problem: { type: Type.STRING },
+                        solutions: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        benefits: { type: Type.STRING }
+                      }
+                    }
                   }
                 }
               }
