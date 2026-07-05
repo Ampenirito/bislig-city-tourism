@@ -336,11 +336,14 @@ app.post("/api/admin/analyze-file", async (req, res) => {
 
     const systemInstruction = `
 You are a top-tier digital transformation consultant and business analyst. 
-Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, PDFs, or text files) and generate a high-impact, professional Executive Summary and an actionable digital Solutions Recommendation Engine.
+Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, PDFs, or images) and generate a high-impact, professional consulting summary/report and an optional digital Solutions Recommendation Engine.
 
-IMPORTANT: The uploaded dataset contains records from multiple distinct offices, departments, or businesses (under columns such as 'Office / Department / Organization / Business Name'). You MUST identify each unique office/department/business and provide a detailed diagnostic breakdown (including bottlenecks, digital maturity KPIs, and custom solution recommendations) FOR EACH INDIVIDUAL OFFICE/DEPARTMENT/BUSINESS in the 'offices' array.
+IMPORTANT: The uploaded file may be of any type (e.g. a legal contract, a photo of a receipt, an image of a document, a general spreadsheet, or survey results). You MUST analyze it, identify its primary context/purpose, and generate:
+1. 'documentTitle': A clean, descriptive title for the document.
+2. 'overallSummary': A comprehensive, detailed analysis report formatted in Markdown. It should explain the contents, key findings, stakeholders, terms, and direct answers to any custom prompts/questions, utilizing clean headings (###), bullet points, or lists.
+3. 'offices': (Optional) Populate this array ONLY if the uploaded document specifically contains structured survey feedback or operational workflows representing multiple offices/departments. If it is a generic image/document (like a deed of sale, a single receipt, or a general report), return an empty array [] for 'offices'.
 
-If a custom prompt or question is provided, you MUST focus your summary or recommendations on answering or addressing that specific prompt/question.
+If a custom prompt or question is provided, you MUST focus your summary and findings on answering or addressing that specific prompt/question.
 `;
 
     let userPrompt: any;
@@ -379,27 +382,22 @@ Analyze this data and return the results in the requested JSON structure.
         responseSchema: {
           type: Type.OBJECT,
           required: [
-            "organizationName", 
-            "analysisScope", 
-            "executiveSummary", 
+            "documentTitle", 
+            "overallSummary",
             "offices"
           ],
           properties: {
-            organizationName: {
+            documentTitle: {
               type: Type.STRING,
-              description: "The name of the company or parent LGU identified in the dataset."
+              description: "A professional title representing the uploaded document or image."
             },
-            analysisScope: {
+            overallSummary: {
               type: Type.STRING,
-              description: "The main focus/scope of the dataset."
-            },
-            executiveSummary: {
-              type: Type.STRING,
-              description: "A comprehensive executive summary synthesizing all records. It should be 2-3 sentences long, highly professional, with specific stats if found."
+              description: "A comprehensive, rich-text analysis report written in Markdown. This should summarize the entire document, explain its contents, key findings, stakeholders, terms, and direct answers to any user-provided prompts/questions in detail, utilizing clear headings (###), bullet points, or lists."
             },
             offices: {
               type: Type.ARRAY,
-              description: "Detailed analysis broken down per office/department/business found in the dataset.",
+              description: "Optional. Detailed metrics grouped per office/department, only if the uploaded file contains structured operational or survey data. Return an empty array [] if not applicable.",
               items: {
                 type: Type.OBJECT,
                 required: [

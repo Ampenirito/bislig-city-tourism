@@ -54,6 +54,49 @@ const PAGES = [
 
 const DEVICE_TYPES = ["Desktop", "Mobile", "Tablet"] as const;
 
+// Helper to render basic markdown elements into clean JSX
+const renderMarkdown = (text: string) => {
+  if (!text) return null;
+  const lines = text.split("\n");
+  return lines.map((line, idx) => {
+    // Bold parsing: **text**
+    const parseBold = (str: string) => {
+      const parts = str.split(/\*\*(.*?)\*\*/g);
+      return parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="font-bold text-slate-800">{part}</strong> : part);
+    };
+
+    const trimmed = line.trim();
+    if (trimmed.startsWith("### ")) {
+      return <h4 key={idx} className="text-xs font-black text-slate-700 mt-4 mb-1.5 uppercase tracking-wider">{parseBold(trimmed.slice(4))}</h4>;
+    }
+    if (trimmed.startsWith("## ")) {
+      return <h3 key={idx} className="text-sm font-black text-[#0047A1] mt-5 mb-2 font-serif">{parseBold(trimmed.slice(3))}</h3>;
+    }
+    if (trimmed.startsWith("# ")) {
+      return <h2 key={idx} className="text-base font-black text-slate-900 mt-6 mb-3 font-serif border-b border-slate-200 pb-1">{parseBold(trimmed.slice(2))}</h2>;
+    }
+    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      return (
+        <li key={idx} className="ml-4 list-disc text-xs text-slate-600 my-1 pl-1">
+          {parseBold(trimmed.slice(2))}
+        </li>
+      );
+    }
+    if (/^\d+\.\s/.test(trimmed)) {
+      const match = trimmed.match(/^(\d+)\.\s(.*)/);
+      return (
+        <li key={idx} className="ml-4 list-decimal text-xs text-slate-600 my-1 pl-1">
+          {parseBold(match ? match[2] : trimmed)}
+        </li>
+      );
+    }
+    if (trimmed === "") {
+      return <div key={idx} className="h-2" />;
+    }
+    return <p key={idx} className="text-xs text-slate-600 leading-relaxed my-1.5">{parseBold(line)}</p>;
+  });
+};
+
 export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => void }) {
   // Login State
   const [username, setUsername] = useState("");
@@ -92,9 +135,19 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
     return saved ? JSON.parse(saved) : {
-      organizationName: "Bislig City Local Government Unit",
-      analysisScope: "Digital Service Readiness & Administrative Efficiency",
-      executiveSummary: "Based on survey responses across multiple departments and local businesses, we identified shared bottlenecks in manual administrative workflows and response times. The BFO Diagnostics Workbench recommends division-specific online forms, QR-coded permit verification systems, and print cue scheduling tools to streamline local operations.",
+      documentTitle: "Digital Service Readiness & Administrative Efficiency Diagnostic Report",
+      overallSummary: `### Executive Overview
+Based on survey responses across multiple departments and local businesses, we identified shared bottlenecks in manual administrative workflows and response times. The BFO Diagnostics Workbench recommends division-specific online forms, QR-coded permit verification systems, and print cue scheduling tools to streamline local operations.
+
+### Key Operational Challenges
+* **Manual Entry & Registration:** High administrative load on staff, delaying member registrations and business clearances.
+* **Paper-Based Permit handshakes:** Delays client coordination and animal vaccine safety processing.
+* **Lack of Automated Messaging:** Slow communication regarding printed project approvals or lead client matches.
+
+### Digital Strategy Roadmap
+1. **Develop online service portals:** Minimize foot traffic and automate queue assignments.
+2. **Standardize secure digital permits:** Enable QR codes to make validations quick and tamper-proof.
+3. **Transition to structured CRM repositories:** Centralize client listings and support requests.`,
       offices: [
         {
           officeName: "Bislig City Chamber of Commerce & Industry",
@@ -498,24 +551,27 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Office/Department,Type,Topic/Problem,Recommended Solutions,Expected Benefit/Impact\n";
     
-    // Add Executive Summary row
-    const escapedSummary = analysisResult.executiveSummary.replace(/"/g, '""');
-    csvContent += `Overall,Executive Summary,"General Synthesis","N/A","${escapedSummary}"\n`;
+    // Add Summary report row
+    const escapedSummary = (analysisResult.overallSummary || "").replace(/"/g, '""');
+    const escapedTitle = (analysisResult.documentTitle || "BFO Multimodal Consulting Report").replace(/"/g, '""');
+    csvContent += `Overall,Report Summary,"${escapedTitle}","N/A","${escapedSummary}"\n`;
     
-    // Add Recommendations for each office
-    analysisResult.offices?.forEach((off: any) => {
-      const escapedOffice = off.officeName.replace(/"/g, '""');
-      
-      // Add maturity metrics as rows
-      csvContent += `"${escapedOffice}",Maturity Metrics,"Willingness: ${off.digitalMaturityKPIs?.willingness}% | Training: ${off.digitalMaturityKPIs?.trainingNeed}%","Budget Barrier: ${off.digitalMaturityKPIs?.budgetBarrier}%","N/A"\n`;
-      
-      off.recommendations?.forEach((rec: any) => {
-        const escapedProblem = rec.problem.replace(/"/g, '""');
-        const escapedSolutions = rec.solutions.join(" | ").replace(/"/g, '""');
-        const escapedBenefits = rec.benefits.replace(/"/g, '""');
-        csvContent += `"${escapedOffice}",Recommendation,"${escapedProblem}","${escapedSolutions}","${escapedBenefits}"\n`;
+    // Add Recommendations for each office if they exist
+    if (analysisResult.offices && analysisResult.offices.length > 0) {
+      analysisResult.offices.forEach((off: any) => {
+        const escapedOffice = off.officeName.replace(/"/g, '""');
+        
+        // Add maturity metrics as rows
+        csvContent += `"${escapedOffice}",Maturity Metrics,"Willingness: ${off.digitalMaturityKPIs?.willingness}% | Training: ${off.digitalMaturityKPIs?.trainingNeed}%","Budget Barrier: ${off.digitalMaturityKPIs?.budgetBarrier}%","N/A"\n`;
+        
+        off.recommendations?.forEach((rec: any) => {
+          const escapedProblem = rec.problem.replace(/"/g, '""');
+          const escapedSolutions = rec.solutions.join(" | ").replace(/"/g, '""');
+          const escapedBenefits = rec.benefits.replace(/"/g, '""');
+          csvContent += `"${escapedOffice}",Recommendation,"${escapedProblem}","${escapedSolutions}","${escapedBenefits}"\n`;
+        });
       });
-    });
+    }
     
     // Trigger download
     const encodedUri = encodeURI(csvContent);
@@ -589,8 +645,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       doc.setTextColor(156, 163, 175); // gray-400
-      doc.text(`Organization: ${analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}`, pageWidth - 15, 25, { align: "right" });
-      doc.text(`Scope: ${analysisResult.analysisScope || "Operational Efficiency"}`, pageWidth - 15, 29, { align: "right" });
+      doc.text(`Document: ${analysisResult.documentTitle || "BFO Multimodal Consulting Report"}`, pageWidth - 15, 25, { align: "right" });
+      doc.text(`Source: ${uploadedFile ? uploadedFile.name : "Simulated Seed Data"}`, pageWidth - 15, 29, { align: "right" });
 
       y = 48;
 
@@ -598,29 +654,26 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text("BFO Overall Executive Summary", 15, y);
-      y += 5;
+      doc.text("BFO Overall Executive Summary & Report", 15, y);
+      y += 6;
 
-      const summaryLines = doc.splitTextToSize(analysisResult.executiveSummary, pageWidth - 38);
-      const cardHeight = summaryLines.length * 4.5 + 8;
-      
-      doc.setFillColor(250, 250, 250); // slate-50
-      doc.setDrawColor(241, 140, 0); // orange border
-      doc.setLineWidth(0.5);
-      doc.roundedRect(15, y, pageWidth - 30, cardHeight, 3, 3, "FD");
-
+      const summaryLines = doc.splitTextToSize(analysisResult.overallSummary || "", pageWidth - 30);
       doc.setTextColor(51, 65, 85);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9.5);
-      let textY = y + 6;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+
       summaryLines.forEach((line: string) => {
-        doc.text(line, 19, textY);
-        textY += 4.5;
+        checkPageBreak(5);
+        // Clean line text
+        const cleanLine = line.replace(/^\s*[#\-*]+\s+/, "").replace(/\*\*/g, "");
+        doc.text(cleanLine, 15, y);
+        y += 4.5;
       });
 
-      y += cardHeight + 12;
+      y += 8;
 
-      // Draw overall project scope
+      // Draw overall project scope parameters
+      checkPageBreak(25);
       doc.setTextColor(71, 85, 105);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
@@ -629,12 +682,14 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(51, 65, 85);
-      doc.text(`• LGU Entity / Client: ${analysisResult.organizationName || "Bislig City LGU"}`, 18, y);
-      doc.text(`• Project Scope Focus: ${analysisResult.analysisScope || "Operational Diagnostics"}`, 18, y + 4.5);
-      doc.text(`• Departments Analyzed: ${analysisResult.offices?.length || 0} Offices / Businesses`, 18, y + 9);
+      doc.text(`• Document Title: ${analysisResult.documentTitle || "BFO Multimodal Report"}`, 18, y);
+      doc.text(`• Source File: ${uploadedFile ? uploadedFile.name : "Simulated Seed Data"}`, 18, y + 4.5);
+      doc.text(`• Scope Classification: ${analysisResult.offices?.length > 0 ? "Structured Dataset" : "General Document Analysis"}`, 18, y + 9);
+      y += 18;
 
-      // 2. Loop through each office and draw its page
-      analysisResult.offices?.forEach((off: any, idx: number) => {
+      // 2. Loop through each office and draw its page if offices exist
+      if (analysisResult.offices && analysisResult.offices.length > 0) {
+        analysisResult.offices.forEach((off: any, idx: number) => {
         doc.addPage();
         
         // Draw Header Banner on new page
@@ -772,6 +827,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
           y += recHeight + 5;
         });
       });
+    }
 
       // Draw footers on all pages
       const totalPages = doc.internal.pages.length - 1;
@@ -1602,13 +1658,13 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   </div>
                 </div>
 
-                {/* Organization Details Panel */}
+                {/* Organization/Document Details Panel */}
                 <div className="bg-slate-50 border border-slate-200/80 p-6 rounded-3xl space-y-4">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/60 pb-4">
-                    <div>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#0047A1] block mb-0.5">Target Organization / Entity</span>
-                      <h2 className="text-base font-black text-slate-800">
-                        {analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}
+                    <div className="max-w-xl">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#0047A1] block mb-0.5">Document Title / Topic</span>
+                      <h2 className="text-base font-black text-slate-800 leading-tight">
+                        {analysisResult.documentTitle || "BFO Multimodal Consulting Analysis Report"}
                       </h2>
                     </div>
                     <div className="bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1.5 shrink-0 border border-emerald-100 shadow-sm self-start md:self-auto">
@@ -1619,34 +1675,42 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Analysis Scope Focus</span>
-                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.analysisScope || "Operational Efficiency"}</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Analysis Classification</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">
+                        {analysisResult.offices && analysisResult.offices.length > 0 
+                          ? "Structured Survey Dataset" 
+                          : "General Multimodal Analysis"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Scope Size</span>
-                      <span className="font-bold text-slate-700 block mt-0.5">{analysisResult.offices?.length || 0} Distinct Offices Analyzed</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Source Payload</span>
+                      <span className="font-bold text-slate-700 block mt-0.5">
+                        {uploadedFile ? uploadedFile.name : "Simulated Seed Data"}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Executive Summary Card */}
+                {/* Executive Summary & Detailed Report Card */}
                 <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full" />
                   
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-100">01</div>
                     <div>
-                      <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Executive Summary</h3>
-                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Synthesis</p>
+                      <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Intelligence Consulting Report</h3>
+                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">Detailed Findings & Synthesis</p>
                     </div>
                   </div>
 
-                  <div className="text-slate-600 text-xs md:text-sm leading-relaxed border-l-4 border-amber-500 pl-4 py-1 italic bg-amber-50/20 rounded-r-xl pr-2">
-                    "{analysisResult.executiveSummary}"
+                  <div className="text-slate-600 text-xs md:text-sm leading-relaxed border-l-4 border-amber-500 pl-4 py-1.5 bg-amber-50/10 rounded-r-xl pr-2 space-y-1">
+                    {renderMarkdown(analysisResult.overallSummary)}
                   </div>
                 </div>
 
-                {/* Office Breakdown Selector Tab bar */}
+                {analysisResult.offices && analysisResult.offices.length > 0 && (
+                  <div className="space-y-8">
+                    {/* Office Breakdown Selector Tab bar */}
                 <div className="space-y-2">
                   <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block px-1">Select Office/Department Diagnostics</span>
                   <div className="bg-white p-2 rounded-2xl border border-slate-200/60 shadow-sm flex flex-wrap gap-1.5">
@@ -1779,6 +1843,8 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                     </>
                   );
                 })()}
+                  </div>
+                )}
 
               </div>
             ) : (
