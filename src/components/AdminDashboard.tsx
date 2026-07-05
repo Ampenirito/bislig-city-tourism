@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   Lock, Eye, EyeOff, BarChart2, Users, MapPin, Globe, Sparkles, 
-  Search, RefreshCw, Terminal, Activity, ArrowUpRight, TrendingUp,
+  Search, RefreshCw, Terminal, Activity, ArrowUpRight, TrendingUp, Calculator, Coins,
   UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check,
-  FileSpreadsheet, UploadCloud, FileText, CheckCircle, Image
+  FileSpreadsheet, UploadCloud, FileText, CheckCircle, Image, AlertCircle
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 
@@ -124,7 +124,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [aiAnswers, setAiAnswers] = useState<Array<{ q: string; a: string }>>([]);
 
   // AI Consulting / File Analysis States
-  const [activeAdminTab, setActiveAdminTab] = useState<"analytics" | "consulting">("analytics");
+  const [activeAdminTab, setActiveAdminTab] = useState<"analytics" | "consulting" | "roi">("analytics");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileTextContent, setFileTextContent] = useState<string>("");
   const [binaryBase64, setBinaryBase64] = useState<string>("");
@@ -1079,9 +1079,20 @@ Based on survey responses across multiple departments and local businesses, we i
             <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
             <span>BFO Consulting Analyst (Demo)</span>
           </button>
+          <button
+            onClick={() => setActiveAdminTab("roi")}
+            className={`py-3 px-5 font-black text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeAdminTab === "roi"
+                ? "border-[#0047A1] text-[#0047A1]"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <Calculator className="w-4 h-4 text-[#2D9B8B]" />
+            <span>BFO ROI Calculator</span>
+          </button>
         </div>
 
-        {activeAdminTab === "analytics" ? (
+        {activeAdminTab === "analytics" && (
           <>
             {/* Heading Info */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
@@ -1465,7 +1476,9 @@ Based on survey responses across multiple departments and local businesses, we i
           </div>
         </div>
       </>
-    ) : (
+    )}
+
+    {activeAdminTab === "consulting" && (
       <div className="space-y-8 animate-fadeIn">
         
         {/* Dashboard Header Card */}
@@ -1910,7 +1923,527 @@ Based on survey responses across multiple departments and local businesses, we i
       </div>
     )}
 
+    {activeAdminTab === "roi" && (
+      <BfoRoiCalculator />
+    )}
+
   </div>
 </div>
+  );
+}
+
+// ============================================================================
+// BFO ROI CALCULATOR COMPONENT
+// ============================================================================
+function BfoRoiCalculator() {
+  const [bfoTool, setBfoTool] = useState<"portal" | "chatbot" | "crm" | "suite">("portal");
+  const [monthlyVolume, setMonthlyVolume] = useState<number>(2500);
+  const [manualTime, setManualTime] = useState<number>(20);
+  const [employeeWage, setEmployeeWage] = useState<number>(150);
+  const [monthlyCost, setMonthlyCost] = useState<number>(5000);
+  const [oneTimeInvestment, setOneTimeInvestment] = useState<number>(50000);
+
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [strategyReport, setStrategyReport] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Efficiency factor based on tool selection
+  const efficiency = useMemo(() => {
+    switch (bfoTool) {
+      case "portal": return 0.75;
+      case "chatbot": return 0.85;
+      case "crm": return 0.60;
+      case "suite": return 0.80;
+    }
+  }, [bfoTool]);
+
+  // Real-time calculations
+  const hoursSaved = useMemo(() => {
+    return Math.round(monthlyVolume * (manualTime / 60) * efficiency);
+  }, [monthlyVolume, manualTime, efficiency]);
+
+  const grossMonthlySavings = useMemo(() => {
+    return Math.round(hoursSaved * employeeWage);
+  }, [hoursSaved, employeeWage]);
+
+  const netMonthlySavings = useMemo(() => {
+    return grossMonthlySavings - monthlyCost;
+  }, [grossMonthlySavings, monthlyCost]);
+
+  const paybackPeriod = useMemo(() => {
+    if (netMonthlySavings <= 0) return "Never";
+    return (oneTimeInvestment / netMonthlySavings).toFixed(1);
+  }, [oneTimeInvestment, netMonthlySavings]);
+
+  const year1Roi = useMemo(() => {
+    if (netMonthlySavings <= 0) return 0;
+    const year1Savings = (netMonthlySavings * 12) - oneTimeInvestment;
+    return Math.round((year1Savings / oneTimeInvestment) * 100);
+  }, [netMonthlySavings, oneTimeInvestment]);
+
+  // 5-Year Cumulative Savings projection list
+  const cumulativeProjections = useMemo(() => {
+    return Array.from({ length: 5 }, (_, i) => {
+      const year = i + 1;
+      const totalSavings = netMonthlySavings * 12 * year;
+      const netSavings = totalSavings - oneTimeInvestment;
+      return { year, netSavings };
+    });
+  }, [netMonthlySavings, oneTimeInvestment]);
+
+  // Simulated progress bar effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isGenerating) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 98) {
+            clearInterval(interval);
+            return 98;
+          }
+          return prev + Math.floor(Math.random() * 6) + 3;
+        });
+      }, 120);
+    }
+    return () => clearInterval(interval);
+  }, [isGenerating]);
+
+  // Call BFO Intelligence to generate full strategic report
+  const generateAiReport = async () => {
+    setIsGenerating(true);
+    setError(null);
+    setStrategyReport(null);
+
+    const prompt = `
+Generate a highly detailed, professional BFO digital transformation ROI strategy audit for Bislig City.
+Use these input parameters:
+- Implemented System: BFO ${bfoTool.toUpperCase()} (Efficiency Gain: ${efficiency * 100}%)
+- Monthly Requests/Transactions: ${monthlyVolume} transactions
+- Avg. Manual Time: ${manualTime} minutes per transaction
+- Average Staff Hourly Wage: ₱${employeeWage} PHP/hour
+- BFO Monthly Licensing/Support: ₱${monthlyCost} PHP/month
+- One-Time Setup & Training Cost: ₱${oneTimeInvestment} PHP
+
+Calculations:
+- Monthly Hours Reclaimed: ${hoursSaved} hours
+- Monthly Net Savings: ₱${netMonthlySavings.toLocaleString()} PHP
+- Payback Period: ${paybackPeriod} months
+- Year 1 Net ROI: ${year1Roi}%
+
+Generate a comprehensive 4-section report formatted in standard clean markdown:
+1. Executive Summary: Explain the organizational significance of adopting the BFO ${bfoTool} suite for Bislig City, focusing on modern citizen service delivery.
+2. Financial Feasibility Analysis: Detail why the payback period of ${paybackPeriod} months is highly viable and evaluate the 5-year savings projection.
+3. Operational Restructuring & Reinvestment: Reclaiming ${hoursSaved} hours/month frees up extensive staff time. Suggest exactly how to upskill or reallocate these staff hours to high-value community projects.
+4. 5-Year Strategic Scale Roadmap: Provide a chronological guide (Year 1 to Year 5) to expand these systems across all local services.
+`;
+
+    try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ sender: "user", text: prompt }]
+        })
+      });
+
+      if (!res.ok) throw new Error("Server failed to respond to ROI analysis request.");
+      const data = await res.json();
+      setProgress(100);
+      setStrategyReport(data.reply);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to communicate with BFO Intelligence. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
+      {/* Left Input Configuration Panel (5 cols) */}
+      <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
+        <div>
+          <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">CONFIGURATION CONTROL</span>
+          <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO ROI Parameters</h2>
+          <p className="text-[11px] text-slate-500">Adjust the inputs below to calculate real-time savings and productivity gains.</p>
+        </div>
+
+        {/* BFO Tool Selection */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">1. Select BFO Digital Solution</label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: "portal", label: "BFO Portal", desc: "Citizen Portal (75% speedup)" },
+              { id: "chatbot", label: "BFO Chatbot", desc: "AI Concierge (85% speedup)" },
+              { id: "crm", label: "BFO CRM", desc: "Feedback Desk (60% speedup)" },
+              { id: "suite", label: "Custom Suite", desc: "Complete Suite (80% speedup)" }
+            ].map((tool) => (
+              <button
+                key={tool.id}
+                onClick={() => setBfoTool(tool.id as any)}
+                className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
+                  bfoTool === tool.id
+                    ? "border-[#0047A1] ring-2 ring-[#0047A1]/20 bg-white"
+                    : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-300"
+                }`}
+              >
+                <span className="font-extrabold text-xs text-slate-800">{tool.label}</span>
+                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{tool.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Volume Slider */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">2. Monthly Transaction Volume</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{monthlyVolume.toLocaleString()} requests</span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="10000"
+            step="100"
+            value={monthlyVolume}
+            onChange={(e) => setMonthlyVolume(Number(e.target.value))}
+            className="w-full accent-[#0047A1] cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
+            <span>100</span>
+            <span>5,000</span>
+            <span>10,000</span>
+          </div>
+        </div>
+
+        {/* Manual Time Slider */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">3. Avg. Time per Request (Manual)</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{manualTime} mins</span>
+          </div>
+          <input
+            type="range"
+            min="5"
+            max="60"
+            step="1"
+            value={manualTime}
+            onChange={(e) => setManualTime(Number(e.target.value))}
+            className="w-full accent-[#0047A1] cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
+            <span>5 mins</span>
+            <span>30 mins</span>
+            <span>60 mins</span>
+          </div>
+        </div>
+
+        {/* Staff Hourly Wage Slider */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">4. Average Employee Hourly Wage</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{employeeWage} / hr</span>
+          </div>
+          <input
+            type="range"
+            min="50"
+            max="500"
+            step="10"
+            value={employeeWage}
+            onChange={(e) => setEmployeeWage(Number(e.target.value))}
+            className="w-full accent-[#0047A1] cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
+            <span>₱50/hr</span>
+            <span>₱250/hr</span>
+            <span>₱500/hr</span>
+          </div>
+        </div>
+
+        {/* Monthly Licensing Cost */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">5. BFO Monthly Licensing Cost</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{monthlyCost.toLocaleString()} / mo</span>
+          </div>
+          <input
+            type="range"
+            min="1000"
+            max="20000"
+            step="500"
+            value={monthlyCost}
+            onChange={(e) => setMonthlyCost(Number(e.target.value))}
+            className="w-full accent-[#0047A1] cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
+            <span>₱1,000</span>
+            <span>₱10,000</span>
+            <span>₱20,000</span>
+          </div>
+        </div>
+
+        {/* One-Time setup Investment */}
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">6. One-Time Setup & Training Investment</label>
+            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{oneTimeInvestment.toLocaleString()}</span>
+          </div>
+          <input
+            type="range"
+            min="10000"
+            max="200000"
+            step="5000"
+            value={oneTimeInvestment}
+            onChange={(e) => setOneTimeInvestment(Number(e.target.value))}
+            className="w-full accent-[#0047A1] cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
+            <span>₱10,000</span>
+            <span>₱100,000</span>
+            <span>₱200,000</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Outputs and SVG Projection Graph Panel (7 cols) */}
+      <div className="lg:col-span-7 space-y-6">
+        
+        {/* Real-time KPIs cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Monthly Net Savings</span>
+            <span className={`text-sm font-extrabold font-mono ${netMonthlySavings >= 0 ? "text-emerald-600" : "text-rose-500"}`}>
+              {netMonthlySavings >= 0 ? "+" : ""}₱{netMonthlySavings.toLocaleString()}
+            </span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Hours Reclaimed</span>
+            <span className="text-sm font-extrabold text-indigo-600 font-mono">
+              {hoursSaved} hrs/mo
+            </span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Payback Period</span>
+            <span className="text-sm font-extrabold text-amber-600 font-mono">
+              {paybackPeriod} {paybackPeriod !== "Never" ? "Months" : ""}
+            </span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Year 1 Net ROI</span>
+            <span className="text-sm font-extrabold text-[#2D9B8B] font-mono">
+              {year1Roi}%
+            </span>
+          </div>
+        </div>
+
+        {/* 5-Year Profit SVG Chart */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
+          <div>
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">FINANCIAL TIMELINE</span>
+            <h4 className="font-bold text-xs text-slate-800">5-Year Cumulative Profit/Savings Trend</h4>
+          </div>
+
+          <div className="h-64 flex flex-col justify-between border-b border-slate-100 pb-2">
+            <svg viewBox="0 0 500 220" className="w-full h-full">
+              {/* Grid Lines */}
+              <line x1="40" y1="20" x2="480" y2="20" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+              <line x1="40" y1="70" x2="480" y2="70" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+              <line x1="40" y1="120" x2="480" y2="120" stroke="#cbd5e1" strokeWidth="1.5" /> {/* Baseline 0 */}
+              <line x1="40" y1="170" x2="480" y2="170" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+
+              {/* Baseline indicator text */}
+              <text x="12" y="123" fill="#94a3b8" fontSize="8" fontFamily="monospace">₱0</text>
+
+              {/* Render Bars */}
+              {cumulativeProjections.map((proj, idx) => {
+                const x = 70 + idx * 85;
+                const barWidth = 40;
+                
+                // Scale net savings to fit 100 height (above or below baseline)
+                // Baseline 0 is at y = 120. Scale factor represents maximum height of 80px.
+                const maxSavings = Math.max(...cumulativeProjections.map(p => Math.abs(p.netSavings)), 100000);
+                const barHeight = (proj.netSavings / maxSavings) * 80;
+                const y = barHeight >= 0 ? 120 - barHeight : 120;
+                const absHeight = Math.max(Math.abs(barHeight), 3); // minimum height
+                const fillClass = proj.netSavings >= 0 ? "fill-emerald-500" : "fill-rose-400";
+                
+                return (
+                  <g key={idx} className="group cursor-pointer">
+                    <rect 
+                      x={x - 10} 
+                      y="10" 
+                      width={barWidth + 20} 
+                      height="200" 
+                      fill="transparent" 
+                    />
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={absHeight}
+                      rx={4}
+                      className={`${fillClass} transition-all duration-500 hover:opacity-85`}
+                    />
+                    <text
+                      x={x + barWidth / 2}
+                      y={proj.netSavings >= 0 ? y - 6 : y + absHeight + 12}
+                      textAnchor="middle"
+                      fill={proj.netSavings >= 0 ? "#0f766e" : "#e11d48"}
+                      fontSize="8"
+                      fontWeight="bold"
+                      fontFamily="monospace"
+                    >
+                      {proj.netSavings >= 0 ? "+" : ""}
+                      {Math.round(proj.netSavings / 1000)}k
+                    </text>
+                    <text
+                      x={x + barWidth / 2}
+                      y="215"
+                      textAnchor="middle"
+                      fill="#64748b"
+                      fontSize="9"
+                      fontWeight="extrabold"
+                    >
+                      Year {proj.year}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+
+          <div className="flex justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-emerald-500 rounded" /> Net Positive Profit
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-rose-400 rounded" /> Outstanding Debt (Amortization)
+            </span>
+          </div>
+        </div>
+
+        {/* AI report generation section */}
+        <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden space-y-6">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FB8C00]/10 rounded-bl-full opacity-60 -z-10" />
+
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/10 rounded-xl">
+              <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-bold font-serif text-lg text-white">BFO AI Strategic Financial Audit</h3>
+              <p className="text-[10px] text-slate-400">Generate a custom 5-year digital transformation roadmap based on these metrics</p>
+            </div>
+          </div>
+
+          {isGenerating ? (
+            <div className="bg-black/30 p-8 rounded-2xl border border-white/5 flex flex-col items-center justify-center space-y-4">
+              <div className="relative w-full max-w-xs h-2.5 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-[#FB8C00] to-amber-300 rounded-full transition-all duration-300 shadow-lg"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-xs font-mono font-bold text-slate-300">
+                BFO Intelligence modeling strategy... {progress}%
+              </span>
+            </div>
+          ) : strategyReport ? (
+            <div className="space-y-4">
+              <div className="bg-black/30 p-5 rounded-2xl border border-white/5 max-h-96 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300 font-sans shadow-inner scrollbar-thin">
+                {strategyReport.split("\n\n").map((para, pIdx) => {
+                  if (para.startsWith("#")) {
+                    const level = para.match(/^#+/)?.[0].length || 1;
+                    const text = para.replace(/^#+\s*/, "");
+                    const hClasses = level === 1 
+                      ? "text-sm font-serif font-black text-[#FB8C00] border-b border-white/10 pb-1.5 mt-4 first:mt-0"
+                      : "text-xs font-bold text-white mt-3";
+                    return React.createElement(`h${Math.min(level + 2, 6)}` as any, { key: pIdx, className: hClasses }, text);
+                  }
+                  
+                  if (para.startsWith("- ") || para.startsWith("* ")) {
+                    return (
+                      <ul key={pIdx} className="list-disc pl-5 space-y-1 mt-1 text-slate-400">
+                        {para.split("\n").map((li, lIdx) => (
+                          <li key={lIdx}>{li.replace(/^[\-\*]\s*/, "")}</li>
+                        ))}
+                      </ul>
+                    );
+                  }
+
+                  return <p key={pIdx} className="text-slate-300">{para}</p>;
+                })}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={generateAiReport}
+                  className="flex-grow bg-white/10 border border-white/15 hover:bg-white/20 text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Recalculate & Re-Generate
+                </button>
+                <button
+                  onClick={() => {
+                    const doc = new jsPDF();
+                    doc.setFont("Helvetica", "bold");
+                    doc.text("BFO Digital Transformation ROI Audit", 20, 20);
+                    doc.setFontSize(10);
+                    doc.setFont("Helvetica", "normal");
+                    doc.text(`Solution Type: BFO ${bfoTool.toUpperCase()}`, 20, 30);
+                    doc.text(`Monthly Volume: ${monthlyVolume.toLocaleString()} requests`, 20, 35);
+                    doc.text(`Hours Reclaimed: ${hoursSaved} hrs/mo`, 20, 40);
+                    doc.text(`Net Monthly Savings: PHP ${netMonthlySavings.toLocaleString()}`, 20, 45);
+                    doc.text(`Year 1 Net ROI: ${year1Roi}%`, 20, 50);
+
+                    // Add content line by line
+                    let y = 65;
+                    doc.setFont("Helvetica", "bold");
+                    doc.text("Strategic Audit Recommendations:", 20, 60);
+                    doc.setFont("Helvetica", "normal");
+                    const lines = doc.splitTextToSize(strategyReport || "", 170);
+                    lines.forEach((line: string) => {
+                      if (y > 275) {
+                        doc.addPage();
+                        y = 20;
+                      }
+                      doc.text(line, 20, y);
+                      y += 6;
+                    });
+                    doc.save(`BFO_ROI_Strategy_${bfoTool}.pdf`);
+                  }}
+                  className="bg-[#FB8C00] text-slate-900 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#d69f00] transition-all cursor-pointer"
+                >
+                  Export Strategic PDF
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {error && (
+                <div className="bg-rose-500/10 border border-rose-500/20 text-rose-300 p-3.5 rounded-xl text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                  <span>{error}</span>
+                </div>
+              )}
+              
+              <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
+                Run BFO intelligence to generate a full, executive strategic analysis on operational upskilling routes, budget allocations, and year-by-year scaling milestones.
+              </p>
+
+              <button
+                onClick={generateAiReport}
+                className="w-full bg-[#FB8C00] text-slate-900 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#e68000] active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-orange-500/10"
+              >
+                <Sparkles className="w-4 h-4 animate-pulse" />
+                <span>Generate BFO Strategic Financial Report</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </div>
   );
 }
