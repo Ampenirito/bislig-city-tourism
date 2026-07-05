@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { 
   Lock, Eye, EyeOff, BarChart2, Users, MapPin, Globe, Sparkles, 
   Search, RefreshCw, Terminal, Activity, ArrowUpRight, TrendingUp,
-  UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check
+  UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check,
+  FileSpreadsheet, UploadCloud, FileText, CheckCircle
 } from "lucide-react";
 
 // Types for analytics
@@ -77,6 +78,37 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   });
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiAnswers, setAiAnswers] = useState<Array<{ q: string; a: string }>>([]);
+
+  // AI Consulting / File Analysis States
+  const [activeAdminTab, setActiveAdminTab] = useState<"analytics" | "consulting">("analytics");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [fileTextContent, setFileTextContent] = useState<string>("");
+  const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [isAnalyzingFile, setIsAnalyzingFile] = useState<boolean>(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(() => {
+    const saved = localStorage.getItem("bfo_file_analysis_result");
+    return saved ? JSON.parse(saved) : {
+      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
+      recommendations: [
+        {
+          problem: "Slow customer response",
+          solutions: ["AI Chatbot", "CRM", "Auto Reply"],
+          benefits: "Improve response time by up to 90%."
+        },
+        {
+          problem: "Manual administrative work",
+          solutions: ["Zapier Automation", "Google Workspace", "Invoice Generator"],
+          benefits: "Saves up to 15 hours of manual data entry per week."
+        },
+        {
+          problem: "Limited marketing reach",
+          solutions: ["Social Media Scheduler", "Email Marketing Tool", "SEO Basics"],
+          benefits: "Increases online visibility and local organic traffic by 40%."
+        }
+      ]
+    };
+  });
+  const [analysisError, setAnalysisError] = useState<string>("");
 
   // Save logs to local storage
   useEffect(() => {
@@ -272,6 +304,92 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setAiAnswers(prev => [...prev, { q, a: answer }]);
   };
 
+  // File upload handler
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadedFile(file);
+    setAnalysisError("");
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      setFileTextContent(text);
+    };
+    reader.onerror = () => {
+      setAnalysisError("Failed to read the file. Please try again.");
+    };
+    reader.readAsText(file);
+  };
+
+  // Run File Analysis trigger
+  const runFileAnalysis = async () => {
+    const dataToAnalyze = fileTextContent.trim();
+    if (!dataToAnalyze) {
+      setAnalysisError("Please upload a file or paste some data to analyze.");
+      return;
+    }
+
+    setIsAnalyzingFile(true);
+    setAnalysisError("");
+
+    try {
+      const response = await fetch("/api/admin/analyze-file", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileContent: dataToAnalyze,
+          customPrompt: customPrompt.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to parse analysis from Gemini.");
+      }
+
+      const result = await response.json();
+      setAnalysisResult(result);
+      localStorage.setItem("bfo_file_analysis_result", JSON.stringify(result));
+    } catch (err: any) {
+      console.error(err);
+      setAnalysisError(err.message || "An unexpected error occurred during AI analysis.");
+    } finally {
+      setIsAnalyzingFile(false);
+    }
+  };
+
+  // Reset File Analysis to seed data
+  const handleResetAnalysis = () => {
+    setUploadedFile(null);
+    setFileTextContent("");
+    setCustomPrompt("");
+    setAnalysisError("");
+    const defaultData = {
+      executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
+      recommendations: [
+        {
+          problem: "Slow customer response",
+          solutions: ["AI Chatbot", "CRM", "Auto Reply"],
+          benefits: "Improve response time by up to 90%."
+        },
+        {
+          problem: "Manual administrative work",
+          solutions: ["Zapier Automation", "Google Workspace", "Invoice Generator"],
+          benefits: "Saves up to 15 hours of manual data entry per week."
+        },
+        {
+          problem: "Limited marketing reach",
+          solutions: ["Social Media Scheduler", "Email Marketing Tool", "SEO Basics"],
+          benefits: "Increases online visibility and local organic traffic by 40%."
+        }
+      ]
+    };
+    setAnalysisResult(defaultData);
+    localStorage.setItem("bfo_file_analysis_result", JSON.stringify(defaultData));
+  };
+
   // Clean login card if not logged in
   if (!isLoggedIn) {
     return (
@@ -404,8 +522,36 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
       <div className="max-w-7xl mx-auto px-4 mt-8 space-y-8">
         
-        {/* Heading Info */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
+        {/* Admin Dashboard Tab Selector */}
+        <div className="flex border-b border-slate-200 gap-1.5 pb-px">
+          <button
+            onClick={() => setActiveAdminTab("analytics")}
+            className={`py-3 px-5 font-black text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeAdminTab === "analytics"
+                ? "border-[#0047A1] text-[#0047A1]"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <BarChart2 className="w-4 h-4" />
+            <span>Traffic Analytics</span>
+          </button>
+          <button
+            onClick={() => setActiveAdminTab("consulting")}
+            className={`py-3 px-5 font-black text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeAdminTab === "consulting"
+                ? "border-[#0047A1] text-[#0047A1]"
+                : "border-transparent text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+            <span>AI Consulting Analyst (Demo)</span>
+          </button>
+        </div>
+
+        {activeAdminTab === "analytics" ? (
+          <>
+            {/* Heading Info */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-bl-full opacity-60 -z-10" />
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -785,8 +931,250 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
             <span>Logs rotate automatically every 50 records</span>
           </div>
         </div>
+      </>
+    ) : (
+      <div className="space-y-8 animate-fadeIn">
+        
+        {/* Dashboard Header Card */}
+        <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-full opacity-60 -z-10" />
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span className="text-[10px] font-black tracking-wider uppercase text-slate-400">AI CONSULTING WORKBENCH</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-serif font-black">AI Executive Summary & Recommendations</h1>
+            <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+              Upload survey responses, spreadsheets, or business reports to instantly extract high-impact executive summaries and digital solution recommendations.
+            </p>
+          </div>
+          {analysisResult && (
+            <button
+              onClick={handleResetAnalysis}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 self-start md:self-auto"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Reset to Seed Demo</span>
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Left Column: File Upload & Input Options */}
+          <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
+            <div>
+              <h3 className="font-bold font-serif text-base mb-1.5">Step 1: Input Data Source</h3>
+              <p className="text-[10px] text-slate-400">Upload a spreadsheet (CSV, Excel), text file, or paste text directly.</p>
+            </div>
+
+            {/* Drag and Drop File Area */}
+            <div className="relative border-2 border-dashed border-slate-200 hover:border-[#0047A1]/40 rounded-2xl p-6 transition-all bg-slate-50/50 hover:bg-[#0047A1]/5 flex flex-col items-center justify-center text-center group cursor-pointer">
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls,.txt,.json"
+                onChange={handleFileChange}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              />
+              <div className="p-3 bg-white border border-slate-200 rounded-xl mb-3 text-slate-400 group-hover:text-[#0047A1] group-hover:scale-110 transition-all shadow-sm">
+                {uploadedFile?.name.endsWith(".xlsx") || uploadedFile?.name.endsWith(".xls") ? (
+                  <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+                ) : uploadedFile ? (
+                  <FileText className="w-8 h-8 text-[#0047A1]" />
+                ) : (
+                  <UploadCloud className="w-8 h-8" />
+                )}
+              </div>
+              
+              {uploadedFile ? (
+                <div>
+                  <p className="text-xs font-bold text-slate-800 max-w-[240px] truncate">{uploadedFile.name}</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">{(uploadedFile.size / 1024).toFixed(1)} KB · Click to change file</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-xs font-bold text-slate-700">Choose File or Drag Here</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Supports CSV, Excel (.xlsx, .xls), TXT, JSON</p>
+                </div>
+              )}
+            </div>
+
+            {/* Text Area for Direct Data Entry */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">Or Paste Raw Data Directly</label>
+                {fileTextContent && (
+                  <button 
+                    onClick={() => { setUploadedFile(null); setFileTextContent(""); }}
+                    className="text-[9px] text-rose-500 hover:underline font-bold"
+                  >
+                    Clear Data
+                  </button>
+                )}
+              </div>
+              <textarea
+                value={fileTextContent}
+                onChange={(e) => setFileTextContent(e.target.value)}
+                placeholder="Paste surveys responses, review columns, list of challenges, or client feedback here..."
+                rows={6}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-colors resize-none placeholder-slate-400"
+              />
+            </div>
+
+            {/* Step 2: Custom Prompt/Directive (Optional) */}
+            <div className="space-y-2.5 pt-4 border-t border-slate-100">
+              <div>
+                <h3 className="font-bold font-serif text-base mb-1">Step 2: AI Directive (Optional)</h3>
+                <p className="text-[10px] text-slate-400">Guide the Gemini model or ask a question regarding the dataset.</p>
+              </div>
+              <textarea
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                placeholder="e.g., 'What is the main bottleneck reported by employees?' or 'Focus the solutions strictly on low-cost open-source tools.'"
+                rows={3}
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-colors resize-none placeholder-slate-400"
+              />
+            </div>
+
+            {analysisError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 font-semibold">
+                ⚠️ {analysisError}
+              </div>
+            )}
+
+            {/* Submit Trigger Button */}
+            <button
+              onClick={runFileAnalysis}
+              disabled={isAnalyzingFile || !fileTextContent.trim()}
+              className="w-full bg-gradient-to-r from-[#0047A1] to-[#0097A7] hover:opacity-90 disabled:opacity-40 text-white font-bold py-3.5 rounded-2xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg shadow-sky-500/10 flex items-center justify-center gap-2"
+            >
+              {isAnalyzingFile ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Gemini is Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  <span>Run Gemini Intelligence</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Right Column: Beautiful Interactive Results */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            {isAnalyzingFile ? (
+              <div className="bg-white p-12 rounded-3xl border border-slate-200/60 shadow-sm text-center space-y-6 min-h-[420px] flex flex-col justify-center items-center">
+                <div className="w-16 h-16 relative flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[#0047A1]/10 rounded-full animate-ping" />
+                  <div className="w-12 h-12 bg-gradient-to-r from-[#0047A1] to-[#0097A7] text-white rounded-full flex items-center justify-center shadow-lg relative">
+                    <Sparkles className="w-5 h-5 animate-pulse" />
+                  </div>
+                </div>
+                <div className="space-y-2 max-w-sm">
+                  <h4 className="font-bold text-base text-slate-800 animate-pulse">Running Digital Diagnostic</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Gemini is compiling survey clusters, formulating strategic solutions, and projecting implementation benefits...
+                  </p>
+                </div>
+                
+                <div className="w-full max-w-xs bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-center justify-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-bounce" />
+                  <span className="text-[10px] text-slate-400 font-mono">Status: Synthesizing records</span>
+                </div>
+              </div>
+            ) : analysisResult ? (
+              <div className="space-y-6 animate-fadeIn">
+                
+                {/* Executive Summary Card */}
+                <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full" />
+                  
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xl">🥇</span>
+                    <div>
+                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">AI Executive Summary</h3>
+                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Insights</p>
+                    </div>
+                  </div>
+
+                  <div className="text-slate-600 text-xs md:text-sm leading-relaxed border-l-4 border-amber-500 pl-4 py-1 italic bg-amber-50/20 rounded-r-xl pr-2">
+                    "{analysisResult.executiveSummary}"
+                  </div>
+                </div>
+
+                {/* Recommendation Engine Card */}
+                <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm">
+                  <div className="flex items-center gap-2 mb-5">
+                    <span className="text-xl">🥈</span>
+                    <div>
+                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">AI Solution Recommendations</h3>
+                      <p className="text-[9px] font-bold text-sky-600 uppercase tracking-widest mt-1">Custom Digital Blueprints</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5">
+                    {analysisResult.recommendations?.map((rec: any, idx: number) => (
+                      <div key={idx} className="p-5 bg-slate-50 border border-slate-200/50 rounded-2xl space-y-4 hover:border-[#0047A1]/20 transition-all hover:bg-white hover:shadow-md">
+                        
+                        {/* Identified Problem */}
+                        <div>
+                          <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Identified Problem</span>
+                          <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                            <span>{rec.problem}</span>
+                          </span>
+                        </div>
+
+                        {/* Recommended Solutions */}
+                        <div>
+                          <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-2">Recommended Digital Solutions</span>
+                          <div className="flex flex-wrap gap-2">
+                            {rec.solutions?.map((sol: string, sIdx: number) => (
+                              <span key={sIdx} className="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                                <Check className="w-3 h-3 text-emerald-600" />
+                                <span>{sol}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Expected Benefits */}
+                        <div className="bg-sky-50/50 border border-sky-100 p-3.5 rounded-xl text-slate-600 flex items-start gap-2.5">
+                          <TrendingUp className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-sky-700 block mb-0.5">Expected Benefit</span>
+                            <p className="text-xs font-semibold text-slate-700">{rec.benefits}</p>
+                          </div>
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            ) : (
+              <div className="bg-white p-12 rounded-3xl border border-slate-200/60 shadow-sm text-center space-y-4 min-h-[420px] flex flex-col justify-center items-center">
+                <UploadCloud className="w-12 h-12 text-slate-300" />
+                <div className="space-y-1">
+                  <h4 className="font-bold text-slate-700">Awaiting Business Data</h4>
+                  <p className="text-xs text-slate-400 max-w-sm">
+                    Configure your data sources and prompts on the left, then trigger Gemini to render consulting recommendations.
+                  </p>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
 
       </div>
-    </div>
+    )}
+
+  </div>
+</div>
   );
 }

@@ -310,6 +310,82 @@ PERSONALITY & TONE:
     res.status(500).json({ error: "Failed to communicate with AI Concierge. Please try again." });
   }
 });
+// AI File Analysis (Executive Summary & Recommendation Engine) Endpoint
+app.post("/api/admin/analyze-file", async (req, res) => {
+  try {
+    const { fileContent, customPrompt } = req.body;
+
+    if (!fileContent) {
+      return res.status(400).json({ error: "Missing file content." });
+    }
+
+    const systemInstruction = `
+You are a top-tier digital transformation consultant and business analyst. 
+Your goal is to analyze the provided file data (which may consist of surveys, business reports, spreadsheets, or text files) and generate a high-impact, professional Executive Summary and an actionable digital Solutions Recommendation Engine.
+
+If a custom prompt or question is provided, you MUST focus your summary or recommendations on answering or addressing that specific prompt/question.
+`;
+
+    const userPrompt = `
+Here is the uploaded file data to analyze:
+----
+${fileContent}
+----
+
+${customPrompt ? `The user also provided this custom question or analysis directive: "${customPrompt}"` : ""}
+
+Analyze this data and return the results in the requested JSON structure.
+`;
+
+    const response = await generateContentWithFallback({
+      contents: userPrompt,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          required: ["executiveSummary", "recommendations"],
+          properties: {
+            executiveSummary: {
+              type: Type.STRING,
+              description: "A comprehensive executive summary of the file data (e.g. summarizing surveys, feedback, challenges, key findings). It should be about 2-3 sentences long, highly professional, with specific stats if found."
+            },
+            recommendations: {
+              type: Type.ARRAY,
+              description: "A list of actionable AI recommendations for the challenges/problems identified in the file.",
+              items: {
+                type: Type.OBJECT,
+                required: ["problem", "solutions", "benefits"],
+                properties: {
+                  problem: {
+                    type: Type.STRING,
+                    description: "The specific operational challenge or pain point identified (e.g., 'Slow customer response time')."
+                  },
+                  solutions: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING },
+                    description: "List of recommended digital tools or solutions (e.g., ['AI Chatbot', 'CRM Integration', 'Auto Reply Message'])."
+                  },
+                  benefits: {
+                    type: Type.STRING,
+                    description: "The expected benefit or why this solution works (e.g., 'Improves response time by up to 90% and captures more leads')."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const resultText = response.text || "{}";
+    const analysis = JSON.parse(resultText);
+    res.json(analysis);
+  } catch (error: any) {
+    console.error("AI File Analysis error:", error);
+    res.status(500).json({ error: "Failed to analyze file data. Please try again." });
+  }
+});
 
 // Vite middleware configuration for serving React assets
 if (process.env.NODE_ENV !== "production") {
