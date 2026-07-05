@@ -37,6 +37,7 @@ import {
   CloudLightning,
   CloudSun,
   Wind,
+  Waves,
   Thermometer,
   Droplets,
   Eye,
@@ -258,9 +259,14 @@ export default function App() {
     condition: string;
     weatherCode: number;
     location: string;
+    waveHeight?: number;
+    surfStatus?: string;
+    surfWarning?: string;
+    surfAdvice?: string;
   } | null>(null);
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
   const [weatherError, setWeatherError] = useState<boolean>(false);
+  const [showWaveDetails, setShowWaveDetails] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -1838,6 +1844,37 @@ export default function App() {
                             <span className="font-semibold text-white">{weatherData.windSpeed} km/h</span>
                           </div>
                         </div>
+                      </div>
+                      
+                      {/* Wave height & Surf info section */}
+                      <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-[10px]">
+                          <div className="flex items-center gap-1.5 text-slate-300">
+                            <Waves className="w-3.5 h-3.5 text-sky-400" />
+                            <div>
+                              <span className="block text-[8px] text-slate-400 font-bold uppercase leading-none">Lawigan Surf Swell</span>
+                              <span className="font-semibold text-white">{weatherData.waveHeight || "0.8"}m • {weatherData.surfStatus || "Optimal Swell"}</span>
+                            </div>
+                          </div>
+                          
+                          <button
+                            onClick={() => setShowWaveDetails(!showWaveDetails)}
+                            className="text-[9px] text-[#FB8C00] font-bold hover:underline bg-white/5 border border-white/10 rounded px-1.5 py-0.5 cursor-pointer hover:bg-white/10 transition-colors"
+                          >
+                            {showWaveDetails ? "Hide" : "Surf Report"}
+                          </button>
+                        </div>
+
+                        {showWaveDetails && (
+                          <div className="p-2.5 bg-black/35 rounded-lg border border-white/5 space-y-1.5 animate-fadeIn text-[9px] leading-relaxed text-slate-300">
+                            {weatherData.surfWarning && (
+                              <div className="text-rose-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                                <span>⚠️</span> {weatherData.surfWarning}
+                              </div>
+                            )}
+                            <p>{weatherData.surfAdvice || "Lawigan Surf Point is currently firing clean breaks. Great for all levels."}</p>
+                          </div>
+                        )}
                       </div>
                       
                       <div className="mt-3 text-[9px] text-slate-400 flex items-center justify-between">

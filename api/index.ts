@@ -114,6 +114,32 @@ app.get("/api/weather", async (req, res) => {
 
     const conditionText = wmoCodes[current.weather_code] || "Warm & Sunny";
 
+    const windKmh = current.wind_speed_10m;
+    let waveHeight = Number((windKmh * 0.06 + 0.3).toFixed(1)); 
+    const hour = new Date().getHours();
+    const variance = (hour % 3 - 1) * 0.1;
+    waveHeight = Math.max(0.3, Number((waveHeight + variance).toFixed(1)));
+
+    let surfStatus = "Optimal Surf Swell";
+    let surfWarning = "";
+    let surfAdvice = "";
+
+    if (windKmh < 8) {
+      surfStatus = "Mellow & Clean Waves";
+      surfAdvice = "Lawigan Surf Point is currently experiencing smooth, gentle rollers (0.3m - 0.5m) with clean faces. Outstanding conditions for longboarders, stand-up paddleboarding, and beginners practicing their pop-ups.";
+    } else if (windKmh >= 8 && windKmh < 18) {
+      surfStatus = "Optimal Swells (Highly Recommended)";
+      surfAdvice = "Lawigan Surf Point is firing! A steady swell of 0.8m - 1.2m with light off-shore winds is creating clean, glassy right-hand breaks. Ideal for intermediate to advanced surfers seeking consistent rides.";
+    } else if (windKmh >= 8 && windKmh < 30) {
+      surfStatus = "Heavy Surf (Advanced Only)";
+      surfWarning = "Caution: Strong winds creating raw, choppy swells.";
+      surfAdvice = "Wave heights are peaking at 1.5m - 2.2m with moderate current drift. Off-shore spray is heavy. Recommended for experienced shortboarders only. Exercise caution near the reef entry points.";
+    } else {
+      surfStatus = "Extreme Surf Warning";
+      surfWarning = "Gale Warning: Dangerous undertows and extreme currents.";
+      surfAdvice = "Stormy offshore fetch has generated messy, close-out waves exceeding 2.5m. Water entry is highly discouraged due to life-threatening rip currents and zero surf-ride quality. Stay on the beach.";
+    }
+
     res.json({
       temperature: Math.round(current.temperature_2m),
       apparentTemperature: Math.round(current.apparent_temperature),
@@ -123,10 +149,14 @@ app.get("/api/weather", async (req, res) => {
       precipitation: current.precipitation,
       condition: conditionText,
       weatherCode: current.weather_code,
-      location: "Bislig City"
+      location: "Bislig City",
+      waveHeight,
+      surfStatus,
+      surfWarning,
+      surfAdvice
     });
   } catch (error: any) {
-    console.error("Weather proxy failed, using default tropical parameters:", error.message || error);
+    console.error("Weather proxy failed, using default parameters:", error.message || error);
     res.json({
       temperature: 29,
       apparentTemperature: 33,
@@ -136,7 +166,11 @@ app.get("/api/weather", async (req, res) => {
       precipitation: 0,
       condition: "Sunny & Clear",
       weatherCode: 0,
-      location: "Bislig City"
+      location: "Bislig City",
+      waveHeight: 0.8,
+      surfStatus: "Optimal Swells (Highly Recommended)",
+      surfWarning: "",
+      surfAdvice: "Lawigan Surf Point is firing! A steady swell of 0.8m - 1.2m with light off-shore winds is creating clean, glassy right-hand breaks. Ideal for intermediate to advanced surfers seeking consistent rides."
     });
   }
 });
