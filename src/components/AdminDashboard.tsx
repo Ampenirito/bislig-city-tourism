@@ -397,15 +397,35 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setAnalysisError("");
 
     const reader = new FileReader();
-    const isImage = file.type.startsWith("image/");
+    const fileNameLower = file.name.toLowerCase();
+    const isImage = file.type.startsWith("image/") || 
+                    fileNameLower.endsWith(".png") || 
+                    fileNameLower.endsWith(".jpg") || 
+                    fileNameLower.endsWith(".jpeg") || 
+                    fileNameLower.endsWith(".webp") || 
+                    fileNameLower.endsWith(".gif") || 
+                    fileNameLower.endsWith(".heic") || 
+                    fileNameLower.endsWith(".heif");
     
-    if (file.type === "application/pdf" || isImage) {
+    let resolvedMime = file.type;
+    if (isImage && !resolvedMime) {
+      if (fileNameLower.endsWith(".png")) resolvedMime = "image/png";
+      else if (fileNameLower.endsWith(".webp")) resolvedMime = "image/webp";
+      else if (fileNameLower.endsWith(".heic")) resolvedMime = "image/heic";
+      else if (fileNameLower.endsWith(".heif")) resolvedMime = "image/heif";
+      else if (fileNameLower.endsWith(".gif")) resolvedMime = "image/gif";
+      else resolvedMime = "image/jpeg";
+    } else if (fileNameLower.endsWith(".pdf") && !resolvedMime) {
+      resolvedMime = "application/pdf";
+    }
+
+    if (resolvedMime === "application/pdf" || isImage) {
       reader.onload = (event) => {
         const result = event.target?.result as string;
         // Extract base64 representation from DataURL
         const base64 = result.split(",")[1] || "";
         setFileTextContent(base64);
-        setFileMimeType(file.type || (isImage ? "image/png" : "application/pdf"));
+        setFileMimeType(resolvedMime || (isImage ? "image/png" : "application/pdf"));
       };
       reader.onerror = () => {
         setAnalysisError(`Failed to read the ${isImage ? "image" : "PDF"} file. Please try again.`);
@@ -415,7 +435,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       reader.onload = (event) => {
         const text = event.target?.result as string;
         setFileTextContent(text);
-        setFileMimeType(file.type || "text/plain");
+        setFileMimeType(resolvedMime || "text/plain");
       };
       reader.onerror = () => {
         setAnalysisError("Failed to read the file. Please try again.");
