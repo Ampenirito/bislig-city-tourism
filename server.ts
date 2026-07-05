@@ -361,8 +361,12 @@ Analyze this data and return the results in the requested JSON structure.
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
-          required: ["executiveSummary", "recommendations"],
+          required: ["organizationName", "executiveSummary", "recommendations"],
           properties: {
+            organizationName: {
+              type: Type.STRING,
+              description: "The name of the company or organization identified in the dataset, or 'Various Local SMEs' if not explicitly found."
+            },
             executiveSummary: {
               type: Type.STRING,
               description: "A comprehensive executive summary of the file data (e.g. summarizing surveys, feedback, challenges, key findings). It should be about 2-3 sentences long, highly professional, with specific stats if found."

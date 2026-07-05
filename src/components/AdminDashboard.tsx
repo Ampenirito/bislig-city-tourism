@@ -90,6 +90,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
     return saved ? JSON.parse(saved) : {
+      organizationName: "Bislig Local Enterprise Survey Group",
       executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
       recommendations: [
         {
@@ -447,24 +448,35 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setFillColor(15, 23, 42); // slate-900
       doc.rect(0, 0, pageWidth, 40, "F");
 
-      // Draw Logo
+      // Draw Logo clipped inside a circle
       if (logoImg) {
-        // Draw round logo background
+        // Draw white circle background
         doc.setFillColor(255, 255, 255);
-        doc.circle(28, 20, 12, "F");
-        doc.addImage(logoImg, "JPEG", 17, 9, 22, 22);
+        doc.circle(28, 20, 11, "F");
+        
+        // Circular clipping mask for image
+        doc.saveGraphicsState();
+        doc.circle(28, 20, 10.5);
+        doc.clip();
+        doc.addImage(logoImg, "JPEG", 17.5, 9.5, 21, 21);
+        doc.restoreGraphicsState();
       }
 
       // Title
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 20, { align: "right" });
+      doc.setFontSize(15);
+      doc.text("BFO CONSULTING DIAGNOSTICS", pageWidth - 15, 17, { align: "right" });
       
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.setTextColor(251, 140, 0); // Orange subtext
-      doc.text("Automated Executive Summary & Digital Recommendations", pageWidth - 15, 26, { align: "right" });
+      doc.text("Automated Executive Summary & Digital Recommendations", pageWidth - 15, 22, { align: "right" });
+
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(156, 163, 175); // gray-400
+      doc.text(`Target Org: ${analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}`, pageWidth - 15, 27, { align: "right" });
 
       y = 48;
 
@@ -472,7 +484,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text("🥇 Executive Summary", 15, y);
+      doc.text("BFO Executive Summary", 15, y);
       y += 6;
 
       // Draw background card for Executive Summary
@@ -502,7 +514,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text("🥈 Solution Recommendations Plan", 15, y);
+      doc.text("BFO Solution Recommendations Plan", 15, y);
       y += 8;
 
       // Loop through recommendations
@@ -585,6 +597,7 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
     setCustomPrompt("");
     setAnalysisError("");
     const defaultData = {
+      organizationName: "Bislig Local Enterprise Survey Group",
       executiveSummary: "Based on 27 survey responses, the most common operational challenge is manual administrative work (74%), followed by slow customer response (53%). Most organizations are willing to adopt digital tools but cite budget and training as the primary barriers.",
       recommendations: [
         {
@@ -1271,12 +1284,12 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
               {isAnalyzingFile ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Gemini is Analyzing...</span>
+                  <span>BFO is Analyzing...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  <span>Run Gemini Intelligence</span>
+                  <span>Run BFO Intelligence</span>
                 </>
               )}
             </button>
@@ -1332,14 +1345,28 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
                   </div>
                 </div>
 
+                {/* Organization Details Panel */}
+                <div className="bg-slate-50 border border-slate-200/80 p-5 rounded-3xl flex items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block mb-0.5">Target Organization / Dataset</span>
+                    <h2 className="text-sm font-bold text-slate-800">
+                      {analysisResult.organizationName || "Bislig Local Enterprise Survey Group"}
+                    </h2>
+                  </div>
+                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-1 shrink-0 border border-emerald-100 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Active Diagnostics</span>
+                  </div>
+                </div>
+
                 {/* Executive Summary Card */}
                 <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full" />
                   
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-xl">🥇</span>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-100">01</div>
                     <div>
-                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">BFO Executive Summary</h3>
+                      <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Executive Summary</h3>
                       <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-1">High Impact Insights</p>
                     </div>
                   </div>
@@ -1351,10 +1378,10 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
 
                 {/* Recommendation Engine Card */}
                 <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/60 shadow-sm">
-                  <div className="flex items-center gap-2 mb-5">
-                    <span className="text-xl">🥈</span>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 border border-sky-100">02</div>
                     <div>
-                      <h3 className="font-bold font-serif text-lg text-slate-800 leading-none">BFO Solution Recommendations</h3>
+                      <h3 className="font-bold font-serif text-base text-slate-800 leading-none">BFO Solution Recommendations</h3>
                       <p className="text-[9px] font-bold text-sky-600 uppercase tracking-widest mt-1">Custom Digital Blueprints</p>
                     </div>
                   </div>
