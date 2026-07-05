@@ -267,6 +267,7 @@ export default function App() {
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
   const [weatherError, setWeatherError] = useState<boolean>(false);
   const [showWaveDetails, setShowWaveDetails] = useState<boolean>(false);
+  const [showMobileSurfModal, setShowMobileSurfModal] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -1915,8 +1916,17 @@ export default function App() {
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Current Forecast</p>
-                  <p className="text-sm font-bold">
-                    {loadingWeather ? "Syncing..." : weatherData ? `${weatherData.temperature}°C ${weatherData.condition}` : "29°C Sunny"} — Bislig City
+                  <p className="text-sm font-bold flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span>{loadingWeather ? "Syncing..." : weatherData ? `${weatherData.temperature}°C ${weatherData.condition}` : "29°C Sunny"} — Bislig City</span>
+                    {!loadingWeather && weatherData && (
+                      <button
+                        onClick={() => setShowMobileSurfModal(true)}
+                        className="text-[9px] bg-white/10 hover:bg-white/20 border border-white/15 px-2 py-0.5 rounded-full text-slate-200 uppercase font-mono flex items-center gap-1 transition-all duration-300 active:scale-95 cursor-pointer ml-1"
+                        title="Click to view Lawigan Surf Report"
+                      >
+                        🌊 Lawigan: {weatherData.waveHeight || "0.8"}m ({weatherData.surfStatus?.split(" ")[0] || "Mellow"})
+                      </button>
+                    )}
                   </p>
                 </div>
               </div>
@@ -3779,6 +3789,59 @@ export default function App() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MOBILE WAVE / SURF REPORT MODAL */}
+      {showMobileSurfModal && weatherData && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99] flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-white/10 text-white w-full max-w-sm rounded-2xl p-6 shadow-2xl space-y-4 relative">
+            <button
+              onClick={() => setShowMobileSurfModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            
+            <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
+              <Waves className="w-6 h-6 text-sky-400 animate-pulse" />
+              <div>
+                <h3 className="font-bold font-serif text-base text-white">Lawigan Surf Report</h3>
+                <p className="text-[10px] text-slate-400">Real-time wave diagnostics & safety advisory</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 bg-black/30 p-3.5 rounded-xl border border-white/5 text-xs">
+              <div>
+                <span className="block text-[8px] text-slate-400 font-bold uppercase leading-none mb-1">Wave Height</span>
+                <span className="text-sm font-extrabold text-sky-300">{weatherData.waveHeight || "0.8"} meters</span>
+              </div>
+              <div>
+                <span className="block text-[8px] text-slate-400 font-bold uppercase leading-none mb-1">Surf Status</span>
+                <span className="text-xs font-bold text-white">{weatherData.surfStatus || "Optimal Swell"}</span>
+              </div>
+              <div className="col-span-2 border-t border-white/5 pt-2 mt-1">
+                <span className="block text-[8px] text-slate-400 font-bold uppercase leading-none mb-1">Local Wind Force</span>
+                <span className="text-xs font-semibold text-white">{weatherData.windSpeed} km/h</span>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-xs leading-relaxed text-slate-300 bg-white/5 p-4 rounded-xl border border-white/5">
+              {weatherData.surfWarning && (
+                <div className="text-rose-400 font-bold uppercase tracking-wider flex items-center gap-1 text-[10px]">
+                  <span>⚠️</span> {weatherData.surfWarning}
+                </div>
+              )}
+              <p className="text-xs">{weatherData.surfAdvice}</p>
+            </div>
+
+            <button
+              onClick={() => setShowMobileSurfModal(false)}
+              className="w-full bg-[#FB8C00] text-slate-900 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-[#d69f00] transition-colors cursor-pointer"
+            >
+              Close Surf Report
+            </button>
           </div>
         </div>
       )}
