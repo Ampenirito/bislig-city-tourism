@@ -1933,65 +1933,128 @@ Based on survey responses across multiple departments and local businesses, we i
 }
 
 // ============================================================================
-// BFO ROI CALCULATOR COMPONENT (SMALL BUSINESS FOCUS)
+// BFO ROI CALCULATOR COMPONENT (SMALL BUSINESS PROFITABILITY OPTIMIZER)
 // ============================================================================
 function BfoRoiCalculator() {
-  const [businessType, setBusinessType] = useState<"retail" | "hospitality" | "dining" | "services">("hospitality");
-  const [solutionFocus, setSolutionFocus] = useState<"chatbot" | "booking" | "pos" | "suite">("chatbot");
-  const [monthlyVolume, setMonthlyVolume] = useState<number>(1500);
-  const [manualTime, setManualTime] = useState<number>(15);
-  const [employeeWage, setEmployeeWage] = useState<number>(120);
-  const [monthlyCost, setMonthlyCost] = useState<number>(3000);
-  const [oneTimeInvestment, setOneTimeInvestment] = useState<number>(25000);
+  const [businessType, setBusinessType] = useState<"resort" | "restaurant" | "refilling" | "autoshop" | "retail" | "custom">("restaurant");
+  const [monthlyRevenue, setMonthlyRevenue] = useState<number>(200000);
+  const [cogsPercent, setCogsPercent] = useState<number>(40);
+  const [manualHours, setManualHours] = useState<number>(40);
+  const [hourlyRate, setHourlyRate] = useState<number>(120);
+  const [efficiencyGain, setEfficiencyGain] = useState<number>(50);
+
+  // Dynamic Custom Savings & Expenses Lists
+  const [customSavings, setCustomSavings] = useState<Array<{ id: string; name: string; value: number }>>([
+    { id: "sav-1", name: "Reduce raw material waste", value: 3500 }
+  ]);
+  const [customExpenses, setCustomExpenses] = useState<Array<{ id: string; name: string; value: number }>>([
+    { id: "exp-1", name: "Monthly shop utilities", value: 8000 }
+  ]);
+
+  // Form states to add custom items
+  const [newSavingName, setNewSavingName] = useState("");
+  const [newSavingValue, setNewSavingValue] = useState("");
+  const [newExpenseName, setNewExpenseName] = useState("");
+  const [newExpenseValue, setNewExpenseValue] = useState("");
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [strategyReport, setStrategyReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Efficiency factor based on solution focus
-  const efficiency = useMemo(() => {
-    switch (solutionFocus) {
-      case "chatbot": return 0.85;
-      case "booking": return 0.75;
-      case "pos": return 0.65;
-      case "suite": return 0.80;
-    }
-  }, [solutionFocus]);
+  // Math Calculations
+  const laborCostManual = useMemo(() => {
+    return manualHours * hourlyRate;
+  }, [manualHours, hourlyRate]);
 
-  // Real-time calculations
-  const hoursSaved = useMemo(() => {
-    return Math.round(monthlyVolume * (manualTime / 60) * efficiency);
-  }, [monthlyVolume, manualTime, efficiency]);
+  const laborSavings = useMemo(() => {
+    return Math.round(laborCostManual * (efficiencyGain / 100));
+  }, [laborCostManual, efficiencyGain]);
 
-  const grossMonthlySavings = useMemo(() => {
-    return Math.round(hoursSaved * employeeWage);
-  }, [hoursSaved, employeeWage]);
+  const totalCustomSavings = useMemo(() => {
+    return customSavings.reduce((acc, item) => acc + item.value, 0);
+  }, [customSavings]);
 
-  const netMonthlySavings = useMemo(() => {
-    return grossMonthlySavings - monthlyCost;
-  }, [grossMonthlySavings, monthlyCost]);
+  const totalMonthlySavings = useMemo(() => {
+    return laborSavings + totalCustomSavings;
+  }, [laborSavings, totalCustomSavings]);
 
-  const paybackPeriod = useMemo(() => {
-    if (netMonthlySavings <= 0) return "Never";
-    return (oneTimeInvestment / netMonthlySavings).toFixed(1);
-  }, [oneTimeInvestment, netMonthlySavings]);
+  const annualFinancialGain = useMemo(() => {
+    return totalMonthlySavings * 12;
+  }, [totalMonthlySavings]);
 
-  const year1Roi = useMemo(() => {
-    if (netMonthlySavings <= 0) return 0;
-    const year1Savings = (netMonthlySavings * 12) - oneTimeInvestment;
-    return Math.round((year1Savings / oneTimeInvestment) * 100);
-  }, [netMonthlySavings, oneTimeInvestment]);
+  // Baseline (Current status) calculations
+  const baselineCogs = useMemo(() => {
+    return Math.round(monthlyRevenue * (cogsPercent / 100));
+  }, [monthlyRevenue, cogsPercent]);
 
-  // 5-Year Cumulative Savings projection list
-  const cumulativeProjections = useMemo(() => {
-    return Array.from({ length: 5 }, (_, i) => {
-      const year = i + 1;
-      const totalSavings = netMonthlySavings * 12 * year;
-      const netSavings = totalSavings - oneTimeInvestment;
-      return { year, netSavings };
-    });
-  }, [netMonthlySavings, oneTimeInvestment]);
+  const totalCustomExpenses = useMemo(() => {
+    return customExpenses.reduce((acc, item) => acc + item.value, 0);
+  }, [customExpenses]);
+
+  const baselineExpenses = useMemo(() => {
+    return baselineCogs + laborCostManual + totalCustomExpenses;
+  }, [baselineCogs, laborCostManual, totalCustomExpenses]);
+
+  const baselineNetProfit = useMemo(() => {
+    return Math.max(monthlyRevenue - baselineExpenses, 0);
+  }, [monthlyRevenue, baselineExpenses]);
+
+  const baselineProfitMargin = useMemo(() => {
+    if (monthlyRevenue <= 0) return 0;
+    return Math.round((baselineNetProfit / monthlyRevenue) * 100);
+  }, [baselineNetProfit, monthlyRevenue]);
+
+  // Optimized calculations
+  const optimizedExpenses = useMemo(() => {
+    return Math.max(baselineExpenses - totalMonthlySavings, 0);
+  }, [baselineExpenses, totalMonthlySavings]);
+
+  const optimizedNetProfit = useMemo(() => {
+    return Math.max(monthlyRevenue - optimizedExpenses, 0);
+  }, [monthlyRevenue, optimizedExpenses]);
+
+  const optimizedProfitMargin = useMemo(() => {
+    if (monthlyRevenue <= 0) return 0;
+    return Math.round((optimizedNetProfit / monthlyRevenue) * 100);
+  }, [optimizedNetProfit, monthlyRevenue]);
+
+  // Custom Item Handlers
+  const addSavingItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSavingName.trim() || !newSavingValue) return;
+    const val = parseFloat(newSavingValue);
+    if (isNaN(val) || val <= 0) return;
+    
+    setCustomSavings((prev) => [
+      ...prev,
+      { id: `sav-${Date.now()}`, name: newSavingName.trim(), value: Math.round(val) }
+    ]);
+    setNewSavingName("");
+    setNewSavingValue("");
+  };
+
+  const removeSavingItem = (id: string) => {
+    setCustomSavings((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const addExpenseItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newExpenseName.trim() || !newExpenseValue) return;
+    const val = parseFloat(newExpenseValue);
+    if (isNaN(val) || val <= 0) return;
+    
+    setCustomExpenses((prev) => [
+      ...prev,
+      { id: `exp-${Date.now()}`, name: newExpenseName.trim(), value: Math.round(val) }
+    ]);
+    setNewExpenseName("");
+    setNewExpenseValue("");
+  };
+
+  const removeExpenseItem = (id: string) => {
+    setCustomExpenses((prev) => prev.filter((item) => item.id !== id));
+  };
 
   // Simulated progress bar effect
   useEffect(() => {
@@ -2017,28 +2080,38 @@ function BfoRoiCalculator() {
     setError(null);
     setStrategyReport(null);
 
-    const prompt = `
-Generate a highly detailed, professional BFO Digital Transformation ROI Strategic Roadmap for a local small business in Bislig City.
-Use these input parameters:
-- Business Sector: ${businessType.toUpperCase()} (e.g. hospitality, retail, local dining, or family service shop)
-- Digital Solution Implemented: BFO ${solutionFocus.toUpperCase()} (Efficiency Gain: ${efficiency * 100}%)
-- Monthly Customer Inquiries / Order Volume: ${monthlyVolume} orders/inquiries
-- Avg. Manual Response/Processing Time per Inquiry/Order: ${manualTime} minutes
-- Avg. staff hourly wage: ₱${employeeWage} PHP/hour
-- BFO Software Licensing / Subscription Support Cost: ₱${monthlyCost} PHP/month
-- One-Time Digital Setup & Onboarding Investment: ₱${oneTimeInvestment} PHP
+    const customSavingsText = customSavings.map(s => `- ${s.name}: ₱${s.value.toLocaleString()}/mo`).join("\n");
+    const customExpensesText = customExpenses.map(e => `- ${e.name}: ₱${e.value.toLocaleString()}/mo`).join("\n");
 
-Calculations:
-- Monthly Hours Reclaimed: ${hoursSaved} hours
-- Monthly Net Savings: ₱${netMonthlySavings.toLocaleString()} PHP
-- Payback Period: ${paybackPeriod} months
-- Year 1 Net ROI: ${year1Roi}%
+    const prompt = `
+Generate a highly detailed, professional Digital Operations Optimization Strategy & Profitability Roadmap for a local business in Bislig City.
+Use these input parameters:
+- Business Sector: ${businessType.toUpperCase()} (e.g. hospitality/resort, restaurant/cafe, water refilling depot, auto repair shop, retail store, or custom shop)
+- Monthly Revenue: ₱${monthlyRevenue.toLocaleString()} PHP/month
+- Base Cost of Goods / Operations (COGS): ${cogsPercent}%
+- Monthly Labor Dedicated to Manual Admin Tasks (scheduling, orders, inventory): ${manualHours} hours/month
+- Avg. Staff Hourly Rate: ₱${hourlyRate} PHP/hour
+- Proposed Operational Efficiency Gain: ${efficiencyGain}%
+
+Financial Calculations:
+- Current Monthly Operating Costs: ₱${baselineExpenses.toLocaleString()} PHP
+- Current Profit Margin: ${baselineProfitMargin}%
+- Optimized Monthly Operating Costs: ₱${optimizedExpenses.toLocaleString()} PHP
+- Optimized Profit Margin: ${optimizedProfitMargin}%
+- Net Monthly Savings (Direct ROI): ₱${totalMonthlySavings.toLocaleString()} PHP
+- Net Annualized Profit Uplift: ₱${annualFinancialGain.toLocaleString()} PHP
+
+Custom Savings Configurations Added by Business:
+${customSavingsText || "None specified."}
+
+Custom Monthly Operating Expenses Specified:
+${customExpensesText || "None specified."}
 
 Generate a comprehensive 4-section consulting report formatted in standard clean markdown:
-1. Executive Summary: Analyze the digital maturity shift for a small business operating in Bislig City adopting BFO ${solutionFocus}. Highlight how modern automated channels improve local competitiveness.
-2. Financial Feasibility & Cost-Benefit Analysis: Detail the payback period of ${paybackPeriod} months and evaluate the 5-year savings trend.
-3. Operational Restructuring & Staff Reinvestment: Freeing up ${hoursSaved} staff hours/month allows a small business to redirect labor. Suggest concrete strategies to redeploy these hours toward customer experience, marketing, local tour partnerships, or service scaling rather than layoffs.
-4. 5-Year Business Growth & Scaling Roadmap: Provide Year-1 to Year-5 milestones for expanding digital channels, scaling customer loyalty, and capturing tourists arriving from Tinuy-an Falls and Enchanted River.
+1. Executive Summary: Analyze the financial and operational status of a local ${businessType} business in Bislig City. Explain how shifting to optimized digital channels addresses bottlenecks and grows competitiveness.
+2. Cost-Benefit & Profit Margin Expansion: Break down the margin change from ${baselineProfitMargin}% to ${optimizedProfitMargin}%, highlighting the annual profit uplift of ₱${annualFinancialGain.toLocaleString()} PHP.
+3. Custom Optimization Strategies: Provide targeted recommendations for their business type and custom items. Detail how to achieve the ${efficiencyGain}% efficiency target using modern booking engines, inventory hubs, or customer inquiry tools.
+4. Staff & Saved Labor Allocation Guide: Reclaiming ${Math.round(manualHours * (efficiencyGain / 100))} hours/month of labor allows a small business to grow. Suggest how to reinvest these saved hours into local marketing, customer loyalty programs, or partnering with local tourist centers (Tinuy-an Falls/Enchanted River) rather than reducing staff.
 `;
 
     try {
@@ -2062,292 +2135,383 @@ Generate a comprehensive 4-section consulting report formatted in standard clean
     }
   };
 
+  // Stacked Bar Heights scaling calculation for SVG (Max height = 160px)
+  const maxScaledVal = Math.max(monthlyRevenue, baselineExpenses, optimizedExpenses, 1000);
+  const baselineCostHeight = Math.round((baselineExpenses / maxScaledVal) * 160);
+  const baselineProfitHeight = Math.round((baselineNetProfit / maxScaledVal) * 160);
+  
+  const optimizedCostHeight = Math.round((optimizedExpenses / maxScaledVal) * 160);
+  const optimizedProfitHeight = Math.round((optimizedNetProfit / maxScaledVal) * 160);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
-      {/* Left Input Configuration Panel (5 cols) */}
-      <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
+      {/* Left Input Configuration & Custom Lists (6 cols) */}
+      <div className="lg:col-span-6 bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-6">
         <div>
           <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">BUSINESS ROI WORKBENCH</span>
-          <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO ROI Parameters</h2>
-          <p className="text-[11px] text-slate-500">Configure your local business profile and BFO solution focus to calculate financial benefits.</p>
+          <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO Business Optimizer</h2>
+          <p className="text-[11px] text-slate-500">Configure your business financials and add custom savings/expenses to track profitability gains.</p>
         </div>
 
-        {/* Business Sector */}
+        {/* Business Category Selection */}
         <div className="space-y-2">
           <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">1. Select Business Sector</label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {[
-              { id: "hospitality", label: "🏨 Hospitality & Tourism", desc: "Resorts, hotels, homestays" },
-              { id: "dining", label: "☕ Food & Beverage", desc: "Restaurants, cafes, bakeries" },
-              { id: "retail", label: "🛍️ Retail & Shops", desc: "Grocers, boutiques, markets" },
-              { id: "services", label: "💧 Services & Others", desc: "Water refilling, local logistics" }
+              { id: "restaurant", label: "☕ Restaurant/Cafe" },
+              { id: "refilling", label: "💧 Water Refilling" },
+              { id: "retail", label: "🛍️ Retail Shop" },
+              { id: "autoshop", label: "🔧 Auto Repair" },
+              { id: "resort", label: "🏨 Beach Resort" },
+              { id: "custom", label: "⚙️ Custom Business" }
             ].map((sector) => (
               <button
                 key={sector.id}
                 onClick={() => setBusinessType(sector.id as any)}
-                className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-center transition-all relative overflow-hidden flex flex-col justify-center items-center cursor-pointer ${
                   businessType === sector.id
                     ? "border-[#0047A1] ring-2 ring-[#0047A1]/20 bg-white"
                     : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-300"
                 }`}
               >
-                <span className="font-extrabold text-xs text-slate-800">{sector.label}</span>
-                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{sector.desc}</span>
+                <span className="font-extrabold text-[10px] text-slate-800 leading-tight">{sector.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Digital Solution Focus */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">2. Select BFO Digital Solution</label>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { id: "chatbot", label: "BFO Chatbot", desc: "Automate booking & Qs (85%)" },
-              { id: "booking", label: "BFO Reservation", desc: "Menus & bookings (75%)" },
-              { id: "pos", label: "BFO Inventory POS", desc: "Sales & stock tracker (65%)" },
-              { id: "suite", label: "BFO Business Suite", desc: "Complete integration (80%)" }
-            ].map((solution) => (
+        {/* Financial Sliders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Monthly Revenue */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-wider">Avg. Monthly Revenue</label>
+              <span className="text-[10px] font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{monthlyRevenue.toLocaleString()}</span>
+            </div>
+            <input
+              type="range"
+              min="10000"
+              max="1000000"
+              step="10000"
+              value={monthlyRevenue}
+              onChange={(e) => setMonthlyRevenue(Number(e.target.value))}
+              className="w-full accent-[#0047A1] cursor-pointer"
+            />
+          </div>
+
+          {/* COGS % */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-wider">Base Material/COGS Cost</label>
+              <span className="text-[10px] font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{cogsPercent}%</span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="90"
+              step="5"
+              value={cogsPercent}
+              onChange={(e) => setCogsPercent(Number(e.target.value))}
+              className="w-full accent-[#0047A1] cursor-pointer"
+            />
+          </div>
+
+          {/* Manual Admin Hours */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-wider">Monthly Manual Hours</label>
+              <span className="text-[10px] font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{manualHours} hrs/mo</span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="200"
+              step="5"
+              value={manualHours}
+              onChange={(e) => setManualHours(Number(e.target.value))}
+              className="w-full accent-[#0047A1] cursor-pointer"
+            />
+          </div>
+
+          {/* Labor Wage */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-wider">Employee Hourly Wage</label>
+              <span className="text-[10px] font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{hourlyRate}/hr</span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="500"
+              step="10"
+              value={hourlyRate}
+              onChange={(e) => setHourlyRate(Number(e.target.value))}
+              className="w-full accent-[#0047A1] cursor-pointer"
+            />
+          </div>
+
+          {/* Target Efficiency Gain */}
+          <div className="space-y-1 md:col-span-2">
+            <div className="flex justify-between items-center">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-wider">Target Digital Optimization Savings</label>
+              <span className="text-[10px] font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{efficiencyGain}% efficiency</span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="90"
+              step="5"
+              value={efficiencyGain}
+              onChange={(e) => setEfficiencyGain(Number(e.target.value))}
+              className="w-full accent-[#0047A1] cursor-pointer"
+            />
+          </div>
+
+        </div>
+
+        {/* CUSTOM ITEMS DYNAMIC SECTIONS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+          
+          {/* Custom Savings List */}
+          <div className="space-y-3.5">
+            <div>
+              <span className="text-[9px] font-black text-slate-400 uppercase block leading-none mb-0.5">CUSTOM BENEFIT SECTIONS</span>
+              <h4 className="font-extrabold text-xs text-slate-800">Operational Savings</h4>
+            </div>
+
+            <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+              {customSavings.map((item) => (
+                <div key={item.id} className="flex justify-between items-center bg-emerald-50/50 border border-emerald-100 p-2 rounded-xl text-xs font-semibold">
+                  <span className="text-slate-600 truncate max-w-[120px]">{item.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-700 font-mono">₱{item.value.toLocaleString()}</span>
+                    <button
+                      onClick={() => removeSavingItem(item.id)}
+                      className="text-rose-500 hover:text-rose-700 font-black cursor-pointer px-1"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {customSavings.length === 0 && (
+                <p className="text-[10px] text-slate-400 italic">No custom savings configured.</p>
+              )}
+            </div>
+
+            <form onSubmit={addSavingItem} className="flex gap-1.5">
+              <input
+                type="text"
+                value={newSavingName}
+                onChange={(e) => setNewSavingName(e.target.value)}
+                placeholder="Saving Title"
+                className="flex-grow text-[10px] p-2 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+              />
+              <input
+                type="number"
+                value={newSavingValue}
+                onChange={(e) => setNewSavingValue(e.target.value)}
+                placeholder="Value ₱"
+                className="w-16 text-[10px] p-2 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+              />
               <button
-                key={solution.id}
-                onClick={() => setSolutionFocus(solution.id as any)}
-                className={`p-3 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
-                  solutionFocus === solution.id
-                    ? "border-[#0047A1] ring-2 ring-[#0047A1]/20 bg-white"
-                    : "border-slate-100 bg-slate-50 hover:bg-white hover:border-slate-300"
-                }`}
+                type="submit"
+                className="bg-[#0047A1] text-white px-2.5 rounded-xl font-bold text-[10px] hover:bg-blue-800 transition-colors cursor-pointer"
               >
-                <span className="font-extrabold text-xs text-slate-800">{solution.label}</span>
-                <span className="text-[9px] text-slate-400 mt-1 leading-tight">{solution.desc}</span>
+                +
               </button>
-            ))}
+            </form>
           </div>
+
+          {/* Custom Expenses List */}
+          <div className="space-y-3.5">
+            <div>
+              <span className="text-[9px] font-black text-slate-400 uppercase block leading-none mb-0.5">CUSTOM COST SECTIONS</span>
+              <h4 className="font-extrabold text-xs text-slate-800">Fixed Operating Expenses</h4>
+            </div>
+
+            <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+              {customExpenses.map((item) => (
+                <div key={item.id} className="flex justify-between items-center bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs font-semibold">
+                  <span className="text-slate-600 truncate max-w-[120px]">{item.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-800 font-mono">₱{item.value.toLocaleString()}</span>
+                    <button
+                      onClick={() => removeExpenseItem(item.id)}
+                      className="text-rose-500 hover:text-rose-700 font-black cursor-pointer px-1"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {customExpenses.length === 0 && (
+                <p className="text-[10px] text-slate-400 italic">No custom expenses configured.</p>
+              )}
+            </div>
+
+            <form onSubmit={addExpenseItem} className="flex gap-1.5">
+              <input
+                type="text"
+                value={newExpenseName}
+                onChange={(e) => setNewExpenseName(e.target.value)}
+                placeholder="Expense Title"
+                className="flex-grow text-[10px] p-2 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+              />
+              <input
+                type="number"
+                value={newExpenseValue}
+                onChange={(e) => setNewExpenseValue(e.target.value)}
+                placeholder="Value ₱"
+                className="w-16 text-[10px] p-2 bg-slate-50 border border-slate-200 rounded-xl outline-none"
+              />
+              <button
+                type="submit"
+                className="bg-[#0047A1] text-white px-2.5 rounded-xl font-bold text-[10px] hover:bg-blue-800 transition-colors cursor-pointer"
+              >
+                +
+              </button>
+            </form>
+          </div>
+
         </div>
 
-        {/* Volume Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">3. Monthly Customer Volume / Orders</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{monthlyVolume.toLocaleString()} inputs</span>
-          </div>
-          <input
-            type="range"
-            min="100"
-            max="10000"
-            step="100"
-            value={monthlyVolume}
-            onChange={(e) => setMonthlyVolume(Number(e.target.value))}
-            className="w-full accent-[#0047A1] cursor-pointer"
-          />
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
-            <span>100</span>
-            <span>5,000</span>
-            <span>10,000</span>
-          </div>
-        </div>
-
-        {/* Manual Time Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">4. Avg. Manual Processing Time per Order/Inquiry</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">{manualTime} mins</span>
-          </div>
-          <input
-            type="range"
-            min="5"
-            max="60"
-            step="1"
-            value={manualTime}
-            onChange={(e) => setManualTime(Number(e.target.value))}
-            className="w-full accent-[#0047A1] cursor-pointer"
-          />
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
-            <span>5 mins</span>
-            <span>30 mins</span>
-            <span>60 mins</span>
-          </div>
-        </div>
-
-        {/* Staff Hourly Wage Slider */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">5. Average Staff Hourly Wage</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{employeeWage} / hr</span>
-          </div>
-          <input
-            type="range"
-            min="50"
-            max="500"
-            step="10"
-            value={employeeWage}
-            onChange={(e) => setEmployeeWage(Number(e.target.value))}
-            className="w-full accent-[#0047A1] cursor-pointer"
-          />
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
-            <span>₱50/hr</span>
-            <span>₱250/hr</span>
-            <span>₱500/hr</span>
-          </div>
-        </div>
-
-        {/* Monthly Licensing Cost */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">6. BFO Support / Subscription Cost</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{monthlyCost.toLocaleString()} / mo</span>
-          </div>
-          <input
-            type="range"
-            min="1000"
-            max="20000"
-            step="500"
-            value={monthlyCost}
-            onChange={(e) => setMonthlyCost(Number(e.target.value))}
-            className="w-full accent-[#0047A1] cursor-pointer"
-          />
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
-            <span>₱1,000</span>
-            <span>₱10,000</span>
-            <span>₱20,000</span>
-          </div>
-        </div>
-
-        {/* One-Time setup Investment */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between items-center">
-            <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider">7. One-Time Setup & Onboarding Investment</label>
-            <span className="text-xs font-mono font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md">₱{oneTimeInvestment.toLocaleString()}</span>
-          </div>
-          <input
-            type="range"
-            min="10000"
-            max="200000"
-            step="5000"
-            value={oneTimeInvestment}
-            onChange={(e) => setOneTimeInvestment(Number(e.target.value))}
-            className="w-full accent-[#0047A1] cursor-pointer"
-          />
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold font-mono">
-            <span>₱10,000</span>
-            <span>₱100,000</span>
-            <span>₱200,000</span>
-          </div>
-        </div>
       </div>
 
-      {/* Right Outputs and SVG Projection Graph Panel (7 cols) */}
-      <div className="lg:col-span-7 space-y-6">
+      {/* Right Outputs & Dynamic Stacked Comparison SVG (6 cols) */}
+      <div className="lg:col-span-6 space-y-6">
         
-        {/* Real-time KPIs cards */}
+        {/* Profitability indicators */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Monthly Net Savings</span>
-            <span className={`text-sm font-extrabold font-mono ${netMonthlySavings >= 0 ? "text-emerald-600" : "text-rose-500"}`}>
-              {netMonthlySavings >= 0 ? "+" : ""}₱{netMonthlySavings.toLocaleString()}
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Monthly Saved Gain</span>
+            <span className="text-sm font-extrabold text-emerald-600 font-mono">
+              +₱{totalMonthlySavings.toLocaleString()}
             </span>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Hours Reclaimed</span>
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Annualized Profit Uplift</span>
             <span className="text-sm font-extrabold text-indigo-600 font-mono">
-              {hoursSaved} hrs/mo
+              ₱{annualFinancialGain.toLocaleString()}
             </span>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Payback Period</span>
-            <span className="text-sm font-extrabold text-amber-600 font-mono">
-              {paybackPeriod} {paybackPeriod !== "Never" ? "Months" : ""}
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Base Profit Margin</span>
+            <span className="text-sm font-extrabold text-slate-600 font-mono">
+              {baselineProfitMargin}%
             </span>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex flex-col justify-between">
-            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Year 1 Net ROI</span>
+            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-1">Optimized Margin</span>
             <span className="text-sm font-extrabold text-[#2D9B8B] font-mono">
-              {year1Roi}%
+              {optimizedProfitMargin}%
             </span>
           </div>
         </div>
 
-        {/* 5-Year Profit SVG Chart */}
+        {/* Stacked Comparison Bar Chart SVG */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm space-y-4">
           <div>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">FINANCIAL TIMELINE</span>
-            <h4 className="font-bold text-xs text-slate-800">5-Year Cumulative Savings & Profit Trend</h4>
+            <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-0.5">PROFIT MARGIN COMPARISON</span>
+            <h4 className="font-bold text-xs text-slate-800">Monthly Revenue Allocation & Margin Boost</h4>
           </div>
 
           <div className="h-64 flex flex-col justify-between border-b border-slate-100 pb-2">
             <svg viewBox="0 0 500 220" className="w-full h-full">
               {/* Grid Lines */}
-              <line x1="40" y1="20" x2="480" y2="20" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
-              <line x1="40" y1="70" x2="480" y2="70" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
-              <line x1="40" y1="120" x2="480" y2="120" stroke="#cbd5e1" strokeWidth="1.5" /> {/* Baseline 0 */}
-              <line x1="40" y1="170" x2="480" y2="170" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+              <line x1="45" y1="20" x2="455" y2="20" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+              <line x1="45" y1="100" x2="455" y2="100" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="3" />
+              <line x1="45" y1="180" x2="455" y2="180" stroke="#cbd5e1" strokeWidth="1.5" /> {/* Baseline */}
 
-              {/* Baseline indicator text */}
-              <text x="12" y="123" fill="#94a3b8" fontSize="8" fontFamily="monospace">₱0</text>
+              <text x="12" y="24" fill="#94a3b8" fontSize="8" fontFamily="monospace">100%</text>
+              <text x="12" y="104" fill="#94a3b8" fontSize="8" fontFamily="monospace">50%</text>
+              <text x="12" y="184" fill="#94a3b8" fontSize="8" fontFamily="monospace">0%</text>
 
-              {/* Render Bars */}
-              {cumulativeProjections.map((proj, idx) => {
-                const x = 70 + idx * 85;
-                const barWidth = 40;
+              {/* Column 1: Current Manual Setup */}
+              {/* Stacked Operating Expenses (rose) + Net Profit (sky) */}
+              <g>
+                {/* Cost segment */}
+                <rect 
+                  x="120" 
+                  y={180 - baselineCostHeight} 
+                  width="70" 
+                  height={baselineCostHeight} 
+                  fill="#fda4af" 
+                  rx={4} 
+                />
+                {/* Profit segment (rendered stacked on top of cost) */}
+                {baselineProfitHeight > 0 && (
+                  <rect 
+                    x="120" 
+                    y={180 - baselineCostHeight - baselineProfitHeight} 
+                    width="70" 
+                    height={baselineProfitHeight} 
+                    fill="#38bdf8" 
+                    rx={4} 
+                  />
+                )}
                 
-                // Scale net savings to fit 100 height (above or below baseline)
-                // Baseline 0 is at y = 120. Scale factor represents maximum height of 80px.
-                const maxSavings = Math.max(...cumulativeProjections.map(p => Math.abs(p.netSavings)), 100000);
-                const barHeight = (proj.netSavings / maxSavings) * 80;
-                const y = barHeight >= 0 ? 120 - barHeight : 120;
-                const absHeight = Math.max(Math.abs(barHeight), 3); // minimum height
-                const fillClass = proj.netSavings >= 0 ? "fill-emerald-500" : "fill-rose-400";
+                <text x="155" y="200" textAnchor="middle" fill="#64748b" fontSize="9" fontWeight="black">Manual Status</text>
+                <text x="155" y="212" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace">Margin: {baselineProfitMargin}%</text>
                 
-                return (
-                  <g key={idx} className="group cursor-pointer">
-                    <rect 
-                      x={x - 10} 
-                      y="10" 
-                      width={barWidth + 20} 
-                      height="200" 
-                      fill="transparent" 
-                    />
-                    <rect
-                      x={x}
-                      y={y}
-                      width={barWidth}
-                      height={absHeight}
-                      rx={4}
-                      className={`${fillClass} transition-all duration-500 hover:opacity-85`}
-                    />
-                    <text
-                      x={x + barWidth / 2}
-                      y={proj.netSavings >= 0 ? y - 6 : y + absHeight + 12}
-                      textAnchor="middle"
-                      fill={proj.netSavings >= 0 ? "#0f766e" : "#e11d48"}
-                      fontSize="8"
-                      fontWeight="bold"
-                      fontFamily="monospace"
-                    >
-                      {proj.netSavings >= 0 ? "+" : ""}
-                      {Math.round(proj.netSavings / 1000)}k
-                    </text>
-                    <text
-                      x={x + barWidth / 2}
-                      y="215"
-                      textAnchor="middle"
-                      fill="#64748b"
-                      fontSize="9"
-                      fontWeight="extrabold"
-                    >
-                      Year {proj.year}
-                    </text>
-                  </g>
-                );
-              })}
+                {/* Labels inside stacked segments */}
+                {baselineCostHeight > 18 && (
+                  <text x="155" y={180 - (baselineCostHeight / 2) + 3} textAnchor="middle" fill="#e11d48" fontSize="7" fontWeight="bold">Costs: ₱{baselineExpenses.toLocaleString()}</text>
+                )}
+                {baselineProfitHeight > 18 && (
+                  <text x="155" y={180 - baselineCostHeight - (baselineProfitHeight / 2) + 3} textAnchor="middle" fill="#0369a1" fontSize="7" fontWeight="bold">Profit: ₱{baselineNetProfit.toLocaleString()}</text>
+                )}
+              </g>
+
+              {/* Column 2: Optimized Setup */}
+              {/* Stacked Operating Expenses (rose) + Net Profit (emerald) */}
+              <g>
+                {/* Cost segment */}
+                <rect 
+                  x="300" 
+                  y={180 - optimizedCostHeight} 
+                  width="70" 
+                  height={optimizedCostHeight} 
+                  fill="#fda4af" 
+                  rx={4} 
+                />
+                {/* Profit segment */}
+                {optimizedProfitHeight > 0 && (
+                  <rect 
+                    x="300" 
+                    y={180 - optimizedCostHeight - optimizedProfitHeight} 
+                    width="70" 
+                    height={optimizedProfitHeight} 
+                    fill="#34d399" 
+                    rx={4} 
+                  />
+                )}
+                
+                <text x="335" y="200" textAnchor="middle" fill="#64748b" fontSize="9" fontWeight="black">Optimized</text>
+                <text x="335" y="212" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace">Margin: {optimizedProfitMargin}%</text>
+                
+                {/* Labels inside stacked segments */}
+                {optimizedCostHeight > 18 && (
+                  <text x="335" y={180 - (optimizedCostHeight / 2) + 3} textAnchor="middle" fill="#e11d48" fontSize="7" fontWeight="bold">Costs: ₱{optimizedExpenses.toLocaleString()}</text>
+                )}
+                {optimizedProfitHeight > 18 && (
+                  <text x="335" y={180 - optimizedCostHeight - (optimizedProfitHeight / 2) + 3} textAnchor="middle" fill="#047857" fontSize="7" fontWeight="bold">Profit: ₱{optimizedNetProfit.toLocaleString()}</text>
+                )}
+              </g>
+
             </svg>
           </div>
 
           <div className="flex justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-emerald-500 rounded" /> Net Positive Profit
+              <span className="w-2.5 h-2.5 bg-[#38bdf8] rounded" /> Manual Net Profit
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 bg-rose-400 rounded" /> Outstanding Debt (Amortization)
+              <span className="w-2.5 h-2.5 bg-[#34d399] rounded" /> Optimized Net Profit
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-[#fda4af] rounded" /> Operating Expenses
             </span>
           </div>
         </div>
@@ -2361,7 +2525,7 @@ Generate a comprehensive 4-section consulting report formatted in standard clean
               <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold font-serif text-lg text-white">BFO AI Small Business Strategic Report</h3>
+              <h3 className="font-bold font-serif text-lg text-white">BFO AI Strategic Business Report</h3>
               <p className="text-[10px] text-slate-400">Generate a custom 5-year digital growth roadmap based on your business metrics</p>
             </div>
           </div>
@@ -2420,11 +2584,11 @@ Generate a comprehensive 4-section consulting report formatted in standard clean
                     doc.setFontSize(10);
                     doc.setFont("Helvetica", "normal");
                     doc.text(`Sector: ${businessType.toUpperCase()}`, 20, 30);
-                    doc.text(`Solution Focus: BFO ${solutionFocus.toUpperCase()}`, 20, 35);
-                    doc.text(`Monthly Volume: ${monthlyVolume.toLocaleString()} transactions`, 20, 40);
-                    doc.text(`Hours Reclaimed: ${hoursSaved} hrs/mo`, 20, 45);
-                    doc.text(`Net Monthly Savings: PHP ${netMonthlySavings.toLocaleString()}`, 20, 50);
-                    doc.text(`Year 1 Net ROI: ${year1Roi}%`, 20, 55);
+                    doc.text(`Monthly Revenue: PHP ${monthlyRevenue.toLocaleString()}`, 20, 35);
+                    doc.text(`Monthly Labor Hours: ${manualHours} hrs`, 20, 40);
+                    doc.text(`Proposed Efficiency Gain: ${efficiencyGain}%`, 20, 45);
+                    doc.text(`Estimated Monthly Savings: PHP ${totalMonthlySavings.toLocaleString()}`, 20, 50);
+                    doc.text(`Estimated Annual Uplift: PHP ${annualFinancialGain.toLocaleString()}`, 20, 55);
 
                     // Add content line by line
                     let y = 70;
@@ -2440,7 +2604,7 @@ Generate a comprehensive 4-section consulting report formatted in standard clean
                       doc.text(line, 20, y);
                       y += 6;
                     });
-                    doc.save(`BFO_SmallBusiness_ROI_${solutionFocus}.pdf`);
+                    doc.save(`BFO_Business_ROI_Report.pdf`);
                   }}
                   className="bg-[#FB8C00] text-slate-900 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-[#d69f00] transition-all cursor-pointer"
                 >
