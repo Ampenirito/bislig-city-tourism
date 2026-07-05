@@ -131,6 +131,24 @@ export default function AdminDashboard({ onBackToHome }: { onBackToHome: () => v
   const [fileMimeType, setFileMimeType] = useState<string>("text/plain");
   const [customPrompt, setCustomPrompt] = useState<string>("");
   const [isAnalyzingFile, setIsAnalyzingFile] = useState<boolean>(false);
+  const [fileProgress, setFileProgress] = useState<number>(0);
+  useEffect(() => {
+    let interval: any;
+    if (isAnalyzingFile) {
+      setFileProgress(0);
+      interval = setInterval(() => {
+        setFileProgress((prev) => {
+          if (prev >= 98) return prev;
+          const diff = 100 - prev;
+          const inc = Math.max(1, Math.floor(diff / 10));
+          return prev + inc;
+        });
+      }, 350);
+    } else {
+      setFileProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [isAnalyzingFile]);
   const [selectedOfficeIdx, setSelectedOfficeIdx] = useState<number>(0);
   const [analysisResult, setAnalysisResult] = useState<any>(() => {
     const saved = localStorage.getItem("bfo_file_analysis_result");
@@ -538,7 +556,7 @@ Based on survey responses across multiple departments and local businesses, we i
 
       if (!response.ok) {
         const errJson = await response.json().catch(() => ({}));
-        throw new Error(errJson.error || "Failed to parse analysis from Gemini.");
+        throw new Error(errJson.error || "Failed to parse analysis from BFO.");
       }
 
       const result = await response.json();
@@ -1582,7 +1600,7 @@ Based on survey responses across multiple departments and local businesses, we i
             <div className="space-y-2.5 pt-4 border-t border-slate-100">
               <div>
                 <h3 className="font-bold font-serif text-base mb-1">Step 2: BFO Directive (Optional)</h3>
-                <p className="text-[10px] text-slate-400">Guide the Gemini model or ask a question regarding the dataset.</p>
+                <p className="text-[10px] text-slate-400">Guide the BFO model or ask a question regarding the dataset.</p>
               </div>
               <textarea
                 value={customPrompt}
@@ -1630,11 +1648,27 @@ Based on survey responses across multiple departments and local businesses, we i
                     <Sparkles className="w-5 h-5 animate-pulse" />
                   </div>
                 </div>
-                <div className="space-y-2 max-w-sm">
-                  <h4 className="font-bold text-base text-slate-800 animate-pulse">Running Digital Diagnostic</h4>
-                  <p className="text-xs text-slate-500 leading-relaxed">
-                    Gemini is compiling survey clusters, formulating strategic solutions, and projecting implementation benefits...
-                  </p>
+                <div className="space-y-4 max-w-sm w-full">
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-base text-slate-800 animate-pulse">Running Digital Diagnostic</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      BFO is compiling survey clusters, formulating strategic solutions, and projecting implementation benefits...
+                    </p>
+                  </div>
+
+                  {/* Premium Loading Bar */}
+                  <div className="space-y-1.5 text-left">
+                    <div className="flex justify-between text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                      <span>Analyzing Document Layout</span>
+                      <span className="font-mono text-[#0047A1]">{fileProgress}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/40">
+                      <div
+                        className="bg-gradient-to-r from-[#0047A1] to-[#0097A7] h-full rounded-full transition-all duration-300 ease-out"
+                        style={{ width: `${fileProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="w-full max-w-xs bg-slate-50 rounded-xl p-3 border border-slate-100 flex items-center justify-center gap-2">
@@ -1864,7 +1898,7 @@ Based on survey responses across multiple departments and local businesses, we i
                 <div className="space-y-1">
                   <h4 className="font-bold text-slate-700">Awaiting Business Data</h4>
                   <p className="text-xs text-slate-400 max-w-sm">
-                    Configure your data sources and prompts on the left, then trigger Gemini to render consulting recommendations.
+                    Configure your data sources and prompts on the left, then trigger BFO to render consulting recommendations.
                   </p>
                 </div>
               </div>

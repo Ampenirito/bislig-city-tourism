@@ -389,6 +389,24 @@ export default function App() {
   const [aiBudget, setAiBudget] = useState<"Budget" | "Mid-range" | "Luxury">("Mid-range");
   const [aiGroupSize, setAiGroupSize] = useState<"Solo" | "Couple" | "Family" | "Friends">("Couple");
   const [isGeneratingAi, setIsGeneratingAi] = useState<boolean>(false);
+  const [aiProgress, setAiProgress] = useState<number>(0);
+  useEffect(() => {
+    let interval: any;
+    if (isGeneratingAi) {
+      setAiProgress(0);
+      interval = setInterval(() => {
+        setAiProgress((prev) => {
+          if (prev >= 98) return prev;
+          const diff = 100 - prev;
+          const inc = Math.max(1, Math.floor(diff / 12));
+          return prev + inc;
+        });
+      }, 400);
+    } else {
+      setAiProgress(0);
+    }
+    return () => clearInterval(interval);
+  }, [isGeneratingAi]);
   const [generatedItinerary, setGeneratedItinerary] = useState<GeneratedItinerary | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
 
@@ -2797,7 +2815,7 @@ export default function App() {
                 <div className="bg-gradient-to-br from-[#0047A1] to-slate-900 text-white p-6 rounded-2xl shadow-lg border border-white/10">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-5 h-5 text-[#FB8C00] animate-pulse" />
-                    <h3 className="font-bold font-serif text-lg">AI Trip Planner Assistant</h3>
+                    <h3 className="font-bold font-serif text-lg">BFO Trip Planner Assistant</h3>
                   </div>
                   <p className="text-slate-300 text-xs mb-5">
                     Select your travel options below, and we will instantly build a customized day-by-day travel plan with local advice and budget estimates.
@@ -2884,6 +2902,24 @@ export default function App() {
                         </>
                       )}
                     </button>
+
+                    {isGeneratingAi && (
+                      <div className="mt-3 p-4 bg-white/5 border border-white/10 rounded-xl space-y-2 animate-fadeIn">
+                        <div className="flex justify-between text-[10px] font-bold tracking-wider uppercase">
+                          <span className="text-slate-300">BFO is plotting routes...</span>
+                          <span className="text-[#FB8C00] font-mono">{aiProgress}%</span>
+                        </div>
+                        <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-[#FB8C00] to-amber-500 h-full rounded-full transition-all duration-300 ease-out"
+                            style={{ width: `${aiProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-[9px] text-slate-400 italic">
+                          Compiling destination coordinates, optimizing travel schedules, and budgeting local activities...
+                        </p>
+                      </div>
+                    )}
                   </form>
 
                   {/* Error Alert */}
