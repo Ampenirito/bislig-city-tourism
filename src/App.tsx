@@ -3773,7 +3773,7 @@ export default function App() {
                     rel="noreferrer"
                     className="flex-grow bg-[#0047A1] text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-[#005f92] transition-colors"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="hidden sm:inline-block w-4 h-4" />
                     <span>Open on Google Maps</span>
                   </a>
                   <button
@@ -3889,7 +3889,7 @@ export default function App() {
                   rel="noreferrer"
                   className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
-                  <ExternalLink className="w-4.5 h-4.5" />
+                  <ExternalLink className="hidden sm:inline-block w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
                 </a>
               </div>
@@ -3942,7 +3942,7 @@ export default function App() {
                   rel="noreferrer"
                   className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
-                  <ExternalLink className="w-4.5 h-4.5" />
+                  <ExternalLink className="hidden sm:inline-block w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
                 </a>
               </div>
@@ -4039,7 +4039,7 @@ export default function App() {
                   rel="noreferrer"
                   className="w-full bg-[#0047A1] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
                 >
-                  <ExternalLink className="w-4.5 h-4.5" />
+                  <ExternalLink className="hidden sm:inline-block w-4.5 h-4.5" />
                   <span>Navigate with Google Maps</span>
                 </a>
               </div>
