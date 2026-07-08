@@ -2726,9 +2726,25 @@ function BfoCmsManager({
   restaurants,
   setRestaurants
 }: BfoCmsManagerProps) {
-  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants">("events");
+  interface TrashedItem {
+    id: string;
+    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants";
+    originalItem: any;
+    deletedAt: string;
+  }
+
+  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "trash">("events");
   const [cmsSearch, setCmsSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const [trash, setTrash] = useState<TrashedItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_cms_trash");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Clear success notification after 3 seconds
   useEffect(() => {
@@ -2752,36 +2768,121 @@ function BfoCmsManager({
         return accommodations.filter(acc => acc.name.toLowerCase().includes(query));
       case "restaurants":
         return restaurants.filter(r => r.name.toLowerCase().includes(query));
+      case "trash":
+        return trash.filter(t => {
+          const name = t.originalItem.name || t.originalItem.title || "";
+          return name.toLowerCase().includes(query);
+        });
     }
-  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants]);
+  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, trash]);
 
-  // Remove Handlers
+  // Move to Trash Handler (Soft Delete)
   const handleRemoveItem = (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this item? This action is irreversible.")) return;
+    let deletedItem: any = null;
+    let itemCategory: TrashedItem["category"] = "events";
 
     if (cmsTab === "events") {
-      const updated = events.filter(e => e.id !== id);
+      deletedItem = events.find(e => e.id === id);
+      itemCategory = "events";
+      if (deletedItem) {
+        const updated = events.filter(e => e.id !== id);
+        setEvents(updated);
+        localStorage.setItem("bislig_events", JSON.stringify(updated));
+      }
+    } else if (cmsTab === "directory") {
+      deletedItem = establishments.find(e => e.id === id);
+      itemCategory = "directory";
+      if (deletedItem) {
+        const updated = establishments.filter(e => e.id !== id);
+        setEstablishments(updated);
+        localStorage.setItem("bislig_establishments", JSON.stringify(updated));
+      }
+    } else if (cmsTab === "attractions") {
+      deletedItem = attractions.find(a => a.id === id);
+      itemCategory = "attractions";
+      if (deletedItem) {
+        const updated = attractions.filter(a => a.id !== id);
+        setAttractions(updated);
+        localStorage.setItem("bislig_attractions", JSON.stringify(updated));
+      }
+    } else if (cmsTab === "accommodations") {
+      deletedItem = accommodations.find(acc => acc.id === id);
+      itemCategory = "accommodations";
+      if (deletedItem) {
+        const updated = accommodations.filter(acc => acc.id !== id);
+        setAccommodations(updated);
+        localStorage.setItem("bislig_accommodations", JSON.stringify(updated));
+      }
+    } else if (cmsTab === "restaurants") {
+      deletedItem = restaurants.find(r => r.id === id);
+      itemCategory = "restaurants";
+      if (deletedItem) {
+        const updated = restaurants.filter(r => r.id !== id);
+        setRestaurants(updated);
+        localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
+      }
+    }
+
+    if (deletedItem) {
+      const newTrashedItem: TrashedItem = {
+        id: id,
+        category: itemCategory,
+        originalItem: deletedItem,
+        deletedAt: new Date().toLocaleString()
+      };
+      const updatedTrash = [...trash, newTrashedItem];
+      setTrash(updatedTrash);
+      localStorage.setItem("bislig_cms_trash", JSON.stringify(updatedTrash));
+      setSuccessMsg("Item moved to Trash Bin! You can restore it or permanently delete it anytime.");
+    }
+  };
+
+  const handleRestoreItem = (trashed: TrashedItem) => {
+    const { category, originalItem } = trashed;
+
+    if (category === "events") {
+      const updated = [...events, originalItem];
       setEvents(updated);
       localStorage.setItem("bislig_events", JSON.stringify(updated));
-    } else if (cmsTab === "directory") {
-      const updated = establishments.filter(e => e.id !== id);
+    } else if (category === "directory") {
+      const updated = [...establishments, originalItem];
       setEstablishments(updated);
       localStorage.setItem("bislig_establishments", JSON.stringify(updated));
-    } else if (cmsTab === "attractions") {
-      const updated = attractions.filter(a => a.id !== id);
+    } else if (category === "attractions") {
+      const updated = [...attractions, originalItem];
       setAttractions(updated);
       localStorage.setItem("bislig_attractions", JSON.stringify(updated));
-    } else if (cmsTab === "accommodations") {
-      const updated = accommodations.filter(acc => acc.id !== id);
+    } else if (category === "accommodations") {
+      const updated = [...accommodations, originalItem];
       setAccommodations(updated);
       localStorage.setItem("bislig_accommodations", JSON.stringify(updated));
-    } else if (cmsTab === "restaurants") {
-      const updated = restaurants.filter(r => r.id !== id);
+    } else if (category === "restaurants") {
+      const updated = [...restaurants, originalItem];
       setRestaurants(updated);
       localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
     }
 
-    setSuccessMsg("Item deleted successfully!");
+    const updatedTrash = trash.filter(t => t.id !== trashed.id);
+    setTrash(updatedTrash);
+    localStorage.setItem("bislig_cms_trash", JSON.stringify(updatedTrash));
+    setSuccessMsg("Item restored successfully!");
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this item? This action is irreversible.")) return;
+
+    const updatedTrash = trash.filter(t => t.id !== id);
+    setTrash(updatedTrash);
+    localStorage.setItem("bislig_cms_trash", JSON.stringify(updatedTrash));
+    setSuccessMsg("Item permanently deleted!");
+  };
+
+  const handleEmptyTrash = () => {
+    if (!window.confirm("Are you sure you want to permanently delete all items in the Trash? This cannot be undone.")) return;
+
+    setTrash([]);
+    localStorage.setItem("bislig_cms_trash", JSON.stringify([]));
+    setSuccessMsg("Trash Bin emptied!");
   };
 
   // Add Item Submit Handlers
@@ -2949,7 +3050,8 @@ function BfoCmsManager({
             { id: "directory", label: "🛍️ Directory" },
             { id: "attractions", label: "🗺️ Attractions" },
             { id: "accommodations", label: "🏨 Hotels" },
-            { id: "restaurants", label: "☕ Dining" }
+            { id: "restaurants", label: "☕ Dining" },
+            { id: "trash", label: "🗑️ Trash Bin" }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -2964,6 +3066,11 @@ function BfoCmsManager({
               }`}
             >
               {tab.label}
+              {tab.id === "trash" && trash.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 bg-rose-500 text-white text-[8px] font-bold rounded-full animate-bounce">
+                  {trash.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -3000,449 +3107,539 @@ function BfoCmsManager({
           </div>
 
           {/* Items Container */}
-          <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
-            {filteredItems.map((item: any) => {
-              const name = item.name || item.title;
-              const subText = item.category || item.dateRange || item.date || "";
-              
-              return (
-                <div 
-                  key={item.id} 
-                  className="bg-white border border-slate-150 p-3 rounded-xl flex items-center justify-between gap-3 group hover:border-[#0047A1]/40 hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img 
-                      src={item.image} 
-                      alt={name} 
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/assets/images/bisligcity logo.jpg";
-                      }}
-                      className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0" 
-                    />
-                    <div className="min-w-0 leading-tight">
-                      <h4 className="font-extrabold text-xs text-slate-800 truncate">{name}</h4>
-                      <p className="text-[10px] text-slate-400 font-semibold truncate mt-0.5">{subText}</p>
+          {cmsTab === "trash" ? (
+            <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+              {filteredItems.map((itemVal: any) => {
+                const tItem = itemVal as TrashedItem;
+                const name = tItem.originalItem.name || tItem.originalItem.title || "Untitled";
+                const image = tItem.originalItem.image || "/assets/images/bisligcity logo.jpg";
+                
+                return (
+                  <div 
+                    key={tItem.id} 
+                    className="bg-white border border-slate-150 p-3 rounded-xl flex items-center justify-between gap-3 group hover:border-[#FB8C00]/40 hover:shadow-sm transition-all"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img 
+                        src={image} 
+                        alt={name} 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/assets/images/bisligcity logo.jpg";
+                        }}
+                        className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0" 
+                      />
+                      <div className="min-w-0 leading-tight">
+                        <h4 className="font-extrabold text-xs text-slate-800 truncate">{name}</h4>
+                        <p className="text-[9px] text-[#FB8C00] font-bold uppercase mt-0.5">{tItem.category} · Trashed</p>
+                        <p className="text-[8px] text-slate-400 font-medium mt-0.5">{tItem.deletedAt}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => handleRestoreItem(tItem)}
+                        className="p-2 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors cursor-pointer"
+                        title="Restore item"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handlePermanentDelete(tItem.id)}
+                        className="p-2 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors cursor-pointer"
+                        title="Delete permanently"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
+                );
+              })}
 
-                  <button
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="p-2 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors cursor-pointer shrink-0"
-                    title="Remove item"
+              {filteredItems.length === 0 && (
+                <p className="text-xs text-slate-400 italic text-center py-6">Trash Bin is empty.</p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+              {filteredItems.map((item: any) => {
+                const name = item.name || item.title;
+                const subText = item.category || item.dateRange || item.date || "";
+                
+                return (
+                  <div 
+                    key={item.id} 
+                    className="bg-white border border-slate-150 p-3 rounded-xl flex items-center justify-between gap-3 group hover:border-[#0047A1]/40 hover:shadow-sm transition-all"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              );
-            })}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img 
+                        src={item.image} 
+                        alt={name} 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/assets/images/bisligcity logo.jpg";
+                        }}
+                        className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0" 
+                      />
+                      <div className="min-w-0 leading-tight">
+                        <h4 className="font-extrabold text-xs text-slate-800 truncate">{name}</h4>
+                        <p className="text-[10px] text-slate-400 font-semibold truncate mt-0.5">{subText}</p>
+                      </div>
+                    </div>
 
-            {filteredItems.length === 0 && (
-              <p className="text-xs text-slate-400 italic text-center py-6">No matching records found.</p>
-            )}
-          </div>
+                    <button
+                      onClick={() => handleRemoveItem(item.id)}
+                      className="p-2 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors cursor-pointer shrink-0"
+                      title="Move to Trash Bin"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+
+              {filteredItems.length === 0 && (
+                <p className="text-xs text-slate-400 italic text-center py-6">No matching records found.</p>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Right Side: Form Panel (7 columns) */}
-        <form onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-4">
-          <div>
-            <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
-              ➕ Add New {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}
-            </h3>
-            <p className="text-[10px] text-slate-400 leading-tight mt-1">Specify detailed properties below. Make sure to provide a valid image URL for the featured image.</p>
+        {/* Right Side: Form Panel or Trash Info Panel (7 columns) */}
+        {cmsTab === "trash" ? (
+          <div className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
+            <div>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                🧹 Trash Bin Management
+              </h3>
+              <p className="text-[10px] text-slate-400 leading-tight mt-1">Review deleted entries. You can restore them back to their original pages or permanently purge them.</p>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-5 rounded-xl space-y-3">
+              <h4 className="text-xs font-bold text-slate-700 uppercase">Trash Bin Protocol</h4>
+              <ul className="list-disc ml-4 space-y-1.5 text-[11px] text-slate-600">
+                <li>Deleted items are kept in this trash bin temporarily to prevent accidental loss.</li>
+                <li>Restoring an item returns it to its original tab dynamically, immediately updating map pins and public pages.</li>
+                <li>Purging/Emptying the trash bin will delete entries permanently and clear them from local storage.</li>
+              </ul>
+            </div>
+
+            <div className="pt-4 flex flex-col gap-3">
+              <div className="flex justify-between items-center text-xs border-b border-slate-100 pb-2">
+                <span className="text-slate-500">Trashed Item Count:</span>
+                <span className="font-bold text-[#FB8C00]">{trash.length} items</span>
+              </div>
+              
+              <button
+                type="button"
+                disabled={trash.length === 0}
+                onClick={handleEmptyTrash}
+                className="w-full bg-rose-600 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-rose-700 disabled:bg-slate-150 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors shadow-md shadow-rose-500/10 cursor-pointer"
+              >
+                🧹 Empty Trash Bin Permanently
+              </button>
+            </div>
           </div>
+        ) : (
+          <form onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-4">
+            <div>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                ➕ Add New {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}
+              </h3>
+              <p className="text-[10px] text-slate-400 leading-tight mt-1">Specify detailed properties below. Make sure to provide a valid image URL for the featured image.</p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {cmsTab === "events" && (
-              <>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Title *</label>
-                  <input type="text" name="title" required placeholder="Saka-Saka Festival" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Subtitle</label>
-                  <input type="text" name="subtitle" placeholder="Street Dancing & Local Crabs Exhibition" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Date (Short Date Text) *</label>
-                  <input type="text" name="date" required placeholder="September 17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Full Date Range Text *</label>
-                  <input type="text" name="dateRange" required placeholder="September 17-18, 2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Month (3 Letters) *</label>
-                  <input type="text" name="month" required maxLength={3} placeholder="SEP" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Start Day (Number) *</label>
-                  <input type="text" name="day" required placeholder="17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Year *</label>
-                  <input type="text" name="year" required placeholder="2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Category Type *</label>
-                  <select name="type" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Festival">Festival</option>
-                    <option value="Community">Community</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Seasonal">Seasonal</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Venue Location *</label>
-                  <input type="text" name="location" required placeholder="Mangagoy Gym, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Organizer *</label>
-                  <input type="text" name="organizer" required placeholder="LGU Bislig City & DOT" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Thumbnail Image (URL) *</label>
-                  <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Hero Wide Banner Image (URL) *</label>
-                  <input type="text" name="heroImage" required placeholder="/public/assets/images/bislig baywalk.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Description *</label>
-                  <textarea name="description" required rows={3} placeholder="A short engaging teaser description." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Overview (Rich Detail Text)</label>
-                  <textarea name="overview" rows={3} placeholder="Provide extensive details about the schedule, rules, registration, etc." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Historical Background & Significance</label>
-                  <textarea name="history" rows={3} placeholder="Where did this festival start? What does it symbolize?" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Highlights (Comma-Separated)</label>
-                  <input type="text" name="highlights" placeholder="Crab Parade, Street Dance Competition, Seafood Feast" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Visitor Tips (Comma-Separated)</label>
-                  <input type="text" name="tips" placeholder="Arrive early to secure parking, Bring sunblock, Wear cultural apparel" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Tags (Comma-Separated)</label>
-                  <input type="text" name="tags" placeholder="Culture, Crab Feast, Saka-Saka, Tourism" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-              </>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {cmsTab === "events" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Title *</label>
+                    <input type="text" name="title" required placeholder="Saka-Saka Festival" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Subtitle</label>
+                    <input type="text" name="subtitle" placeholder="Street Dancing & Local Crabs Exhibition" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Date (Short Date Text) *</label>
+                    <input type="text" name="date" required placeholder="September 17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Full Date Range Text *</label>
+                    <input type="text" name="dateRange" required placeholder="September 17-18, 2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Month (3 Letters) *</label>
+                    <input type="text" name="month" required maxLength={3} placeholder="SEP" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Start Day (Number) *</label>
+                    <input type="text" name="day" required placeholder="17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Year *</label>
+                    <input type="text" name="year" required placeholder="2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Category Type *</label>
+                    <select name="type" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Festival">Festival</option>
+                      <option value="Community">Community</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Seasonal">Seasonal</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Venue Location *</label>
+                    <input type="text" name="location" required placeholder="Mangagoy Gym, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Organizer *</label>
+                    <input type="text" name="organizer" required placeholder="LGU Bislig City & DOT" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Thumbnail Image (URL) *</label>
+                    <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Hero Wide Banner Image (URL) *</label>
+                    <input type="text" name="heroImage" required placeholder="/public/assets/images/bislig baywalk.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Description *</label>
+                    <textarea name="description" required rows={3} placeholder="A short engaging teaser description." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Overview (Rich Detail Text)</label>
+                    <textarea name="overview" rows={3} placeholder="Provide extensive details about the schedule, rules, registration, etc." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Historical Background & Significance</label>
+                    <textarea name="history" rows={3} placeholder="Where did this festival start? What does it symbolize?" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Highlights (Comma-Separated)</label>
+                    <input type="text" name="highlights" placeholder="Crab Parade, Street Dance Competition, Seafood Feast" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Visitor Tips (Comma-Separated)</label>
+                    <input type="text" name="tips" placeholder="Arrive early to secure parking, Bring sunblock, Wear cultural apparel" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Tags (Comma-Separated)</label>
+                    <input type="text" name="tags" placeholder="Culture, Crab Feast, Saka-Saka, Tourism" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
 
-            {cmsTab === "directory" && (
-              <>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Establishment Name *</label>
-                  <input type="text" name="name" required placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Directory Category *</label>
-                  <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Shops & Malls">Shops & Malls</option>
-                    <option value="Convenience Stores">Convenience Stores</option>
-                    <option value="Dining & Cafes">Dining & Cafes</option>
-                    <option value="Sports & Recreation">Sports & Recreation</option>
-                    <option value="Surfing & Beaches">Surfing & Beaches</option>
-                    <option value="Services & Others">Services & Others</option>
-                    <option value="Accommodations">Accommodations</option>
-                    <option value="Churches & Landmarks">Churches & Landmarks</option>
-                    <option value="Attractions">Attractions</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Hours *</label>
-                  <input type="text" name="operatingHours" required placeholder="08:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Address / Street Location *</label>
-                  <input type="text" name="location" required placeholder="Barreda St., Mangagoy, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
-                  <input type="text" name="contact" required placeholder="+63 912 345 6789" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Facebook Handle Page Link</label>
-                  <input type="text" name="socialMedia" placeholder="facebook.com/aquaxwater" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                  <input type="text" name="website" placeholder="www.aquaxbislig.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Image (URL) *</label>
-                  <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                  <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                  <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link</label>
-                  <input type="text" name="mapUrl" placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
-                  <textarea name="description" required rows={2} placeholder="A brief sentence describing what this store/office provides." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Long Description / Details Panel</label>
-                  <textarea name="longDescription" rows={3} placeholder="Elaborated profile information displayed in the business details drawer." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-              </>
-            )}
+              {cmsTab === "directory" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Establishment Name *</label>
+                    <input type="text" name="name" required placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Directory Category *</label>
+                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Shops & Malls">Shops & Malls</option>
+                      <option value="Convenience Stores">Convenience Stores</option>
+                      <option value="Dining & Cafes">Dining & Cafes</option>
+                      <option value="Sports & Recreation">Sports & Recreation</option>
+                      <option value="Surfing & Beaches">Surfing & Beaches</option>
+                      <option value="Services & Others">Services & Others</option>
+                      <option value="Accommodations">Accommodations</option>
+                      <option value="Churches & Landmarks">Churches & Landmarks</option>
+                      <option value="Attractions">Attractions</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Hours *</label>
+                    <input type="text" name="operatingHours" required placeholder="08:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Address / Street Location *</label>
+                    <input type="text" name="location" required placeholder="Barreda St., Mangagoy, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
+                    <input type="text" name="contact" required placeholder="+63 912 345 6789" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Facebook Handle Page Link</label>
+                    <input type="text" name="socialMedia" placeholder="facebook.com/aquaxwater" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
+                    <input type="text" name="website" placeholder="www.aquaxbislig.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Image (URL) *</label>
+                    <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
+                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
+                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link</label>
+                    <input type="text" name="mapUrl" placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
+                    <textarea name="description" required rows={2} placeholder="A brief sentence describing what this store/office provides." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Long Description / Details Panel</label>
+                    <textarea name="longDescription" rows={3} placeholder="Elaborated profile information displayed in the business details drawer." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
 
-            {cmsTab === "attractions" && (
-              <>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Name *</label>
-                  <input type="text" name="name" required placeholder="Tinuy-an Falls" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Category *</label>
-                  <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Waterfalls">Waterfalls</option>
-                    <option value="Rivers">Rivers</option>
-                    <option value="Beaches">Beaches</option>
-                    <option value="Caves">Caves</option>
-                    <option value="Parks">Parks</option>
-                    <option value="Culture">Culture</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Distance from City Center *</label>
-                  <input type="text" name="distance" required placeholder="18 km" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Time from proper *</label>
-                  <input type="text" name="travelTime" required placeholder="30-40 mins" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Trekking Difficulty *</label>
-                  <select name="difficulty" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Easy">Easy</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Challenging">Challenging</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Best Season / Hours *</label>
-                  <input type="text" name="bestTime" required placeholder="Morning, dry season" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Entrance Fee Cost *</label>
-                  <input type="text" name="entranceFee" required placeholder="₱50 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Opening Hours *</label>
-                  <input type="text" name="openingHours" required placeholder="06:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5) *</label>
-                  <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.8} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                  <input type="text" name="image" required placeholder="/public/assets/images/Tinuy.an Featured 2.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                  <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                  <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                  <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Accessibility Support description</label>
-                  <input type="text" name="accessibility" placeholder="Paved walkways, wheelchair access viewing deck." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
-                  <textarea name="description" required rows={2} placeholder="Teaser summary of the waterfall/beach." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Detailed Long Description Overview</label>
-                  <textarea name="longDescription" rows={3} placeholder="Full history, guidelines, and context of the attraction site." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Tips (Comma-Separated)</label>
-                  <textarea name="travelTips" rows={2} placeholder="Hire a local guide, Keep life jackets secured, Bring dry bags" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Attractions (Comma-Separated)</label>
-                  <input type="text" name="nearbyAttractions" placeholder="Enchanted River, Lake 77" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Dining (Comma-Separated)</label>
-                  <input type="text" name="nearbyRestaurants" placeholder="Brew Side Cafe, Food in a Box" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-              </>
-            )}
+              {cmsTab === "attractions" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Name *</label>
+                    <input type="text" name="name" required placeholder="Tinuy-an Falls" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Category *</label>
+                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Waterfalls">Waterfalls</option>
+                      <option value="Rivers">Rivers</option>
+                      <option value="Beaches">Beaches</option>
+                      <option value="Caves">Caves</option>
+                      <option value="Parks">Parks</option>
+                      <option value="Culture">Culture</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Distance from City Center *</label>
+                    <input type="text" name="distance" required placeholder="18 km" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Time from proper *</label>
+                    <input type="text" name="travelTime" required placeholder="30-40 mins" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Trekking Difficulty *</label>
+                    <select name="difficulty" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Easy">Easy</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value="Challenging">Challenging</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Best Season / Hours *</label>
+                    <input type="text" name="bestTime" required placeholder="Morning, dry season" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Entrance Fee Cost *</label>
+                    <input type="text" name="entranceFee" required placeholder="₱50 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Opening Hours *</label>
+                    <input type="text" name="openingHours" required placeholder="06:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5) *</label>
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.8} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
+                    <input type="text" name="image" required placeholder="/public/assets/images/Tinuy.an Featured 2.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
+                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
+                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
+                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Accessibility Support description</label>
+                    <input type="text" name="accessibility" placeholder="Paved walkways, wheelchair access viewing deck." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
+                    <textarea name="description" required rows={2} placeholder="Teaser summary of the waterfall/beach." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Detailed Long Description Overview</label>
+                    <textarea name="longDescription" rows={3} placeholder="Full history, guidelines, and context of the attraction site." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Tips (Comma-Separated)</label>
+                    <textarea name="travelTips" rows={2} placeholder="Hire a local guide, Keep life jackets secured, Bring dry bags" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Attractions (Comma-Separated)</label>
+                    <input type="text" name="nearbyAttractions" placeholder="Enchanted River, Lake 77" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Dining (Comma-Separated)</label>
+                    <input type="text" name="nearbyRestaurants" placeholder="Brew Side Cafe, Food in a Box" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
 
-            {cmsTab === "accommodations" && (
-              <>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge / Hotel Name *</label>
-                  <input type="text" name="name" required placeholder="Paper Country Inn" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Category *</label>
-                  <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Beachfront">Beachfront</option>
-                    <option value="Eco Lodge">Eco Lodge</option>
-                    <option value="Luxury">Luxury</option>
-                    <option value="Budget">Budget</option>
-                    <option value="Mid-range">Mid-range</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Night *</label>
-                  <input type="text" name="priceRange" required placeholder="₱1,800 - ₱3,500 per night" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone *</label>
-                  <input type="text" name="contact" required placeholder="+63 86 853 1234" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
-                  <input type="text" name="socialMedia" placeholder="facebook.com/papercountry" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                  <input type="text" name="website" placeholder="www.papercountryinn.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Check-in / Operating Hours *</label>
-                  <input type="text" name="operatingHours" required placeholder="24/7 (Check-in 2:00 PM)" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
-                  <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.4} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                  <input type="text" name="image" required placeholder="/public/assets/images/paper country inn.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                  <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                  <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                  <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Amenities (Comma-Separated) *</label>
-                  <textarea name="amenities" required rows={2} placeholder="Free WiFi, Air Conditioning, Hot Shower, In-room Safety Vault, Restaurant Access" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Teaser Description *</label>
-                  <textarea name="description" required rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-              </>
-            )}
+              {cmsTab === "accommodations" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge / Hotel Name *</label>
+                    <input type="text" name="name" required placeholder="Paper Country Inn" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Category *</label>
+                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Beachfront">Beachfront</option>
+                      <option value="Eco Lodge">Eco Lodge</option>
+                      <option value="Luxury">Luxury</option>
+                      <option value="Budget">Budget</option>
+                      <option value="Mid-range">Mid-range</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Night *</label>
+                    <input type="text" name="priceRange" required placeholder="₱1,800 - ₱3,500 per night" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone *</label>
+                    <input type="text" name="contact" required placeholder="+63 86 853 1234" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
+                    <input type="text" name="socialMedia" placeholder="facebook.com/papercountry" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
+                    <input type="text" name="website" placeholder="www.papercountryinn.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Check-in / Operating Hours *</label>
+                    <input type="text" name="operatingHours" required placeholder="24/7 (Check-in 2:00 PM)" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.4} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
+                    <input type="text" name="image" required placeholder="/public/assets/images/paper country inn.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
+                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
+                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
+                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Amenities (Comma-Separated) *</label>
+                    <textarea name="amenities" required rows={2} placeholder="Free WiFi, Air Conditioning, Hot Shower, In-room Safety Vault, Restaurant Access" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Teaser Description *</label>
+                    <textarea name="description" required rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
 
-            {cmsTab === "restaurants" && (
-              <>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Restaurant / Cafe Name *</label>
-                  <input type="text" name="name" required placeholder="Brew Side Cafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Dining Category *</label>
-                  <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                    <option value="Local Cuisine">Local Cuisine</option>
-                    <option value="Seafood">Seafood</option>
-                    <option value="Cafe">Cafe</option>
-                    <option value="Family Restaurant">Family Restaurant</option>
-                    <option value="Fine Dining">Fine Dining</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Person *</label>
-                  <input type="text" name="priceRange" required placeholder="₱120 - ₱350 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
-                  <input type="text" name="contact" required placeholder="+63 987 654 3210" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
-                  <input type="text" name="socialMedia" placeholder="facebook.com/brewsidecafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                  <input type="text" name="website" placeholder="www.brewsidecafe.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Dining Hours *</label>
-                  <input type="text" name="operatingHours" required placeholder="09:00 AM - 10:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
-                  <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.6} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                  <input type="text" name="image" required placeholder="/public/assets/images/brew side cafe featured 1.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                  <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                  <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                  <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">House Specialties (Comma-Separated) *</label>
-                  <textarea name="specialty" required rows={2} placeholder="Espresso Brews, Salted Caramel Coffee, Grilled Panini, Blueberry Cheesecakes" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Diner Teaser Description *</label>
-                  <textarea name="description" required rows={2} placeholder="Short teaser outlining the cafe/restaurant ambience and food style." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
-                </div>
-              </>
-            )}
-          </div>
+              {cmsTab === "restaurants" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Restaurant / Cafe Name *</label>
+                    <input type="text" name="name" required placeholder="Brew Side Cafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Dining Category *</label>
+                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Local Cuisine">Local Cuisine</option>
+                      <option value="Seafood">Seafood</option>
+                      <option value="Cafe">Cafe</option>
+                      <option value="Family Restaurant">Family Restaurant</option>
+                      <option value="Fine Dining">Fine Dining</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Person *</label>
+                    <input type="text" name="priceRange" required placeholder="₱120 - ₱350 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
+                    <input type="text" name="contact" required placeholder="+63 987 654 3210" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
+                    <input type="text" name="socialMedia" placeholder="facebook.com/brewsidecafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
+                    <input type="text" name="website" placeholder="www.brewsidecafe.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Dining Hours *</label>
+                    <input type="text" name="operatingHours" required placeholder="09:00 AM - 10:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.6} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
+                    <input type="text" name="image" required placeholder="/public/assets/images/brew side cafe featured 1.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
+                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
+                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
+                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">House Specialties (Comma-Separated) *</label>
+                    <textarea name="specialty" required rows={2} placeholder="Espresso Brews, Salted Caramel Coffee, Grilled Panini, Blueberry Cheesecakes" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Diner Teaser Description *</label>
+                    <textarea name="description" required rows={2} placeholder="Short teaser outlining the cafe/restaurant ambience and food style." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
+            </div>
 
-          <div className="pt-4 flex gap-3 border-t border-slate-100">
-            <button
-              type="reset"
-              className="px-5 py-3 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
-            >
-              Reset Fields
-            </button>
-            <button
-              type="submit"
-              className="flex-grow bg-[#0047A1] text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-800 transition-colors shadow-md shadow-blue-500/10 cursor-pointer"
-            >
-              Add Entry to Database
-            </button>
-          </div>
-        </form>
+            <div className="pt-4 flex gap-3 border-t border-slate-100">
+              <button
+                type="reset"
+                className="px-5 py-3 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
+              >
+                Reset Fields
+              </button>
+              <button
+                type="submit"
+                className="flex-grow bg-[#0047A1] text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-800 transition-colors shadow-md shadow-blue-500/10 cursor-pointer"
+              >
+                Add Entry to Database
+              </button>
+            </div>
+          </form>
+        )}
 
       </div>
     </div>
