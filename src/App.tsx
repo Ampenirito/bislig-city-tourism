@@ -72,7 +72,8 @@ import {
   TripPreference,
   GeneratedItinerary,
   SavedItinerary,
-  Establishment
+  Establishment,
+  TourismEvent
 } from "./types";
 
 import GoogleMapSection from "./components/GoogleMapSection";
@@ -248,6 +249,52 @@ const KajabiFormEmbed = () => {
 };
 
 export default function App() {
+  // Dynamic CMS States
+  const [events, setEvents] = useState<TourismEvent[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_events");
+      return saved ? JSON.parse(saved) : EVENTS;
+    } catch {
+      return EVENTS;
+    }
+  });
+
+  const [establishments, setEstablishments] = useState<Establishment[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_establishments");
+      return saved ? JSON.parse(saved) : ESTABLISHMENTS;
+    } catch {
+      return ESTABLISHMENTS;
+    }
+  });
+
+  const [attractions, setAttractions] = useState<Attraction[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_attractions");
+      return saved ? JSON.parse(saved) : ATTRACTIONS;
+    } catch {
+      return ATTRACTIONS;
+    }
+  });
+
+  const [accommodations, setAccommodations] = useState<Accommodation[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_accommodations");
+      return saved ? JSON.parse(saved) : ACCOMMODATIONS;
+    } catch {
+      return ACCOMMODATIONS;
+    }
+  });
+
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_restaurants");
+      return saved ? JSON.parse(saved) : RESTAURANTS;
+    } catch {
+      return RESTAURANTS;
+    }
+  });
+
   // Real-time Weather State
   const [weatherData, setWeatherData] = useState<{
     temperature: number;
@@ -312,7 +359,7 @@ export default function App() {
   // Values: 'home' | 'explore' | 'attractions' | 'things-to-do' | 'hotels' | 'restaurants' | 'map' | 'gallery' | 'blog' | 'about' | 'contact' | 'downloads' | 'events' | 'event-detail'
   const [activeTab, setActiveTab] = useState<string>("home");
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const selectedEvent = EVENTS.find(e => e.id === selectedEventId) ?? null;
+  const selectedEvent = events.find(e => e.id === selectedEventId) ?? null;
 
   // Accessibility State
   const [highContrast, setHighContrast] = useState<boolean>(false);
@@ -431,7 +478,7 @@ export default function App() {
   // Merge Attractions, Accommodations, and Restaurants dynamically into Directory items
   const allEstablishments = useMemo(() => {
     // 1. Map Attractions
-    const mappedAttractions: Establishment[] = ATTRACTIONS.map((att) => ({
+    const mappedAttractions: Establishment[] = attractions.map((att) => ({
       id: att.id,
       name: att.name,
       description: att.description,
@@ -449,7 +496,7 @@ export default function App() {
     }));
 
     // 2. Map Accommodations
-    const mappedAccommodations: Establishment[] = ACCOMMODATIONS.map((acc) => ({
+    const mappedAccommodations: Establishment[] = accommodations.map((acc) => ({
       id: acc.id,
       name: acc.name,
       description: acc.description,
@@ -466,7 +513,7 @@ export default function App() {
     }));
 
     // 3. Map Restaurants
-    const mappedRestaurants: Establishment[] = RESTAURANTS.map((rest) => ({
+    const mappedRestaurants: Establishment[] = restaurants.map((rest) => ({
       id: rest.id,
       name: rest.name,
       description: rest.description,
@@ -483,14 +530,14 @@ export default function App() {
     }));
 
     // Prevent duplicates (e.g. Ocean View Park which is defined in both Attractions and Establishments)
-    const estNames = new Set(ESTABLISHMENTS.map((e) => e.name.toLowerCase()));
+    const estNames = new Set(establishments.map((e) => e.name.toLowerCase()));
     
     const uniqueAttractions = mappedAttractions.filter((a) => !estNames.has(a.name.toLowerCase()));
     const uniqueAccommodations = mappedAccommodations.filter((a) => !estNames.has(a.name.toLowerCase()));
     const uniqueRestaurants = mappedRestaurants.filter((a) => !estNames.has(a.name.toLowerCase()));
 
-    return [...ESTABLISHMENTS, ...uniqueAttractions, ...uniqueAccommodations, ...uniqueRestaurants];
-  }, []);
+    return [...establishments, ...uniqueAttractions, ...uniqueAccommodations, ...uniqueRestaurants];
+  }, [attractions, accommodations, restaurants, establishments]);
 
   const filteredEstablishments = useMemo(() => {
     const list = allEstablishments.filter((est) => {
@@ -986,8 +1033,8 @@ export default function App() {
 
   // 1. All Attractions Page Items (merge ATTRACTIONS + directory landmarks)
   const allAttractionsPageItems = useMemo(() => {
-    const items = [...ATTRACTIONS];
-    const dirAttractions = ESTABLISHMENTS.filter((e) => 
+    const items = [...attractions];
+    const dirAttractions = establishments.filter((e) => 
       e.id === "ocean-view-park-directory" || 
       e.id === "lawigan-surf-point" ||
       e.id === "i-love-bislig"
@@ -1018,12 +1065,12 @@ export default function App() {
       }
     });
     return items.sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+  }, [attractions, establishments]);
 
   // 2. All Accommodations Page Items (merge ACCOMMODATIONS + directory accommodations)
   const allAccommodationsPageItems = useMemo(() => {
-    const items = [...ACCOMMODATIONS];
-    const dirAccommodations = ESTABLISHMENTS.filter((e) => e.category === "Accommodations");
+    const items = [...accommodations];
+    const dirAccommodations = establishments.filter((e) => e.category === "Accommodations");
     dirAccommodations.forEach((da) => {
       if (!items.some((i) => i.name.toLowerCase() === da.name.toLowerCase())) {
         items.push({
@@ -1045,12 +1092,12 @@ export default function App() {
       }
     });
     return items.sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+  }, [accommodations, establishments]);
 
   // 3. All Restaurants Page Items (merge RESTAURANTS + directory dining)
   const allRestaurantsPageItems = useMemo(() => {
-    const items = [...RESTAURANTS];
-    const dirRestaurants = ESTABLISHMENTS.filter((e) => e.category === "Dining & Cafes");
+    const items = [...restaurants];
+    const dirRestaurants = establishments.filter((e) => e.category === "Dining & Cafes");
     dirRestaurants.forEach((dr) => {
       if (!items.some((i) => i.name.toLowerCase() === dr.name.toLowerCase())) {
         items.push({
@@ -1072,7 +1119,7 @@ export default function App() {
       }
     });
     return items.sort((a, b) => a.name.localeCompare(b.name));
-  }, []);
+  }, [restaurants, establishments]);
 
   // Search filtered items
   const filteredAttractions = useMemo(() => {
@@ -1125,7 +1172,21 @@ export default function App() {
   };
 
   if (activeTab === "admin") {
-    return <AdminDashboard onBackToHome={() => setActiveTab("home")} />;
+    return (
+      <AdminDashboard
+        onBackToHome={() => setActiveTab("home")}
+        events={events}
+        setEvents={setEvents}
+        establishments={establishments}
+        setEstablishments={setEstablishments}
+        attractions={attractions}
+        setAttractions={setAttractions}
+        accommodations={accommodations}
+        setAccommodations={setAccommodations}
+        restaurants={restaurants}
+        setRestaurants={setRestaurants}
+      />
+    );
   }
 
   return (
@@ -1980,7 +2041,7 @@ export default function App() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Filter to show key required ones */}
-                    {ATTRACTIONS.slice(0, 4).map((att) => (
+                    {attractions.slice(0, 4).map((att) => (
                       <div
                         key={att.id}
                         onClick={() => setSelectedAttraction(att)}
@@ -2199,7 +2260,7 @@ export default function App() {
                   </div>
 
                   <div className="space-y-4">
-                    {EVENTS.map((evt) => (
+                    {events.map((evt) => (
                       <button
                         key={evt.id}
                         onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); }}
@@ -3312,7 +3373,7 @@ export default function App() {
               <h3 className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-5 text-center">2025 Event Calendar</h3>
               <div className="flex gap-3 justify-center flex-wrap">
                 {["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"].map((m) => {
-                  const eventsInMonth = EVENTS.filter(e => e.month === m);
+                  const eventsInMonth = events.filter(e => e.month === m);
                   const hasEvent = eventsInMonth.length > 0;
                   return (
                     <div key={m} className={`relative flex flex-col items-center gap-1.5 ${hasEvent ? "cursor-pointer" : ""}`}>
@@ -3339,7 +3400,7 @@ export default function App() {
 
             {/* Event Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {EVENTS.map((evt, idx) => {
+              {events.map((evt, idx) => {
                 const typeColors: Record<string, string> = {
                   Festival: "bg-purple-500/20 text-purple-300 border-purple-500/30",
                   Community: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -3569,7 +3630,7 @@ export default function App() {
               <div className="mt-14 pt-10 border-t border-gray-100">
                 <h3 className="font-serif font-bold text-xl text-[#0047A1] mb-6">More Events</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  {EVENTS.filter(e => e.id !== selectedEvent.id).map(evt => (
+                  {events.filter(e => e.id !== selectedEvent.id).map(evt => (
                     <button
                       key={evt.id}
                       onClick={() => { setSelectedEventId(evt.id); setActiveTab("event-detail"); }}
