@@ -336,6 +336,65 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Automatically inject "The Apero" into local storage database tables if they already exist but lack it
+  useEffect(() => {
+    try {
+      const savedR = localStorage.getItem("bislig_restaurants");
+      if (savedR) {
+        const parsedR = JSON.parse(savedR);
+        if (!parsedR.some((r: any) => r.id === "the-apero")) {
+          const theAperoRestaurant = {
+            id: "the-apero",
+            name: "The Apero",
+            description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
+            category: "Fine Dining",
+            image: "/assets/images/theapero.jpg",
+            specialty: ["Artisanal Sourdough & Pastries", "Premium Roasted Ribeye", "Signature Espresso Brews"],
+            priceRange: "₱300 - ₱800 per person",
+            contact: "+63 912 345 6789",
+            socialMedia: "facebook.com/theaperobislig",
+            website: "https://theaperobislig.com",
+            operatingHours: "11:00 AM - 10:00 PM daily",
+            coordinates: { lat: 8.2105, lng: 126.3521 },
+            mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
+            rating: 4.9
+          };
+          const updatedR = [...parsedR, theAperoRestaurant];
+          localStorage.setItem("bislig_restaurants", JSON.stringify(updatedR));
+          setRestaurants(updatedR);
+        }
+      }
+
+      const savedE = localStorage.getItem("bislig_establishments");
+      if (savedE) {
+        const parsedE = JSON.parse(savedE);
+        if (!parsedE.some((e: any) => e.id === "the-apero")) {
+          const theAperoEst = {
+            id: "the-apero",
+            name: "The Apero",
+            description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
+            longDescription: "The Apero brings a premium casual dining experience to Bislig City. Featuring a meticulously crafted menu that blends modern international flavors with local ingredients, it is a favored hub for business meetings, family gatherings, and coffee connoisseurs. The cozy ambiance is complemented by freshly baked artisanal breads and pastries daily.",
+            category: "Dining & Cafes",
+            image: "/assets/images/theapero.jpg",
+            location: "Caramcam District, Mangagoy, Bislig City",
+            contact: "+63 912 345 6789",
+            socialMedia: "facebook.com/theaperobislig",
+            website: "https://theaperobislig.com",
+            operatingHours: "11:00 AM - 10:00 PM daily",
+            coordinates: { lat: 8.2105, lng: 126.3521 },
+            mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
+            rating: 4.9
+          };
+          const updatedE = [...parsedE, theAperoEst];
+          localStorage.setItem("bislig_establishments", JSON.stringify(updatedE));
+          setEstablishments(updatedE);
+        }
+      }
+    } catch (err) {
+      console.error("Error migrating/injecting The Apero data:", err);
+    }
+  }, [setRestaurants, setEstablishments]);
+
   const getWeatherIcon = (code: number, isDay: boolean = true, size = 20, className = "") => {
     if (code === 0) {
       return isDay ? <Sun size={size} className={`text-amber-400 ${className}`} /> : <Moon size={size} className={`text-sky-300 ${className}`} />;

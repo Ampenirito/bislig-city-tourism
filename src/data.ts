@@ -208,6 +208,22 @@ export const RESTAURANTS: Restaurant[] = [
     coordinates: { lat: 8.2081, lng: 126.3533 },
     mapUrl: "https://www.google.com/maps/search/Fabella+Coffee+Bislig",
     rating: 4.9
+  },
+  {
+    id: "the-apero",
+    name: "The Apero",
+    description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
+    category: "Fine Dining",
+    image: "/assets/images/theapero.jpg",
+    specialty: ["Artisanal Sourdough & Pastries", "Premium Roasted Ribeye", "Signature Espresso Brews"],
+    priceRange: "₱300 - ₱800 per person",
+    contact: "+63 912 345 6789",
+    socialMedia: "facebook.com/theaperobislig",
+    website: "https://theaperobislig.com",
+    operatingHours: "11:00 AM - 10:00 PM daily",
+    coordinates: { lat: 8.2105, lng: 126.3521 },
+    mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
+    rating: 4.9
   }
 ];
 
@@ -1065,5 +1081,21 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2102, lng: 126.3538 },
     mapUrl: "https://www.google.com/maps/search/Aqua+X+Refilling+Station+Bislig",
     rating: 4.8
+  },
+  {
+    id: "the-apero",
+    name: "The Apero",
+    description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
+    longDescription: "The Apero brings a premium casual dining experience to Bislig City. Featuring a meticulously crafted menu that blends modern international flavors with local ingredients, it is a favored hub for business meetings, family gatherings, and coffee connoisseurs. The cozy ambiance is complemented by freshly baked artisanal breads and pastries daily.",
+    category: "Dining & Cafes",
+    image: "/assets/images/theapero.jpg",
+    location: "Caramcam District, Mangagoy, Bislig City",
+    contact: "+63 912 345 6789",
+    socialMedia: "facebook.com/theaperobislig",
+    website: "https://theaperobislig.com",
+    operatingHours: "11:00 AM - 10:00 PM daily",
+    coordinates: { lat: 8.2105, lng: 126.3521 },
+    mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
+    rating: 4.9
   }
 ];
