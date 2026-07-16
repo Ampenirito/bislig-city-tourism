@@ -489,6 +489,7 @@ export default function App() {
     }
   });
   const [selectedItineraryDay, setSelectedItineraryDay] = useState<number>(1);
+  const [showCustomEntryForm, setShowCustomEntryForm] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [showNotifBar, setShowNotifBar] = useState<boolean>(true);
   const [showLangMenu, setShowLangMenu] = useState<boolean>(false);
@@ -767,7 +768,7 @@ export default function App() {
   // Add item to custom itinerary
   const [addedFeedback, setAddedFeedback] = useState<Record<string, boolean>>({});
 
-  const addToItinerary = (item: any, type: "attraction" | "restaurant" | "hotel") => {
+  const addToItinerary = (item: any, type: "attraction" | "restaurant" | "hotel" | "event" | "directory" | "rental" | "custom") => {
     const dayList = customItinerary[selectedItineraryDay] || [];
     // Prevent duplicates within the same day
     if (dayList.some((existing) => existing.id === item.id)) {
@@ -916,12 +917,16 @@ export default function App() {
           const notesLines = notesText ? doc.splitTextToSize(notesText, contentWidth - 12) : [];
           
           let cost = "Free / Variable";
-          if (item.itineraryType === "attraction" && item.entranceFee) {
+          if (item.customCost) {
+            cost = `₱${item.customCost}`;
+          } else if (item.itineraryType === "attraction" && item.entranceFee) {
             cost = item.entranceFee;
           } else if (item.itineraryType === "restaurant") {
             cost = "₱350.00 (Estimated meal cost)";
           } else if (item.itineraryType === "hotel") {
             cost = "₱2,000.00 (Estimated lodging cost)";
+          } else if (item.itineraryType === "rental" && item.rate) {
+            cost = `${item.rate} (Rental rate)`;
           }
 
           const detailsHeight = 12 + (descLines.length * 4.5) + (notesLines.length * 4.5) + 6;
@@ -1002,7 +1007,7 @@ export default function App() {
 
       // Budget Summary footer
       if (hasContent) {
-        checkPageBreak(40);
+        checkPageBreak(45);
         y += 4;
 
         doc.setDrawColor(220, 225, 230);
@@ -1019,9 +1024,17 @@ export default function App() {
         let totalAccom = 0;
         let totalFood = 0;
         let totalTours = 0;
+        let totalCustomAndOther = 0;
 
         daysArray.forEach((d) => {
           (customItinerary[d] || []).forEach((item) => {
+            if (item.customCost) {
+              const digits = item.customCost.match(/\d+/);
+              if (digits) {
+                totalCustomAndOther += parseInt(digits[0]);
+                return;
+              }
+            }
             if (item.itineraryType === "hotel") {
               totalAccom += 2000;
             } else if (item.itineraryType === "restaurant") {
@@ -1029,6 +1042,11 @@ export default function App() {
             } else if (item.itineraryType === "attraction") {
               const digits = item.entranceFee ? item.entranceFee.match(/\d+/) : null;
               totalTours += digits ? parseInt(digits[0]) : 30;
+            } else if (item.itineraryType === "rental") {
+              const rateVal = item.rate || "";
+              const cleanRate = rateVal.replace(/,/g, "");
+              const digits = cleanRate.match(/\d+/);
+              totalCustomAndOther += digits ? parseInt(digits[0]) : 1500;
             }
           });
         });
@@ -1037,7 +1055,8 @@ export default function App() {
           { label: "Accommodation Total", value: `₱${totalAccom.toLocaleString()}.00 (Estimated lodging)` },
           { label: "Food & Dining Total", value: `₱${totalFood.toLocaleString()}.00 (Estimated meal expenses)` },
           { label: "Tours & Entrance Fees", value: `₱${totalTours.toLocaleString()}.00 (Entrance fees & guide tips)` },
-          { label: "Estimated Grand Total", value: `₱${(totalAccom + totalFood + totalTours).toLocaleString()}.00` }
+          { label: "Transit & Other Services", value: `₱${totalCustomAndOther.toLocaleString()}.00 (Rentals, custom entry fees)` },
+          { label: "Estimated Grand Total", value: `₱${(totalAccom + totalFood + totalTours + totalCustomAndOther).toLocaleString()}.00` }
         ];
 
         budgetLines.forEach((line) => {
@@ -1370,13 +1389,25 @@ export default function App() {
     let total = 0;
     Object.values(customItinerary).forEach((items: any) => {
       items.forEach((item: any) => {
+        if (item.customCost) {
+          const digits = item.customCost.match(/\d+/);
+          if (digits) {
+            total += parseInt(digits[0]);
+            return;
+          }
+        }
         if (item.itineraryType === "attraction") {
-          const digits = item.entranceFee.match(/\d+/);
+          const digits = item.entranceFee ? item.entranceFee.match(/\d+/) : null;
           total += digits ? parseInt(digits[0]) : 30;
         } else if (item.itineraryType === "restaurant") {
-          total += 350; // default estimated meal cost
+          total += 350;
         } else if (item.itineraryType === "hotel") {
-          total += 2000; // default estimated night cost
+          total += 2000;
+        } else if (item.itineraryType === "rental") {
+          const rateVal = item.rate || "";
+          const cleanRate = rateVal.replace(/,/g, "");
+          const digits = cleanRate.match(/\d+/);
+          total += digits ? parseInt(digits[0]) : 1500;
         }
       });
     });
@@ -3333,6 +3364,103 @@ export default function App() {
                     )}
                   </div>
 
+                  {/* Add Custom Entry Toggle and Form */}
+                  <div className="mb-4">
+                    <button
+                      onClick={() => setShowCustomEntryForm(!showCustomEntryForm)}
+                      className="w-full py-2 bg-slate-100 hover:bg-[#0047A1]/5 border border-dashed border-slate-300 rounded-xl text-xs font-bold text-[#0047A1] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      {showCustomEntryForm ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                      <span>{showCustomEntryForm ? "Close Custom Entry Form" : "Add Custom Activity Entry"}</span>
+                    </button>
+
+                    {showCustomEntryForm && (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const fData = new FormData(e.currentTarget);
+                          const entryName = fData.get("customName") as string;
+                          if (!entryName || !entryName.trim()) return;
+
+                          const newCustomItem = {
+                            id: `custom-entry-${Date.now()}`,
+                            name: entryName,
+                            itineraryType: fData.get("customCategory") as string,
+                            location: fData.get("customLocation") as string || "Bislig City",
+                            customCost: fData.get("customCost") as string || "",
+                            time: fData.get("customTime") as string || "09:00 AM",
+                            notes: fData.get("customNotes") as string || ""
+                          };
+
+                          setCustomItinerary({
+                            ...customItinerary,
+                            [selectedItineraryDay]: [...(customItinerary[selectedItineraryDay] || []), newCustomItem]
+                          });
+
+                          e.currentTarget.reset();
+                          setShowCustomEntryForm(false);
+                        }}
+                        className="bg-slate-50/50 p-4 rounded-xl border border-slate-150 mt-3 space-y-3 animate-fadeIn"
+                      >
+                        <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Custom Activity Details</h4>
+                        
+                        <div>
+                          <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Activity Name / Place *</label>
+                          <input type="text" name="customName" required placeholder="e.g. Visit Grandfather's Farm" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Category *</label>
+                            <select name="customCategory" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]">
+                              <option value="attraction">Attraction</option>
+                              <option value="restaurant">Restaurant</option>
+                              <option value="hotel">Lodging</option>
+                              <option value="event">Event</option>
+                              <option value="rental">Transit</option>
+                              <option value="custom">Other</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Time Slot *</label>
+                            <select name="customTime" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]">
+                              {[
+                                "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM",
+                                "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM",
+                                "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM"
+                              ].map((t) => (
+                                <option key={t} value={t}>{t}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Location Address</label>
+                            <input type="text" name="customLocation" placeholder="e.g. Brgy. San Jose" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]" />
+                          </div>
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Estimated Cost (₱)</label>
+                            <input type="text" name="customCost" placeholder="e.g. 150" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Custom Notes</label>
+                          <input type="text" name="customNotes" placeholder="e.g. Bring hats & sunblock" className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#0047A1]" />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full bg-[#0047A1] text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wider hover:bg-blue-800 transition-colors cursor-pointer"
+                        >
+                          Add Custom Activity
+                        </button>
+                      </form>
+                    )}
+                  </div>
+
                   {/* Budget & Action Buttons */}
                   <div className="border-t border-slate-100 pt-4 flex flex-wrap justify-between items-center gap-4">
                     <div>
@@ -3683,7 +3811,7 @@ export default function App() {
 
         {activeTab === "car-rental" && (
           <div className="w-full">
-            <CarRental vehicles={vehicles} operators={operators} />
+            <CarRental vehicles={vehicles} operators={operators} addToItinerary={addToItinerary} addedFeedback={addedFeedback} />
           </div>
         )}
 
@@ -3769,12 +3897,20 @@ export default function App() {
                         <span className="truncate">{est.location}</span>
                       </div>
 
-                      <div className="pt-4 mt-auto">
+                      <div className="pt-4 mt-auto flex gap-2">
+                        <button
+                          onClick={() => addToItinerary(est, "directory")}
+                          className="px-3 bg-[#0047A1]/5 border border-transparent text-[#0047A1] py-2.5 rounded-xl text-xs font-bold uppercase hover:bg-[#0047A1] hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          title="Add to Itinerary"
+                        >
+                          {addedFeedback[est.id] ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                          <span className="sr-only md:not-sr-only text-[10px]">Itinerary</span>
+                        </button>
                         <button
                           onClick={() => setSelectedEstablishment(est)}
-                          className="w-full bg-[#FAFCFC] border border-slate-200 text-[#0047A1] py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-center cursor-pointer hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all flex items-center justify-center gap-1.5"
+                          className="flex-grow bg-[#FAFCFC] border border-slate-200 text-[#0047A1] py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-center cursor-pointer hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all flex items-center justify-center gap-1.5"
                         >
-                          <span>View Business Details</span>
+                          <span>View Details</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -3900,12 +4036,18 @@ export default function App() {
                           {evt.location}
                         </p>
                         <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">{evt.description}</p>
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex flex-wrap gap-1">
-                            {evt.tags.slice(0,3).map(tag => (
-                              <span key={tag} className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{tag}</span>
-                            ))}
-                          </div>
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToItinerary(evt, "event");
+                            }}
+                            className="px-3 py-1.5 bg-[#0047A1]/5 hover:bg-[#0047A1] hover:text-white rounded-xl text-[#0047A1] transition-all flex items-center gap-1 text-[10px] font-bold cursor-pointer"
+                            title="Add to Custom Itinerary"
+                          >
+                            {addedFeedback[evt.id] ? <Check className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                            <span>Itinerary</span>
+                          </button>
                           <span className="text-xs font-bold text-[#0047A1] group-hover:text-[#FB8C00] transition-colors flex items-center gap-1">
                             Read <ArrowRight className="w-3 h-3" />
                           </span>

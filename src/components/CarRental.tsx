@@ -15,7 +15,8 @@ import {
   Calendar,
   Compass,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from "lucide-react";
 import { Vehicle, Operator } from "../types";
 import { VEHICLES as DEFAULT_VEHICLES, OPERATORS as DEFAULT_OPERATORS } from "../data";
@@ -23,11 +24,15 @@ import { VEHICLES as DEFAULT_VEHICLES, OPERATORS as DEFAULT_OPERATORS } from "..
 interface CarRentalProps {
   vehicles?: Vehicle[];
   operators?: Operator[];
+  addToItinerary?: (item: any, type: "attraction" | "restaurant" | "hotel" | "event" | "directory" | "rental" | "custom") => void;
+  addedFeedback?: Record<string, boolean>;
 }
 
 export default function CarRental({ 
   vehicles = DEFAULT_VEHICLES, 
-  operators = DEFAULT_OPERATORS 
+  operators = DEFAULT_OPERATORS,
+  addToItinerary,
+  addedFeedback
 }: CarRentalProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
@@ -182,15 +187,36 @@ export default function CarRental({
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="p-6 border-t border-slate-100 flex items-center justify-between bg-slate-50/50 gap-2">
                   <div>
                     <span className="text-[9px] text-slate-400 font-bold uppercase block">Est. Rate Range</span>
-                    <span className="font-bold text-sm text-[#0097A7]">{vehicle.rate}</span>
+                    <span className="font-bold text-xs text-[#0097A7]">{vehicle.rate}</span>
                   </div>
-                  <button className="bg-[#0047A1] text-white p-2.5 rounded-xl hover:bg-[#005f92] transition-colors flex items-center gap-1 text-xs font-bold shadow-sm">
-                    <span>Configure</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex gap-1.5 shrink-0">
+                    {addToItinerary && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToItinerary(vehicle, "rental");
+                        }}
+                        className={`p-2 rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                          addedFeedback && addedFeedback[vehicle.id]
+                            ? "bg-[#0097A7] text-white"
+                            : "bg-slate-100 text-[#0047A1] hover:bg-[#0047A1] hover:text-white"
+                        }`}
+                        title={addedFeedback && addedFeedback[vehicle.id] ? "Added to itinerary" : "Add vehicle to itinerary"}
+                      >
+                        {addedFeedback && addedFeedback[vehicle.id] ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => handleSelectVehicle(vehicle)}
+                      className="bg-[#0047A1] text-white p-2.5 rounded-xl hover:bg-[#005f92] transition-colors flex items-center gap-1 text-xs font-bold shadow-sm"
+                    >
+                      <span>Configure</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
