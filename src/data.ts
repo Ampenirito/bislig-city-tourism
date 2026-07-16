@@ -1144,6 +1144,7 @@ export const VEHICLES: Vehicle[] = [
 
 export const OPERATORS: Operator[] = [
   {
+    id: "romeo",
     name: "Romeo",
     phone: "+63 926 123 4567",
     rating: "4.9",
@@ -1160,6 +1161,7 @@ export const OPERATORS: Operator[] = [
     }
   },
   {
+    id: "christopher",
     name: "Christopher",
     phone: "+63 915 987 6543",
     rating: "4.8",
@@ -1175,6 +1177,7 @@ export const OPERATORS: Operator[] = [
     }
   },
   {
+    id: "angel",
     name: "Angel",
     phone: "+63 918 222 3344",
     rating: "4.9",
@@ -1191,6 +1194,7 @@ export const OPERATORS: Operator[] = [
     }
   },
   {
+    id: "dez",
     name: "Dez",
     phone: "+63 909 444 5566",
     rating: "4.7",
@@ -1206,6 +1210,7 @@ export const OPERATORS: Operator[] = [
     }
   },
   {
+    id: "ken",
     name: "Ken",
     phone: "+63 927 555 7788",
     rating: "4.8",
@@ -1221,6 +1226,7 @@ export const OPERATORS: Operator[] = [
     }
   },
   {
+    id: "brad",
     name: "Brad",
     phone: "+63 936 888 9900",
     rating: "4.9",

@@ -2750,12 +2750,12 @@ function BfoCmsManager({
 }: BfoCmsManagerProps) {
   interface TrashedItem {
     id: string;
-    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals";
+    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators";
     originalItem: any;
     deletedAt: string;
   }
 
-  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "trash">("events");
+  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators" | "trash">("events");
   const [cmsSearch, setCmsSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -2799,13 +2799,15 @@ function BfoCmsManager({
         return restaurants.filter(r => r.name.toLowerCase().includes(query));
       case "rentals":
         return vehicles.filter(v => v.name.toLowerCase().includes(query));
+      case "operators":
+        return operators.filter(op => op.name.toLowerCase().includes(query));
       case "trash":
         return trash.filter(t => {
           const name = t.originalItem.name || t.originalItem.title || "";
           return name.toLowerCase().includes(query);
         });
     }
-  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, vehicles, trash]);
+  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, vehicles, operators, trash]);
 
   // Move to Trash Handler (Soft Delete)
   const handleRemoveItem = (id: string) => {
@@ -2860,6 +2862,14 @@ function BfoCmsManager({
         setVehicles(updated);
         localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
       }
+    } else if (cmsTab === "operators") {
+      deletedItem = operators.find(op => op.id === id);
+      itemCategory = "operators";
+      if (deletedItem) {
+        const updated = operators.filter(op => op.id !== id);
+        setOperators(updated);
+        localStorage.setItem("bislig_operators", JSON.stringify(updated));
+      }
     }
 
     if (deletedItem) {
@@ -2906,6 +2916,10 @@ function BfoCmsManager({
       const updated = [...vehicles, originalItem];
       setVehicles(updated);
       localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
+    } else if (category === "operators") {
+      const updated = [...operators, originalItem];
+      setOperators(updated);
+      localStorage.setItem("bislig_operators", JSON.stringify(updated));
     }
 
     const updatedTrash = trash.filter(t => t.id !== trashed.id);
@@ -3134,6 +3148,37 @@ function BfoCmsManager({
       }
       setVehicles(updated);
       localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
+
+    } else if (cmsTab === "operators") {
+      const selectedVehicles = formData.getAll("supportedVehicles") as string[];
+      const newOp: Operator = {
+        id: baseId,
+        name: formData.get("name") as string,
+        phone: formData.get("phone") as string || "",
+        rating: formData.get("rating") as string || "5.0",
+        reviews: parseInt(formData.get("reviews") as string) || 0,
+        badge: formData.get("badge") as string || "",
+        bio: formData.get("bio") as string || "",
+        supportedVehicles: selectedVehicles,
+        supportsSelfDrive: formData.get("supportsSelfDrive") === "true",
+        supportsWithDriver: formData.get("supportsWithDriver") === "true",
+        socials: {
+          facebook: formData.get("facebook") as string || undefined,
+          messenger: formData.get("messenger") as string || undefined,
+          whatsapp: formData.get("whatsapp") as string || undefined
+        }
+      };
+
+      let updated;
+      if (editingItem) {
+        updated = operators.map(item => item.id === editingItem.id ? newOp : item);
+        setSuccessMsg("Provider profile updated successfully!");
+      } else {
+        updated = [...operators, newOp];
+        setSuccessMsg("New provider profile added successfully!");
+      }
+      setOperators(updated);
+      localStorage.setItem("bislig_operators", JSON.stringify(updated));
     }
 
     setEditingItem(null);
@@ -3159,6 +3204,7 @@ function BfoCmsManager({
             { id: "accommodations", label: "🏨 Hotels" },
             { id: "restaurants", label: "☕ Dining" },
             { id: "rentals", label: "🚗 Car Rentals" },
+            { id: "operators", label: "👤 Providers" },
             { id: "trash", label: "🗑️ Trash Bin" }
           ].map((tab) => (
             <button
@@ -3270,7 +3316,8 @@ function BfoCmsManager({
             <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
               {filteredItems.map((item: any) => {
                 const name = item.name || item.title;
-                const subText = item.category || item.dateRange || item.date || item.type || item.rate || "";
+                const subText = item.category || item.dateRange || item.date || item.type || item.rate || item.phone || "";
+                const image = item.image || "/assets/images/bisligcity logo.jpg";
                 
                 return (
                   <div 
@@ -3283,7 +3330,7 @@ function BfoCmsManager({
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <img 
-                        src={item.image} 
+                        src={image} 
                         alt={name} 
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = "/assets/images/bisligcity logo.jpg";
@@ -3792,6 +3839,78 @@ function BfoCmsManager({
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Vehicle Teaser Description *</label>
                     <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
+
+              {cmsTab === "operators" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Provider / Host Name *</label>
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Christopher" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
+                    <input type="text" name="phone" required defaultValue={editingItem ? editingItem.phone : ""} placeholder="+63 915 987 6543" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Status Badge / Highlight Tag</label>
+                    <input type="text" name="badge" defaultValue={editingItem ? editingItem.badge : ""} placeholder="Top-Rated Vehicle Fleet Manager" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating (1-5)</label>
+                    <input type="text" name="rating" defaultValue={editingItem ? editingItem.rating : "4.8"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Reviews Count</label>
+                    <input type="number" name="reviews" defaultValue={editingItem ? editingItem.reviews : 0} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Supports Self-Drive *</label>
+                    <select name="supportsSelfDrive" defaultValue={editingItem ? String(editingItem.supportsSelfDrive) : "true"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Supports With Driver *</label>
+                    <select name="supportsWithDriver" defaultValue={editingItem ? String(editingItem.supportsWithDriver) : "true"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Facebook URL Link</label>
+                    <input type="text" name="facebook" defaultValue={editingItem && editingItem.socials ? editingItem.socials.facebook : ""} placeholder="https://facebook.com/..." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Messenger URL Link</label>
+                    <input type="text" name="messenger" defaultValue={editingItem && editingItem.socials ? editingItem.socials.messenger : ""} placeholder="https://m.me/..." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">WhatsApp URL Link</label>
+                    <input type="text" name="whatsapp" defaultValue={editingItem && editingItem.socials ? editingItem.socials.whatsapp : ""} placeholder="https://wa.me/..." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Provider Short Biography *</label>
+                    <textarea name="bio" required defaultValue={editingItem ? editingItem.bio : ""} rows={3} placeholder="Describe host credentials, fleet quality, or specialized guide features..." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Assigned Vehicle Models *</label>
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                      {vehicles.map((v) => (
+                        <label key={v.id} className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            name="supportedVehicles"
+                            value={v.id}
+                            defaultChecked={editingItem && Array.isArray(editingItem.supportedVehicles) ? editingItem.supportedVehicles.includes(v.id) : false}
+                            className="w-4 h-4 rounded text-[#0047A1] focus:ring-[#0047A1] border-slate-300"
+                          />
+                          <span>{v.name}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </>
               )}

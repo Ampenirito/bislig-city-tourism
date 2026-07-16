@@ -185,6 +185,7 @@ export interface Vehicle {
 }
 
 export interface Operator {
+  id: string;
   name: string;
   phone: string;
   rating: string;

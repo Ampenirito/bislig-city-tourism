@@ -358,7 +358,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Automatically inject "The Apero" into local storage database tables if they already exist but lack it
+  // Automatically inject "The Apero" and sync operator id fields
   useEffect(() => {
     try {
       const savedR = localStorage.getItem("bislig_restaurants");
@@ -412,10 +412,28 @@ export default function App() {
           setEstablishments(updatedE);
         }
       }
+
+      const savedOps = localStorage.getItem("bislig_operators");
+      if (savedOps) {
+        const parsedOps = JSON.parse(savedOps);
+        const needsSync = parsedOps.some((op: any) => !op.id);
+        if (needsSync) {
+          const updatedOps = parsedOps.map((op: any) => {
+            if (op.id) return op;
+            const found = OPERATORS.find((o) => o.name === op.name);
+            return {
+              id: found ? found.id : op.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+              ...op
+            };
+          });
+          localStorage.setItem("bislig_operators", JSON.stringify(updatedOps));
+          setOperators(updatedOps);
+        }
+      }
     } catch (err) {
-      console.error("Error migrating/injecting The Apero data:", err);
+      console.error("Error migrating/injecting BFO data:", err);
     }
-  }, [setRestaurants, setEstablishments]);
+  }, [setRestaurants, setEstablishments, setOperators]);
 
   const getWeatherIcon = (code: number, isDay: boolean = true, size = 20, className = "") => {
     if (code === 0) {
