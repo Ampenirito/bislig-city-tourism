@@ -51,7 +51,9 @@ import {
   Star,
   Facebook,
   Mail,
-  ChevronDown
+  ChevronDown,
+  ArrowUp,
+  ArrowDown
 } from "lucide-react";
 
 import {
@@ -477,11 +479,14 @@ export default function App() {
     }
   });
 
-  // Itinerary Builder State
-  const [customItinerary, setCustomItinerary] = useState<Record<number, any[]>>({
-    1: [],
-    2: [],
-    3: []
+  // Itinerary Builder State loaded from local storage
+  const [customItinerary, setCustomItinerary] = useState<Record<number, any[]>>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_custom_itinerary");
+      return saved ? JSON.parse(saved) : { 1: [], 2: [], 3: [] };
+    } catch {
+      return { 1: [], 2: [], 3: [] };
+    }
   });
   const [selectedItineraryDay, setSelectedItineraryDay] = useState<number>(1);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -750,6 +755,15 @@ export default function App() {
     localStorage.setItem("bislig_favorites", JSON.stringify(updated));
   };
 
+  // Synchronize custom manual itinerary state changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("bislig_custom_itinerary", JSON.stringify(customItinerary));
+    } catch (err) {
+      console.error("Error saving custom itinerary:", err);
+    }
+  }, [customItinerary]);
+
   // Add item to custom itinerary
   const [addedFeedback, setAddedFeedback] = useState<Record<string, boolean>>({});
 
@@ -764,15 +778,286 @@ export default function App() {
       return;
     }
 
+    // Default time slots sequentially to make it highly user-friendly
+    const timeSlots = ["08:00 AM", "10:30 AM", "01:00 PM", "03:30 PM", "06:00 PM", "08:00 PM"];
+    const defaultTime = timeSlots[dayList.length] || "09:00 AM";
+
     setCustomItinerary({
       ...customItinerary,
-      [selectedItineraryDay]: [...dayList, { ...item, itineraryType: type }]
+      [selectedItineraryDay]: [...dayList, { ...item, itineraryType: type, time: defaultTime, notes: "" }]
     });
 
     setAddedFeedback((prev) => ({ ...prev, [item.id]: true }));
     setTimeout(() => {
       setAddedFeedback((prev) => ({ ...prev, [item.id]: false }));
     }, 1500);
+  };
+
+  // Update time/notes fields on a custom itinerary item
+  const updateItineraryItem = (day: number, itemId: string, fields: Partial<{ time: string; notes: string }>) => {
+    const dayList = customItinerary[day] || [];
+    const updatedList = dayList.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, ...fields };
+      }
+      return item;
+    });
+    setCustomItinerary({
+      ...customItinerary,
+      [day]: updatedList
+    });
+  };
+
+  // Move custom itinerary item up or down in sorting order
+  const moveItineraryItem = (day: number, index: number, direction: "up" | "down") => {
+    const dayList = [...(customItinerary[day] || [])];
+    if (direction === "up" && index > 0) {
+      const temp = dayList[index];
+      dayList[index] = dayList[index - 1];
+      dayList[index - 1] = temp;
+    } else if (direction === "down" && index < dayList.length - 1) {
+      const temp = dayList[index];
+      dayList[index] = dayList[index + 1];
+      dayList[index + 1] = temp;
+    }
+    setCustomItinerary({
+      ...customItinerary,
+      [day]: dayList
+    });
+  };
+
+  // Export Custom Manual Itinerary to PDF
+  const exportCustomItineraryToPdf = async () => {
+    try {
+      const logoImg = await new Promise<HTMLImageElement | null>((resolve) => {
+        const img = new Image();
+        img.src = "/assets/images/logo.jpg";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
+
+      let y = 20;
+
+      const checkPageBreak = (neededHeight: number) => {
+        if (y + neededHeight > pageHeight - margin) {
+          doc.addPage();
+          doc.setFillColor(29, 53, 87);
+          doc.rect(0, 0, pageWidth, 5, "F");
+          y = 20;
+        }
+      };
+
+      // Header band
+      doc.setFillColor(29, 53, 87);
+      doc.rect(0, 0, pageWidth, 12, "F");
+      
+      doc.setFillColor(42, 157, 143);
+      doc.rect(0, 12, pageWidth, 2, "F");
+
+      y = 24;
+
+      doc.setTextColor(29, 53, 87);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("MY CUSTOM TRAVEL ITINERARY", margin, y);
+      y += 6;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(115, 120, 130);
+      doc.text(`Official Bislig City Tourism Planner  |  Generated on ${new Date().toLocaleDateString()}`, margin, y);
+      y += 5;
+
+      if (logoImg) {
+        doc.addImage(logoImg, "JPEG", pageWidth - margin - 16, 17, 16, 16);
+      }
+
+      doc.setDrawColor(220, 225, 230);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 8;
+
+      // Iterating over days
+      let hasContent = false;
+      const daysArray = [1, 2, 3];
+      
+      for (const d of daysArray) {
+        const list = customItinerary[d] || [];
+        if (list.length === 0) continue;
+        hasContent = true;
+
+        checkPageBreak(25);
+
+        // Day Section title
+        doc.setFillColor(248, 246, 242);
+        doc.setDrawColor(230, 225, 215);
+        doc.rect(margin, y, contentWidth, 10, "FD");
+
+        doc.setTextColor(29, 53, 87);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(`DAY ${d}: Customized Schedule`, margin + 4, y + 6.5);
+        y += 15;
+
+        list.forEach((item, index) => {
+          const notesText = item.notes ? `Notes: ${item.notes}` : "";
+          const descLines = doc.splitTextToSize(item.description || "", contentWidth - 12);
+          const notesLines = notesText ? doc.splitTextToSize(notesText, contentWidth - 12) : [];
+          
+          let cost = "Free / Variable";
+          if (item.itineraryType === "attraction" && item.entranceFee) {
+            cost = item.entranceFee;
+          } else if (item.itineraryType === "restaurant") {
+            cost = "₱350.00 (Estimated meal cost)";
+          } else if (item.itineraryType === "hotel") {
+            cost = "₱2,000.00 (Estimated lodging cost)";
+          }
+
+          const detailsHeight = 12 + (descLines.length * 4.5) + (notesLines.length * 4.5) + 6;
+          checkPageBreak(detailsHeight);
+
+          // Left timeline bar
+          doc.setDrawColor(0, 119, 182);
+          doc.setLineWidth(1);
+          doc.line(margin + 2, y - 5, margin + 2, y + detailsHeight - 12);
+
+          doc.setFillColor(0, 119, 182);
+          doc.circle(margin + 2, y, 1.5, "F");
+
+          // Display selected time slot
+          doc.setTextColor(100, 110, 120);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9);
+          doc.text(item.time || "09:00 AM", margin + 8, y + 1);
+          y += 5.5;
+
+          // Activity Name & category
+          doc.setTextColor(29, 53, 87);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          doc.text(`${item.name} (${item.itineraryType.toUpperCase()})`, margin + 8, y);
+          y += 4.5;
+
+          // Location info
+          doc.setTextColor(115, 120, 130);
+          doc.setFont("helvetica", "italic");
+          doc.setFontSize(8.5);
+          const loc = item.location || item.distance || "Bislig City Center";
+          doc.text(`@ ${loc}`, margin + 8, y);
+          y += 4.5;
+
+          // Estimated Cost
+          doc.setTextColor(42, 157, 143);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.5);
+          doc.text(`Cost: ${cost}`, margin + 8, y);
+          y += 4.5;
+
+          // Teaser description
+          doc.setTextColor(80, 85, 95);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+          descLines.forEach((line: string) => {
+            doc.text(line, margin + 8, y);
+            y += 4.5;
+          });
+
+          // Custom user notes (rendered in bold blue/slate color)
+          if (notesText) {
+            y += 1.5;
+            doc.setTextColor(29, 53, 87);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            notesLines.forEach((line: string) => {
+              doc.text(line, margin + 8, y);
+              y += 4.5;
+            });
+            doc.setFont("helvetica", "normal");
+          }
+
+          y += 4;
+        });
+
+        y += 4;
+      }
+
+      if (!hasContent) {
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(11);
+        doc.setTextColor(115, 120, 130);
+        doc.text("No items added to this itinerary yet. Add tourist spots, hotels, or cafes to begin!", margin, y);
+        y += 15;
+      }
+
+      // Budget Summary footer
+      if (hasContent) {
+        checkPageBreak(40);
+        y += 4;
+
+        doc.setDrawColor(220, 225, 230);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += 6;
+
+        doc.setTextColor(29, 53, 87);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text("ESTIMATED BUDGET SUMMARY", margin, y);
+        y += 6;
+
+        let totalAccom = 0;
+        let totalFood = 0;
+        let totalTours = 0;
+
+        daysArray.forEach((d) => {
+          (customItinerary[d] || []).forEach((item) => {
+            if (item.itineraryType === "hotel") {
+              totalAccom += 2000;
+            } else if (item.itineraryType === "restaurant") {
+              totalFood += 350;
+            } else if (item.itineraryType === "attraction") {
+              const digits = item.entranceFee ? item.entranceFee.match(/\d+/) : null;
+              totalTours += digits ? parseInt(digits[0]) : 30;
+            }
+          });
+        });
+
+        const budgetLines = [
+          { label: "Accommodation Total", value: `₱${totalAccom.toLocaleString()}.00 (Estimated lodging)` },
+          { label: "Food & Dining Total", value: `₱${totalFood.toLocaleString()}.00 (Estimated meal expenses)` },
+          { label: "Tours & Entrance Fees", value: `₱${totalTours.toLocaleString()}.00 (Entrance fees & guide tips)` },
+          { label: "Estimated Grand Total", value: `₱${(totalAccom + totalFood + totalTours).toLocaleString()}.00` }
+        ];
+
+        budgetLines.forEach((line) => {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9);
+          doc.setTextColor(29, 53, 87);
+          doc.text(`${line.label}:`, margin, y);
+
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(80, 85, 95);
+          doc.text(line.value, margin + 45, y);
+          y += 5;
+        });
+      }
+
+      doc.save("Bislig_Custom_Itinerary.pdf");
+    } catch (err) {
+      console.error("Error exporting itinerary PDF:", err);
+      alert("An error occurred while compiling your itinerary PDF.");
+    }
   };
 
   // Export personalized/AI itinerary to PDF
@@ -2961,7 +3246,7 @@ export default function App() {
                   </div>
 
                   {/* Day activity list */}
-                  <div className="space-y-3 min-h-[160px] max-h-[300px] overflow-y-auto mb-4 border border-dashed border-gray-200 rounded-xl p-3">
+                  <div className="space-y-3 min-h-[160px] max-h-[450px] overflow-y-auto mb-4 border border-dashed border-gray-200 rounded-xl p-3">
                     {customItinerary[selectedItineraryDay]?.length === 0 ? (
                       <div className="h-32 flex flex-col items-center justify-center text-center">
                         <p className="text-xs text-slate-400">Your Day {selectedItineraryDay} schedule is empty.</p>
@@ -2971,21 +3256,78 @@ export default function App() {
                       </div>
                     ) : (
                       customItinerary[selectedItineraryDay]?.map((item, idx) => (
-                        <div key={idx} className="bg-[#F8F6F2] p-3 rounded-lg flex items-center justify-between border border-gray-100">
-                          <div>
-                            <span className="text-[9px] px-2 py-0.5 rounded bg-white text-slate-500 font-bold uppercase border">
-                              {item.itineraryType}
-                            </span>
-                            <h4 className="font-bold text-xs text-[#0047A1] mt-1">{item.name}</h4>
-                            <p className="text-[9px] text-slate-400">{item.distance || "City center"}</p>
+                        <div key={idx} className="bg-[#F8F6F2] p-3.5 rounded-xl flex flex-col gap-2.5 border border-gray-100 shadow-sm">
+                          
+                          {/* Top Row: Meta info, Time selection, and Reorder arrows */}
+                          <div className="flex justify-between items-center gap-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[8px] px-1.5 py-0.5 rounded bg-white text-slate-500 font-bold uppercase border">
+                                {item.itineraryType}
+                              </span>
+                              
+                              {/* Time selector */}
+                              <select
+                                value={item.time || "09:00 AM"}
+                                onChange={(e) => updateItineraryItem(selectedItineraryDay, item.id, { time: e.target.value })}
+                                className="bg-white border border-gray-200 rounded px-1.5 py-0.5 text-[9px] font-bold text-slate-600 outline-none focus:border-[#0047A1]"
+                              >
+                                {[
+                                  "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM",
+                                  "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM",
+                                  "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM"
+                                ].map((t) => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Arrow button triggers */}
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => moveItineraryItem(selectedItineraryDay, idx, "up")}
+                                disabled={idx === 0}
+                                className="p-1 text-slate-400 hover:text-[#0047A1] hover:bg-white rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
+                                title="Move Up"
+                              >
+                                <ArrowUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => moveItineraryItem(selectedItineraryDay, idx, "down")}
+                                disabled={idx === (customItinerary[selectedItineraryDay]?.length || 0) - 1}
+                                className="p-1 text-slate-400 hover:text-[#0047A1] hover:bg-white rounded transition-all disabled:opacity-30 disabled:pointer-events-none"
+                                title="Move Down"
+                              >
+                                <ArrowDown className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => removeFromItinerary(selectedItineraryDay, item.id)}
+                                className="p-1 text-red-500 hover:bg-white rounded-full transition-colors ml-1"
+                                title="Remove"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => removeFromItinerary(selectedItineraryDay, item.id)}
-                            className="p-1 text-red-500 hover:bg-white rounded-full transition-colors"
-                            title="Remove"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+
+                          {/* Middle Row: Name and address details */}
+                          <div>
+                            <h4 className="font-extrabold text-xs text-[#0047A1] leading-tight">{item.name}</h4>
+                            <p className="text-[9px] text-slate-400 mt-0.5">
+                              📍 {item.location || item.distance || "Bislig City Center"}
+                            </p>
+                          </div>
+
+                          {/* Bottom Row: Text notes input */}
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={item.notes || ""}
+                              onChange={(e) => updateItineraryItem(selectedItineraryDay, item.id, { notes: e.target.value })}
+                              placeholder="Add custom notes (e.g. Bring extra camera)..."
+                              className="w-full px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[9.5px] text-slate-600 outline-none focus:border-[#0047A1]"
+                            />
+                          </div>
+
                         </div>
                       ))
                     )}
@@ -3000,6 +3342,14 @@ export default function App() {
 
                     <div className="flex gap-2">
                       <button
+                        onClick={exportCustomItineraryToPdf}
+                        className="px-3.5 py-2.5 bg-[#0047A1] text-white hover:bg-blue-800 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-blue-500/10 transition-all cursor-pointer text-nowrap"
+                        title="Export Itinerary to PDF"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Export PDF</span>
+                      </button>
+                      <button
                         onClick={() => {
                           window.print();
                         }}
@@ -3010,8 +3360,9 @@ export default function App() {
                       </button>
                       <button
                         onClick={() => {
-                          setCustomItinerary({ 1: [], 2: [], 3: [] });
-                          alert("Your custom itinerary has been cleared.");
+                          if (window.confirm("Are you sure you want to clear your custom itinerary for all days?")) {
+                            setCustomItinerary({ 1: [], 2: [], 3: [] });
+                          }
                         }}
                         className="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg text-xs font-bold"
                         title="Reset All Days"
