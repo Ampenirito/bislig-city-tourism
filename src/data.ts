@@ -1,4 +1,4 @@
-import { Attraction, Accommodation, Restaurant, TourismEvent, GalleryItem, BlogPost, FAQ, Establishment } from "./types";
+import { Attraction, Accommodation, Restaurant, TourismEvent, GalleryItem, BlogPost, FAQ, Establishment, Vehicle, Operator } from "./types";
 
 
 export const ATTRACTIONS: Attraction[] = [
@@ -1097,5 +1097,143 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2105, lng: 126.3521 },
     mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
     rating: 4.9
+  }
+];
+
+export const VEHICLES: Vehicle[] = [
+  {
+    id: "hiace",
+    name: "Toyota Hi Ace Commuter",
+    type: "Van / Tourer",
+    image: "/assets/images/Toyota Hi Ace.webp",
+    seaters: 15,
+    luggage: "6-8 Large Bags",
+    transmission: "Manual (M/T)",
+    fuel: "Diesel",
+    rate: "₱3,500 - ₱4,500 / day",
+    features: ["Dual Aircon", "High-ceiling Comfort", "Spacious Legroom", "Audio System with Bluetooth"],
+    description: "The ultimate group travel choice. Meticulously designed for maximum seating, offering absolute stability and reliability on scenic provincial coastal roads."
+  },
+  {
+    id: "innova",
+    name: "Toyota Innova",
+    type: "Mid-size MPV / SUV",
+    image: "/assets/images/Toyota Innova.webp",
+    seaters: 7,
+    luggage: "4 Large Bags",
+    transmission: "Automatic (A/T)",
+    fuel: "Diesel",
+    rate: "₱2,500 - ₱3,200 / day",
+    features: ["Powerful Climate Control", "Foldable Rear Seats", "Excellent Ground Clearance", "Premium Comfort Seating"],
+    description: "Perfect blend of rugged performance and premium comfort. Great for standard families looking to tackle Bislig's mountain paths and waterfall trails with peace of mind."
+  },
+  {
+    id: "vios",
+    name: "Toyota Vios",
+    type: "Compact Sedan",
+    image: "/assets/images/Toyota Vios.webp",
+    seaters: 5,
+    luggage: "2-3 Medium Bags",
+    transmission: "Automatic / Manual",
+    fuel: "Gasoline",
+    rate: "₱1,500 - ₱2,000 / day",
+    features: ["Sleek Compact Size", "Extreme Fuel Economy", "Easy Parking Navigation", "Eco Driving Indicator"],
+    description: "Highly practical, smart, and cost-effective sedan. Perfect for solo adventurers, honeymoon couples, or business coordinators moving swiftly between City Center and resort hubs."
+  }
+];
+
+export const OPERATORS: Operator[] = [
+  {
+    name: "Romeo",
+    phone: "+63 926 123 4567",
+    rating: "4.9",
+    reviews: 142,
+    badge: "Super Host & Senior Local Guide",
+    bio: "Over 10 years of professional tour guidance and van services in Bislig. Known for sharing secret local dining spots and the best hours to photograph Tinuy-an Falls.",
+    supportedVehicles: ["hiace", "innova"],
+    supportsSelfDrive: true,
+    supportsWithDriver: true,
+    socials: {
+      facebook: "https://facebook.com/romeo.bislig.rentals",
+      messenger: "https://m.me/romeo.bislig.rentals",
+      whatsapp: "https://wa.me/639261234567"
+    }
+  },
+  {
+    name: "Christopher",
+    phone: "+63 915 987 6543",
+    rating: "4.8",
+    reviews: 98,
+    badge: "Top-Rated Vehicle Fleet Manager",
+    bio: "Offers meticulously sanitized, highly reliable, and modern units. Known for on-time hotel delivery services and ultra-quick response rates.",
+    supportedVehicles: ["innova", "vios"],
+    supportsSelfDrive: true,
+    supportsWithDriver: true,
+    socials: {
+      facebook: "https://facebook.com/christopher.car.services",
+      messenger: "https://m.me/christopher.car.services"
+    }
+  },
+  {
+    name: "Angel",
+    phone: "+63 918 222 3344",
+    rating: "4.9",
+    reviews: 76,
+    badge: "Eco-Adventure Advocate",
+    bio: "Specializing in self-drive solutions for green-minded tourists. Provides free reusable trash bags and handy paper maps of Hinatuan and Bislig with every rental.",
+    supportedVehicles: ["hiace", "vios"],
+    supportsSelfDrive: true,
+    supportsWithDriver: false,
+    socials: {
+      facebook: "https://facebook.com/angels.eco.rentals",
+      messenger: "https://m.me/angels.eco.rentals",
+      whatsapp: "https://wa.me/639182223344"
+    }
+  },
+  {
+    name: "Dez",
+    phone: "+63 909 444 5566",
+    rating: "4.7",
+    reviews: 110,
+    badge: "Accredited Tourism Transport Driver",
+    bio: "Providing safe, defensive-driving tours. Focuses exclusively on 'With Driver' rentals to ensure clients sit back and enjoy the sights hassle-free.",
+    supportedVehicles: ["hiace", "innova", "vios"],
+    supportsSelfDrive: false,
+    supportsWithDriver: true,
+    socials: {
+      facebook: "https://facebook.com/dez.travel.tours",
+      messenger: "https://m.me/dez.travel.tours"
+    }
+  },
+  {
+    name: "Ken",
+    phone: "+63 927 555 7788",
+    rating: "4.8",
+    reviews: 54,
+    badge: "Sleek Sedan Specialist",
+    bio: "Affordable and highly flexible Vios rentals. Perfect for business travelers and light tourists who want an easy, uncomplicated self-drive car.",
+    supportedVehicles: ["vios"],
+    supportsSelfDrive: true,
+    supportsWithDriver: true,
+    socials: {
+      facebook: "https://facebook.com/kens.safe.rides",
+      messenger: "https://m.me/kens.safe.rides"
+    }
+  },
+  {
+    name: "Brad",
+    phone: "+63 936 888 9900",
+    rating: "4.9",
+    reviews: 82,
+    badge: "Group Tour Coordinator",
+    bio: "Big-group logistics expert. Operates a fleet of robust Hi Ace vans with dedicated tourist drivers certified by the Department of Tourism.",
+    supportedVehicles: ["hiace"],
+    supportsSelfDrive: false,
+    supportsWithDriver: true,
+    socials: {
+      facebook: "https://facebook.com/brads.van.rental",
+      messenger: "https://m.me/brads.van.rental",
+      whatsapp: "https://wa.me/639368889900"
+    }
   }
 ];

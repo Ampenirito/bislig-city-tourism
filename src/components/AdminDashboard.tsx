@@ -3,7 +3,7 @@ import {
   Lock, Eye, EyeOff, BarChart2, Users, MapPin, Globe, Sparkles, 
   Search, RefreshCw, Terminal, Activity, ArrowUpRight, TrendingUp, Calculator, Coins,
   UserCheck, ShieldCheck, Download, PlusCircle, ArrowLeft, Send, Check,
-  FileSpreadsheet, UploadCloud, FileText, CheckCircle, Image, AlertCircle, Trash2
+  FileSpreadsheet, UploadCloud, FileText, CheckCircle, Image, AlertCircle, Trash2, Edit
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import {
@@ -11,7 +11,9 @@ import {
   Establishment,
   Attraction,
   Accommodation,
-  Restaurant
+  Restaurant,
+  Vehicle,
+  Operator
 } from "../types";
 
 // Types for analytics
@@ -115,7 +117,11 @@ export default function AdminDashboard({
   accommodations,
   setAccommodations,
   restaurants,
-  setRestaurants
+  setRestaurants,
+  vehicles,
+  setVehicles,
+  operators,
+  setOperators
 }: {
   onBackToHome: () => void;
   events: TourismEvent[];
@@ -128,6 +134,10 @@ export default function AdminDashboard({
   setAccommodations: React.Dispatch<React.SetStateAction<Accommodation[]>>;
   restaurants: Restaurant[];
   setRestaurants: React.Dispatch<React.SetStateAction<Restaurant[]>>;
+  vehicles: Vehicle[];
+  setVehicles: React.Dispatch<React.SetStateAction<Vehicle[]>>;
+  operators: Operator[];
+  setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
 }) {
   // Login State
   const [username, setUsername] = useState("");
@@ -1981,6 +1991,10 @@ Based on survey responses across multiple departments and local businesses, we i
         setAccommodations={setAccommodations}
         restaurants={restaurants}
         setRestaurants={setRestaurants}
+        vehicles={vehicles}
+        setVehicles={setVehicles}
+        operators={operators}
+        setOperators={setOperators}
       />
     )}
 
@@ -2712,6 +2726,10 @@ interface BfoCmsManagerProps {
   setAccommodations: React.Dispatch<React.SetStateAction<Accommodation[]>>;
   restaurants: Restaurant[];
   setRestaurants: React.Dispatch<React.SetStateAction<Restaurant[]>>;
+  vehicles: Vehicle[];
+  setVehicles: React.Dispatch<React.SetStateAction<Vehicle[]>>;
+  operators: Operator[];
+  setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
 }
 
 function BfoCmsManager({
@@ -2724,18 +2742,23 @@ function BfoCmsManager({
   accommodations,
   setAccommodations,
   restaurants,
-  setRestaurants
+  setRestaurants,
+  vehicles,
+  setVehicles,
+  operators,
+  setOperators
 }: BfoCmsManagerProps) {
   interface TrashedItem {
     id: string;
-    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants";
+    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals";
     originalItem: any;
     deletedAt: string;
   }
 
-  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "trash">("events");
+  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "trash">("events");
   const [cmsSearch, setCmsSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [editingItem, setEditingItem] = useState<any | null>(null);
 
   const [trash, setTrash] = useState<TrashedItem[]>(() => {
     try {
@@ -2754,6 +2777,12 @@ function BfoCmsManager({
     }
   }, [successMsg]);
 
+  // Reset editing mode when switching tabs
+  useEffect(() => {
+    setEditingItem(null);
+    setCmsSearch("");
+  }, [cmsTab]);
+
   // Dynamic filter for list view
   const filteredItems = useMemo(() => {
     const query = cmsSearch.toLowerCase();
@@ -2768,13 +2797,15 @@ function BfoCmsManager({
         return accommodations.filter(acc => acc.name.toLowerCase().includes(query));
       case "restaurants":
         return restaurants.filter(r => r.name.toLowerCase().includes(query));
+      case "rentals":
+        return vehicles.filter(v => v.name.toLowerCase().includes(query));
       case "trash":
         return trash.filter(t => {
           const name = t.originalItem.name || t.originalItem.title || "";
           return name.toLowerCase().includes(query);
         });
     }
-  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, trash]);
+  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, vehicles, trash]);
 
   // Move to Trash Handler (Soft Delete)
   const handleRemoveItem = (id: string) => {
@@ -2821,9 +2852,20 @@ function BfoCmsManager({
         setRestaurants(updated);
         localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
       }
+    } else if (cmsTab === "rentals") {
+      deletedItem = vehicles.find(v => v.id === id);
+      itemCategory = "rentals";
+      if (deletedItem) {
+        const updated = vehicles.filter(v => v.id !== id);
+        setVehicles(updated);
+        localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
+      }
     }
 
     if (deletedItem) {
+      if (editingItem && editingItem.id === id) {
+        setEditingItem(null);
+      }
       const newTrashedItem: TrashedItem = {
         id: id,
         category: itemCategory,
@@ -2860,6 +2902,10 @@ function BfoCmsManager({
       const updated = [...restaurants, originalItem];
       setRestaurants(updated);
       localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
+    } else if (category === "rentals") {
+      const updated = [...vehicles, originalItem];
+      setVehicles(updated);
+      localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
     }
 
     const updatedTrash = trash.filter(t => t.id !== trashed.id);
@@ -2885,14 +2931,14 @@ function BfoCmsManager({
     setSuccessMsg("Trash Bin emptied!");
   };
 
-  // Add Item Submit Handlers
+  // Add & Edit Item Submit Handler
   const handleAddSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const nameOrTitle = (formData.get("name") || formData.get("title")) as string;
     if (!nameOrTitle || !nameOrTitle.trim()) return;
 
-    const baseId = nameOrTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
+    const baseId = editingItem ? editingItem.id : (nameOrTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now());
 
     if (cmsTab === "events") {
       const newEvent: TourismEvent = {
@@ -2908,18 +2954,25 @@ function BfoCmsManager({
         type: (formData.get("type") as any) || "Festival",
         image: formData.get("image") as string || "/assets/images/bisligcity logo.jpg",
         heroImage: formData.get("heroImage") as string || "/assets/images/bisligcity logo.jpg",
-        gallery: [],
+        gallery: editingItem ? editingItem.gallery : [],
         location: formData.get("location") as string || "Bislig City",
         organizer: formData.get("organizer") as string || "LGU Bislig",
         overview: formData.get("overview") as string || "",
         history: formData.get("history") as string || "",
         highlights: (formData.get("highlights") as string || "").split(",").map(s => s.trim()).filter(Boolean),
-        schedule: [],
+        schedule: editingItem ? editingItem.schedule : [],
         tips: (formData.get("tips") as string || "").split(",").map(s => s.trim()).filter(Boolean),
         tags: (formData.get("tags") as string || "Festival, Bislig").split(",").map(s => s.trim()).filter(Boolean)
       };
 
-      const updated = [...events, newEvent];
+      let updated;
+      if (editingItem) {
+        updated = events.map(item => item.id === editingItem.id ? newEvent : item);
+        setSuccessMsg("Event details updated successfully!");
+      } else {
+        updated = [...events, newEvent];
+        setSuccessMsg("New event entry added successfully!");
+      }
       setEvents(updated);
       localStorage.setItem("bislig_events", JSON.stringify(updated));
 
@@ -2941,10 +2994,17 @@ function BfoCmsManager({
           lng: parseFloat(formData.get("lng") as string) || 126.3125
         },
         mapUrl: formData.get("mapUrl") as string || "https://maps.google.com",
-        rating: 4.5
+        rating: editingItem ? editingItem.rating : 4.5
       };
 
-      const updated = [...establishments, newEst];
+      let updated;
+      if (editingItem) {
+        updated = establishments.map(item => item.id === editingItem.id ? newEst : item);
+        setSuccessMsg("Directory profile updated successfully!");
+      } else {
+        updated = [...establishments, newEst];
+        setSuccessMsg("New directory profile added successfully!");
+      }
       setEstablishments(updated);
       localStorage.setItem("bislig_establishments", JSON.stringify(updated));
 
@@ -2974,7 +3034,14 @@ function BfoCmsManager({
         rating: parseFloat(formData.get("rating") as string) || 4.5
       };
 
-      const updated = [...attractions, newAtt];
+      let updated;
+      if (editingItem) {
+        updated = attractions.map(item => item.id === editingItem.id ? newAtt : item);
+        setSuccessMsg("Attraction details updated successfully!");
+      } else {
+        updated = [...attractions, newAtt];
+        setSuccessMsg("New attraction details added successfully!");
+      }
       setAttractions(updated);
       localStorage.setItem("bislig_attractions", JSON.stringify(updated));
 
@@ -2999,7 +3066,14 @@ function BfoCmsManager({
         rating: parseFloat(formData.get("rating") as string) || 4.5
       };
 
-      const updated = [...accommodations, newAcc];
+      let updated;
+      if (editingItem) {
+        updated = accommodations.map(item => item.id === editingItem.id ? newAcc : item);
+        setSuccessMsg("Accommodation details updated successfully!");
+      } else {
+        updated = [...accommodations, newAcc];
+        setSuccessMsg("New accommodation details added successfully!");
+      }
       setAccommodations(updated);
       localStorage.setItem("bislig_accommodations", JSON.stringify(updated));
 
@@ -3024,12 +3098,45 @@ function BfoCmsManager({
         rating: parseFloat(formData.get("rating") as string) || 4.5
       };
 
-      const updated = [...restaurants, newRest];
+      let updated;
+      if (editingItem) {
+        updated = restaurants.map(item => item.id === editingItem.id ? newRest : item);
+        setSuccessMsg("Dining/Restaurant profile updated successfully!");
+      } else {
+        updated = [...restaurants, newRest];
+        setSuccessMsg("New dining/restaurant profile added successfully!");
+      }
       setRestaurants(updated);
       localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
+
+    } else if (cmsTab === "rentals") {
+      const newCar: Vehicle = {
+        id: baseId,
+        name: formData.get("name") as string,
+        type: formData.get("type") as string || "Compact Sedan",
+        image: formData.get("image") as string || "/assets/images/bisligcity logo.jpg",
+        seaters: parseInt(formData.get("seaters") as string) || 5,
+        luggage: formData.get("luggage") as string || "2-3 Bags",
+        transmission: formData.get("transmission") as string || "Automatic",
+        fuel: formData.get("fuel") as string || "Diesel",
+        rate: formData.get("rate") as string || "₱1,500 - ₱2,000 / day",
+        features: (formData.get("features") as string || "Dual Aircon").split(",").map(s => s.trim()).filter(Boolean),
+        description: formData.get("description") as string || ""
+      };
+
+      let updated;
+      if (editingItem) {
+        updated = vehicles.map(item => item.id === editingItem.id ? newCar : item);
+        setSuccessMsg("Car rental profile updated successfully!");
+      } else {
+        updated = [...vehicles, newCar];
+        setSuccessMsg("New car rental profile added successfully!");
+      }
+      setVehicles(updated);
+      localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
     }
 
-    setSuccessMsg("New item added successfully!");
+    setEditingItem(null);
     e.currentTarget.reset();
   };
 
@@ -3040,7 +3147,7 @@ function BfoCmsManager({
         <div>
           <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">DATABASE MANAGER</span>
           <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO CMS Center</h2>
-          <p className="text-[11px] text-slate-500">Add, edit, or remove events, attractions, transport providers, and directory listings dynamically.</p>
+          <p className="text-[11px] text-slate-500">Add, edit, or remove events, attractions, car rentals, and directory listings dynamically.</p>
         </div>
 
         {/* CMS Sub-Tabs selector */}
@@ -3051,13 +3158,13 @@ function BfoCmsManager({
             { id: "attractions", label: "🗺️ Attractions" },
             { id: "accommodations", label: "🏨 Hotels" },
             { id: "restaurants", label: "☕ Dining" },
+            { id: "rentals", label: "🚗 Car Rentals" },
             { id: "trash", label: "🗑️ Trash Bin" }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => {
                 setCmsTab(tab.id as any);
-                setCmsSearch("");
               }}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all cursor-pointer ${
                 cmsTab === tab.id
@@ -3163,12 +3270,16 @@ function BfoCmsManager({
             <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
               {filteredItems.map((item: any) => {
                 const name = item.name || item.title;
-                const subText = item.category || item.dateRange || item.date || "";
+                const subText = item.category || item.dateRange || item.date || item.type || item.rate || "";
                 
                 return (
                   <div 
                     key={item.id} 
-                    className="bg-white border border-slate-150 p-3 rounded-xl flex items-center justify-between gap-3 group hover:border-[#0047A1]/40 hover:shadow-sm transition-all"
+                    className={`bg-white border p-3 rounded-xl flex items-center justify-between gap-3 group transition-all ${
+                      editingItem && editingItem.id === item.id 
+                        ? "border-[#0047A1] bg-[#0047A1]/5 shadow-sm" 
+                        : "border-slate-150 hover:border-[#0047A1]/40 hover:shadow-sm"
+                    }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <img 
@@ -3185,13 +3296,22 @@ function BfoCmsManager({
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleRemoveItem(item.id)}
-                      className="p-2 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-colors cursor-pointer shrink-0"
-                      title="Move to Trash Bin"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        className="p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[#0047A1] hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all cursor-pointer"
+                        title="Edit Details"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleRemoveItem(item.id)}
+                        className="p-1.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all cursor-pointer"
+                        title="Move to Trash Bin"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -3239,10 +3359,18 @@ function BfoCmsManager({
             </div>
           </div>
         ) : (
-          <form onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-4">
+          <form 
+            onSubmit={handleAddSubmit} 
+            key={editingItem ? editingItem.id : "new-" + cmsTab}
+            className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-4"
+          >
             <div>
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
-                ➕ Add New {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}
+              <h3 className="text-sm font-black text-[#0047A1] uppercase tracking-wider flex items-center gap-2">
+                {editingItem ? (
+                  <>✏️ Edit {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}: <span className="text-slate-700 font-serif italic normal-case font-bold">{editingItem.name || editingItem.title}</span></>
+                ) : (
+                  <>➕ Add New {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}</>
+                )}
               </h3>
               <p className="text-[10px] text-slate-400 leading-tight mt-1">Specify detailed properties below. Make sure to provide a valid image URL for the featured image.</p>
             </div>
@@ -3252,35 +3380,35 @@ function BfoCmsManager({
                 <>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Title *</label>
-                    <input type="text" name="title" required placeholder="Saka-Saka Festival" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="title" required defaultValue={editingItem ? editingItem.title : ""} placeholder="Saka-Saka Festival" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Subtitle</label>
-                    <input type="text" name="subtitle" placeholder="Street Dancing & Local Crabs Exhibition" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="subtitle" defaultValue={editingItem ? editingItem.subtitle : ""} placeholder="Street Dancing & Local Crabs Exhibition" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Date (Short Date Text) *</label>
-                    <input type="text" name="date" required placeholder="September 17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="date" required defaultValue={editingItem ? editingItem.date : ""} placeholder="September 17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Full Date Range Text *</label>
-                    <input type="text" name="dateRange" required placeholder="September 17-18, 2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="dateRange" required defaultValue={editingItem ? editingItem.dateRange : ""} placeholder="September 17-18, 2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Month (3 Letters) *</label>
-                    <input type="text" name="month" required maxLength={3} placeholder="SEP" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="month" required maxLength={3} defaultValue={editingItem ? editingItem.month : ""} placeholder="SEP" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Start Day (Number) *</label>
-                    <input type="text" name="day" required placeholder="17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="day" required defaultValue={editingItem ? editingItem.day : ""} placeholder="17" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Year *</label>
-                    <input type="text" name="year" required placeholder="2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="year" required defaultValue={editingItem ? editingItem.year : ""} placeholder="2026" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Category Type *</label>
-                    <select name="type" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="type" defaultValue={editingItem ? editingItem.type : "Festival"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Festival">Festival</option>
                       <option value="Community">Community</option>
                       <option value="Sports">Sports</option>
@@ -3289,43 +3417,43 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Venue Location *</label>
-                    <input type="text" name="location" required placeholder="Mangagoy Gym, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="location" required defaultValue={editingItem ? editingItem.location : ""} placeholder="Mangagoy Gym, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Organizer *</label>
-                    <input type="text" name="organizer" required placeholder="LGU Bislig City & DOT" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="organizer" required defaultValue={editingItem ? editingItem.organizer : ""} placeholder="LGU Bislig City & DOT" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Thumbnail Image (URL) *</label>
-                    <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Hero Wide Banner Image (URL) *</label>
-                    <input type="text" name="heroImage" required placeholder="/public/assets/images/bislig baywalk.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="heroImage" required defaultValue={editingItem ? editingItem.heroImage : ""} placeholder="/public/assets/images/bislig baywalk.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Description *</label>
-                    <textarea name="description" required rows={3} placeholder="A short engaging teaser description." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={3} placeholder="A short engaging teaser description." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Event Overview (Rich Detail Text)</label>
-                    <textarea name="overview" rows={3} placeholder="Provide extensive details about the schedule, rules, registration, etc." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="overview" defaultValue={editingItem ? editingItem.overview : ""} rows={3} placeholder="Provide extensive details about the schedule, rules, registration, etc." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Historical Background & Significance</label>
-                    <textarea name="history" rows={3} placeholder="Where did this festival start? What does it symbolize?" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="history" defaultValue={editingItem ? editingItem.history : ""} rows={3} placeholder="Where did this festival start? What does it symbolize?" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Highlights (Comma-Separated)</label>
-                    <input type="text" name="highlights" placeholder="Crab Parade, Street Dance Competition, Seafood Feast" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="highlights" defaultValue={editingItem && Array.isArray(editingItem.highlights) ? editingItem.highlights.join(", ") : ""} placeholder="Crab Parade, Street Dance Competition, Seafood Feast" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Visitor Tips (Comma-Separated)</label>
-                    <input type="text" name="tips" placeholder="Arrive early to secure parking, Bring sunblock, Wear cultural apparel" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="tips" defaultValue={editingItem && Array.isArray(editingItem.tips) ? editingItem.tips.join(", ") : ""} placeholder="Arrive early to secure parking, Bring sunblock, Wear cultural apparel" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Tags (Comma-Separated)</label>
-                    <input type="text" name="tags" placeholder="Culture, Crab Feast, Saka-Saka, Tourism" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="tags" defaultValue={editingItem && Array.isArray(editingItem.tags) ? editingItem.tags.join(", ") : ""} placeholder="Culture, Crab Feast, Saka-Saka, Tourism" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                 </>
               )}
@@ -3334,11 +3462,11 @@ function BfoCmsManager({
                 <>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Establishment Name *</label>
-                    <input type="text" name="name" required placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Directory Category *</label>
-                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="category" defaultValue={editingItem ? editingItem.category : "Services & Others"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Shops & Malls">Shops & Malls</option>
                       <option value="Convenience Stores">Convenience Stores</option>
                       <option value="Dining & Cafes">Dining & Cafes</option>
@@ -3352,47 +3480,47 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Hours *</label>
-                    <input type="text" name="operatingHours" required placeholder="08:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="operatingHours" required defaultValue={editingItem ? editingItem.operatingHours : ""} placeholder="08:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Address / Street Location *</label>
-                    <input type="text" name="location" required placeholder="Barreda St., Mangagoy, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="location" required defaultValue={editingItem ? editingItem.location : ""} placeholder="Barreda St., Mangagoy, Bislig City" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
-                    <input type="text" name="contact" required placeholder="+63 912 345 6789" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="contact" required defaultValue={editingItem ? editingItem.contact : ""} placeholder="+63 912 345 6789" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Facebook Handle Page Link</label>
-                    <input type="text" name="socialMedia" placeholder="facebook.com/aquaxwater" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="socialMedia" defaultValue={editingItem ? editingItem.socialMedia : ""} placeholder="facebook.com/aquaxwater" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                    <input type="text" name="website" placeholder="www.aquaxbislig.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="website" defaultValue={editingItem ? editingItem.website : ""} placeholder="www.aquaxbislig.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Image (URL) *</label>
-                    <input type="text" name="image" required placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/Aqua X.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lat" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lat : ""} placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lng" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lng : ""} placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link</label>
-                    <input type="text" name="mapUrl" placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="mapUrl" defaultValue={editingItem ? editingItem.mapUrl : ""} placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
-                    <textarea name="description" required rows={2} placeholder="A brief sentence describing what this store/office provides." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="A brief sentence describing what this store/office provides." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Long Description / Details Panel</label>
-                    <textarea name="longDescription" rows={3} placeholder="Elaborated profile information displayed in the business details drawer." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="longDescription" defaultValue={editingItem ? editingItem.longDescription : ""} rows={3} placeholder="Elaborated profile information displayed in the business details drawer." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                 </>
               )}
@@ -3401,11 +3529,11 @@ function BfoCmsManager({
                 <>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Name *</label>
-                    <input type="text" name="name" required placeholder="Tinuy-an Falls" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Tinuy-an Falls" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Attraction Category *</label>
-                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="category" defaultValue={editingItem ? editingItem.category : "Waterfalls"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Waterfalls">Waterfalls</option>
                       <option value="Rivers">Rivers</option>
                       <option value="Beaches">Beaches</option>
@@ -3416,15 +3544,15 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Distance from City Center *</label>
-                    <input type="text" name="distance" required placeholder="18 km" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="distance" required defaultValue={editingItem ? editingItem.distance : ""} placeholder="18 km" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Time from proper *</label>
-                    <input type="text" name="travelTime" required placeholder="30-40 mins" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="travelTime" required defaultValue={editingItem ? editingItem.travelTime : ""} placeholder="30-40 mins" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Trekking Difficulty *</label>
-                    <select name="difficulty" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="difficulty" defaultValue={editingItem ? editingItem.difficulty : "Easy"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Easy">Easy</option>
                       <option value="Moderate">Moderate</option>
                       <option value="Challenging">Challenging</option>
@@ -3432,59 +3560,59 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Best Season / Hours *</label>
-                    <input type="text" name="bestTime" required placeholder="Morning, dry season" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="bestTime" required defaultValue={editingItem ? editingItem.bestTime : ""} placeholder="Morning, dry season" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Entrance Fee Cost *</label>
-                    <input type="text" name="entranceFee" required placeholder="₱50 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="entranceFee" required defaultValue={editingItem ? editingItem.entranceFee : ""} placeholder="₱50 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Opening Hours *</label>
-                    <input type="text" name="openingHours" required placeholder="06:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="openingHours" required defaultValue={editingItem ? editingItem.openingHours : ""} placeholder="06:00 AM - 05:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5) *</label>
-                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.8} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={editingItem ? editingItem.rating : 4.8} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                    <input type="text" name="image" required placeholder="/public/assets/images/Tinuy.an Featured 2.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/Tinuy.an Featured 2.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lat" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lat : ""} placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lng" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lng : ""} placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="mapUrl" required defaultValue={editingItem ? editingItem.mapUrl : ""} placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Accessibility Support description</label>
-                    <input type="text" name="accessibility" placeholder="Paved walkways, wheelchair access viewing deck." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="accessibility" defaultValue={editingItem ? editingItem.accessibility : ""} placeholder="Paved walkways, wheelchair access viewing deck." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Teaser Description *</label>
-                    <textarea name="description" required rows={2} placeholder="Teaser summary of the waterfall/beach." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="Teaser summary of the waterfall/beach." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Detailed Long Description Overview</label>
-                    <textarea name="longDescription" rows={3} placeholder="Full history, guidelines, and context of the attraction site." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="longDescription" defaultValue={editingItem ? editingItem.longDescription : ""} rows={3} placeholder="Full history, guidelines, and context of the attraction site." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Travel Tips (Comma-Separated)</label>
-                    <textarea name="travelTips" rows={2} placeholder="Hire a local guide, Keep life jackets secured, Bring dry bags" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="travelTips" defaultValue={editingItem && Array.isArray(editingItem.travelTips) ? editingItem.travelTips.join(", ") : ""} rows={2} placeholder="Hire a local guide, Keep life jackets secured, Bring dry bags" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Attractions (Comma-Separated)</label>
-                    <input type="text" name="nearbyAttractions" placeholder="Enchanted River, Lake 77" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="nearbyAttractions" defaultValue={editingItem && Array.isArray(editingItem.nearbyAttractions) ? editingItem.nearbyAttractions.join(", ") : ""} placeholder="Enchanted River, Lake 77" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Nearby Dining (Comma-Separated)</label>
-                    <input type="text" name="nearbyRestaurants" placeholder="Brew Side Cafe, Food in a Box" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="nearbyRestaurants" defaultValue={editingItem && Array.isArray(editingItem.nearbyRestaurants) ? editingItem.nearbyRestaurants.join(", ") : ""} placeholder="Brew Side Cafe, Food in a Box" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                 </>
               )}
@@ -3493,11 +3621,11 @@ function BfoCmsManager({
                 <>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge / Hotel Name *</label>
-                    <input type="text" name="name" required placeholder="Paper Country Inn" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Paper Country Inn" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Category *</label>
-                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="category" defaultValue={editingItem ? editingItem.category : "Mid-range"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Beachfront">Beachfront</option>
                       <option value="Eco Lodge">Eco Lodge</option>
                       <option value="Luxury">Luxury</option>
@@ -3507,51 +3635,51 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Night *</label>
-                    <input type="text" name="priceRange" required placeholder="₱1,800 - ₱3,500 per night" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="priceRange" required defaultValue={editingItem ? editingItem.priceRange : ""} placeholder="₱1,800 - ₱3,500 per night" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone *</label>
-                    <input type="text" name="contact" required placeholder="+63 86 853 1234" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="contact" required defaultValue={editingItem ? editingItem.contact : ""} placeholder="+63 86 853 1234" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
-                    <input type="text" name="socialMedia" placeholder="facebook.com/papercountry" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="socialMedia" defaultValue={editingItem ? editingItem.socialMedia : ""} placeholder="facebook.com/papercountry" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                    <input type="text" name="website" placeholder="www.papercountryinn.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="website" defaultValue={editingItem ? editingItem.website : ""} placeholder="www.papercountryinn.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Check-in / Operating Hours *</label>
-                    <input type="text" name="operatingHours" required placeholder="24/7 (Check-in 2:00 PM)" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="operatingHours" required defaultValue={editingItem ? editingItem.operatingHours : ""} placeholder="24/7 (Check-in 2:00 PM)" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
-                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.4} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={editingItem ? editingItem.rating : 4.4} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                    <input type="text" name="image" required placeholder="/public/assets/images/paper country inn.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/paper country inn.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lat" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lat : ""} placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lng" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lng : ""} placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="mapUrl" required defaultValue={editingItem ? editingItem.mapUrl : ""} placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Amenities (Comma-Separated) *</label>
-                    <textarea name="amenities" required rows={2} placeholder="Free WiFi, Air Conditioning, Hot Shower, In-room Safety Vault, Restaurant Access" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="amenities" required defaultValue={editingItem && Array.isArray(editingItem.amenities) ? editingItem.amenities.join(", ") : ""} rows={2} placeholder="Free WiFi, Air Conditioning, Hot Shower, In-room Safety Vault, Restaurant Access" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Lodge Teaser Description *</label>
-                    <textarea name="description" required rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                 </>
               )}
@@ -3560,11 +3688,11 @@ function BfoCmsManager({
                 <>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Restaurant / Cafe Name *</label>
-                    <input type="text" name="name" required placeholder="Brew Side Cafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Brew Side Cafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Dining Category *</label>
-                    <select name="category" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                    <select name="category" defaultValue={editingItem ? editingItem.category : "Local Cuisine"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
                       <option value="Local Cuisine">Local Cuisine</option>
                       <option value="Seafood">Seafood</option>
                       <option value="Cafe">Cafe</option>
@@ -3574,68 +3702,123 @@ function BfoCmsManager({
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Price Range per Person *</label>
-                    <input type="text" name="priceRange" required placeholder="₱120 - ₱350 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="priceRange" required defaultValue={editingItem ? editingItem.priceRange : ""} placeholder="₱120 - ₱350 per person" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Contact Phone Number *</label>
-                    <input type="text" name="contact" required placeholder="+63 987 654 3210" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="contact" required defaultValue={editingItem ? editingItem.contact : ""} placeholder="+63 987 654 3210" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Social Handle</label>
-                    <input type="text" name="socialMedia" placeholder="facebook.com/brewsidecafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="socialMedia" defaultValue={editingItem ? editingItem.socialMedia : ""} placeholder="facebook.com/brewsidecafe" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Official Website URL</label>
-                    <input type="text" name="website" placeholder="www.brewsidecafe.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="website" defaultValue={editingItem ? editingItem.website : ""} placeholder="www.brewsidecafe.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Dining Hours *</label>
-                    <input type="text" name="operatingHours" required placeholder="09:00 AM - 10:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="operatingHours" required defaultValue={editingItem ? editingItem.operatingHours : ""} placeholder="09:00 AM - 10:00 PM" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rating Star Score (1-5)</label>
-                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={4.6} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="number" name="rating" min={1} max={5} step={0.1} required defaultValue={editingItem ? editingItem.rating : 4.6} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Featured Image (URL) *</label>
-                    <input type="text" name="image" required placeholder="/public/assets/images/brew side cafe featured 1.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/brew side cafe featured 1.jpg" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Latitude Coordinates</label>
-                    <input type="text" name="lat" placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lat" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lat : ""} placeholder="8.2104" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Map Longitude Coordinates</label>
-                    <input type="text" name="lng" placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="lng" defaultValue={editingItem && editingItem.coordinates ? editingItem.coordinates.lng : ""} placeholder="126.3125" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Google Maps Redirect Link *</label>
-                    <input type="text" name="mapUrl" required placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <input type="text" name="mapUrl" required defaultValue={editingItem ? editingItem.mapUrl : ""} placeholder="https://maps.google.com" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">House Specialties (Comma-Separated) *</label>
-                    <textarea name="specialty" required rows={2} placeholder="Espresso Brews, Salted Caramel Coffee, Grilled Panini, Blueberry Cheesecakes" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="specialty" required defaultValue={editingItem && Array.isArray(editingItem.specialty) ? editingItem.specialty.join(", ") : ""} rows={2} placeholder="Espresso Brews, Salted Caramel Coffee, Grilled Panini, Blueberry Cheesecakes" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Diner Teaser Description *</label>
-                    <textarea name="description" required rows={2} placeholder="Short teaser outlining the cafe/restaurant ambience and food style." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="Short teaser outlining the cafe/restaurant ambience and food style." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                </>
+              )}
+
+              {cmsTab === "rentals" && (
+                <>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Vehicle Model Name *</label>
+                    <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Toyota Innova" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Vehicle Type / Category *</label>
+                    <input type="text" name="type" required defaultValue={editingItem ? editingItem.type : ""} placeholder="Mid-size MPV / SUV" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Seating Capacity (Seaters) *</label>
+                    <input type="number" name="seaters" required defaultValue={editingItem ? editingItem.seaters : 7} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Luggage Capacity Text *</label>
+                    <input type="text" name="luggage" required defaultValue={editingItem ? editingItem.luggage : ""} placeholder="4 Large Bags" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Transmission Mode *</label>
+                    <input type="text" name="transmission" required defaultValue={editingItem ? editingItem.transmission : ""} placeholder="Automatic (A/T)" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Fuel Type *</label>
+                    <input type="text" name="fuel" required defaultValue={editingItem ? editingItem.fuel : ""} placeholder="Diesel" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Rental Rate per Day *</label>
+                    <input type="text" name="rate" required defaultValue={editingItem ? editingItem.rate : ""} placeholder="₱2,500 - ₱3,200 / day" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Featured Card Vehicle Image (URL) *</label>
+                    <input type="text" name="image" required defaultValue={editingItem ? editingItem.image : ""} placeholder="/public/assets/images/Toyota Innova.webp" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Features (Comma-Separated) *</label>
+                    <textarea name="features" required defaultValue={editingItem && Array.isArray(editingItem.features) ? editingItem.features.join(", ") : ""} rows={2} placeholder="Dual Aircon, Foldable Rear Seats, Premium Comfort Seating" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Vehicle Teaser Description *</label>
+                    <textarea name="description" required defaultValue={editingItem ? editingItem.description : ""} rows={2} placeholder="A short engaging teaser for travelers." className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                 </>
               )}
             </div>
 
             <div className="pt-4 flex gap-3 border-t border-slate-100">
-              <button
-                type="reset"
-                className="px-5 py-3 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
-              >
-                Reset Fields
-              </button>
+              {editingItem ? (
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="px-5 py-3 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
+                >
+                  Cancel Edit
+                </button>
+              ) : (
+                <button
+                  type="reset"
+                  className="px-5 py-3 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold uppercase hover:bg-slate-50 cursor-pointer"
+                >
+                  Reset Fields
+                </button>
+              )}
               <button
                 type="submit"
                 className="flex-grow bg-[#0047A1] text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-800 transition-colors shadow-md shadow-blue-500/10 cursor-pointer"
               >
-                Add Entry to Database
+                {editingItem ? "Update Entry Details" : "Add Entry to Database"}
               </button>
             </div>
           </form>

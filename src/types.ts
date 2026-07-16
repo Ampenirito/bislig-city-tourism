@@ -170,3 +170,34 @@ export interface Establishment {
   rating: number;
 }
 
+export interface Vehicle {
+  id: string;
+  name: string;
+  type: string;
+  image: string;
+  seaters: number;
+  luggage: string;
+  transmission: string;
+  fuel: string;
+  rate: string;
+  features: string[];
+  description: string;
+}
+
+export interface Operator {
+  name: string;
+  phone: string;
+  rating: string;
+  reviews: number;
+  badge: string;
+  bio: string;
+  supportedVehicles: string[]; // vehicle IDs
+  supportsSelfDrive: boolean;
+  supportsWithDriver: boolean;
+  socials: {
+    facebook?: string;
+    messenger?: string;
+    whatsapp?: string;
+  };
+}
+

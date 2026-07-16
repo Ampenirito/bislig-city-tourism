@@ -62,7 +62,9 @@ import {
   GALLERY_ITEMS,
   BLOG_POSTS,
   FAQS,
-  ESTABLISHMENTS
+  ESTABLISHMENTS,
+  VEHICLES,
+  OPERATORS
 } from "./data";
 
 import {
@@ -73,7 +75,9 @@ import {
   GeneratedItinerary,
   SavedItinerary,
   Establishment,
-  TourismEvent
+  TourismEvent,
+  Vehicle,
+  Operator
 } from "./types";
 
 import GoogleMapSection from "./components/GoogleMapSection";
@@ -292,6 +296,24 @@ export default function App() {
       return saved ? JSON.parse(saved) : RESTAURANTS;
     } catch {
       return RESTAURANTS;
+    }
+  });
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_vehicles");
+      return saved ? JSON.parse(saved) : VEHICLES;
+    } catch {
+      return VEHICLES;
+    }
+  });
+
+  const [operators, setOperators] = useState<Operator[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_operators");
+      return saved ? JSON.parse(saved) : OPERATORS;
+    } catch {
+      return OPERATORS;
     }
   });
 
@@ -1244,6 +1266,10 @@ export default function App() {
         setAccommodations={setAccommodations}
         restaurants={restaurants}
         setRestaurants={setRestaurants}
+        vehicles={vehicles}
+        setVehicles={setVehicles}
+        operators={operators}
+        setOperators={setOperators}
       />
     );
   }
@@ -3288,7 +3314,7 @@ export default function App() {
 
         {activeTab === "car-rental" && (
           <div className="w-full">
-            <CarRental />
+            <CarRental vehicles={vehicles} operators={operators} />
           </div>
         )}
 
