@@ -3444,6 +3444,143 @@ export default function App() {
         )}
 
         {/* ==================================
+            ATTRACTIONS TAB RENDER
+            ================================== */}
+        {activeTab === "attractions" && (
+          <div className="max-w-7xl mx-auto px-4 py-12 animate-fadeIn">
+            {/* Header section */}
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.25em] block mb-2">EXPLORE NATURE & HERITAGE</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Must-Visit Attractions in Bislig City</h2>
+              <p className="text-slate-600 mt-3 text-sm md:text-base leading-relaxed">
+                Discover majestic waterfalls, serene mangroves, pristine tropical islands, and vibrant indigenous Kamayo culture.
+              </p>
+            </div>
+
+            {/* Filter and Search Bar */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-12 space-y-6">
+              <div className="relative max-w-md mx-auto">
+                <Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search attractions by name or keyword..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-all bg-[#FAFAFA]"
+                />
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                {["All", "Waterfalls", "Islands & Beaches", "Parks & Nature", "Culture", "Caves & Springs"].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setAttractionFilter(cat)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all border ${
+                      attractionFilter === cat
+                        ? "bg-[#0047A1] border-[#0047A1] text-white shadow-sm"
+                        : "bg-[#FAFCFC] border-slate-200 text-slate-600 hover:border-[#0047A1] hover:text-[#0047A1]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Attractions Cards Grid */}
+            {filteredAttractions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredAttractions.map((att) => (
+                  <div
+                    key={att.id}
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-[#0047A1]/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div
+                        className="h-64 bg-slate-100 relative overflow-hidden group cursor-pointer"
+                        onClick={() => setSelectedAttraction(att)}
+                      >
+                        <img
+                          src={att.image}
+                          alt={att.name}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
+                          {att.category}
+                        </div>
+                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow">
+                          <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                          <span>{att.rating || "4.9"}</span>
+                        </div>
+                      </div>
+
+                      <div className="p-6 space-y-3">
+                        <h3
+                          className="font-serif font-bold text-2xl text-[#0047A1] group-hover:text-[#0097A7] transition-colors cursor-pointer"
+                          onClick={() => setSelectedAttraction(att)}
+                        >
+                          {att.name}
+                        </h3>
+                        <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">
+                          {att.description}
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2 text-[11px] pt-3 border-t border-slate-100 font-medium text-slate-500">
+                          <div>
+                            <span className="text-slate-400 block text-[9px] font-extrabold uppercase">Entrance</span>
+                            <span className="text-slate-700 font-bold">{att.entranceFee || "Free"}</span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400 block text-[9px] font-extrabold uppercase">Travel Time</span>
+                            <span className="text-slate-700 font-bold">{att.travelTime || "15 mins"}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 pt-0 space-y-2">
+                      <button
+                        onClick={() => setSelectedAttraction(att)}
+                        className="w-full bg-[#0047A1] hover:bg-[#005F92] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                      >
+                        <span>View Attraction Details</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={() => addToItinerary(att, "attraction")}
+                        className={`w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
+                          addedFeedback[att.id]
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        }`}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>{addedFeedback[att.id] ? "Added to Itinerary ✓" : "Add to Itinerary"}</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm max-w-md mx-auto space-y-3">
+                <Compass className="w-10 h-10 text-slate-300 mx-auto" />
+                <h4 className="text-base font-bold text-slate-700">No attractions found</h4>
+                <p className="text-xs text-slate-500">Try adjusting your search terms or category filter.</p>
+                <button
+                  onClick={() => { setSearchQuery(""); setAttractionFilter("All"); }}
+                  className="px-4 py-2 bg-[#0047A1] text-white rounded-full text-xs font-bold uppercase tracking-wider"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ==================================
             HOTELS & RESORTS TAB RENDER
             ================================== */}
         {activeTab === "hotels" && (
