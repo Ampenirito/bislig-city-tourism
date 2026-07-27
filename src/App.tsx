@@ -3209,7 +3209,7 @@ export default function App() {
               <div className="lg:col-span-6 space-y-6">
                 <div className="bg-white p-3 rounded-3xl border border-slate-100 shadow-xl overflow-hidden relative group">
                   <div
-                    className="w-full aspect-square rounded-2xl overflow-hidden relative bg-slate-900 cursor-zoom-in group flex items-center justify-center"
+                    className="w-full h-96 sm:h-[480px] rounded-2xl overflow-hidden relative bg-slate-100 cursor-zoom-in group"
                     onClick={() => setLightboxImage({ src: selectedProduct.image, title: selectedProduct.name, author: selectedProduct.category })}
                     title="Click to view high-resolution image in Lightbox"
                   >
@@ -3217,7 +3217,7 @@ export default function App() {
                       src={selectedProduct.image}
                       alt={selectedProduct.name}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-contain object-top group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black text-[#0047A1] shadow-lg border border-slate-100">
                       ⭐ Official Bislig Craft
