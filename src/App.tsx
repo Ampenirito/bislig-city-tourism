@@ -3209,7 +3209,7 @@ export default function App() {
               <div className="lg:col-span-6 space-y-6">
                 <div className="bg-white p-3 rounded-3xl border border-slate-100 shadow-xl overflow-hidden relative group">
                   <div
-                    className="h-96 sm:h-[450px] rounded-2xl overflow-hidden relative bg-slate-100 cursor-zoom-in group"
+                    className="w-full aspect-square rounded-2xl overflow-hidden relative bg-slate-900 cursor-zoom-in group flex items-center justify-center"
                     onClick={() => setLightboxImage({ src: selectedProduct.image, title: selectedProduct.name, author: selectedProduct.category })}
                     title="Click to view high-resolution image in Lightbox"
                   >
@@ -3217,16 +3217,16 @@ export default function App() {
                       src={selectedProduct.image}
                       alt={selectedProduct.name}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-contain object-top group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black text-[#0047A1] shadow-lg border border-slate-100">
                       ⭐ Official Bislig Craft
                     </div>
-                    <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Lightbox View</span>
+                    <div className="absolute top-4 right-4 bg-black/75 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                      <Maximize2 className="w-3.5 h-3.5 text-[#FB8C00]" />
+                      <span>Click for Lightbox View</span>
                     </div>
-                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">
+                    <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">
                       {selectedProduct.materials}
                     </div>
                   </div>
@@ -3273,14 +3273,20 @@ export default function App() {
                   <p className="text-sm font-semibold text-[#0097A7] mt-1">{selectedProduct.tagline}</p>
                 </div>
 
-                {/* Price Range Banner */}
-                <div className="bg-gradient-to-r from-[#0047A1]/5 to-[#0097A7]/10 p-5 rounded-2xl border border-[#0047A1]/10 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">Estimated Price Range</span>
-                    <span className="text-2xl font-bold text-[#0047A1]">{selectedProduct.priceRange}</span>
+                {/* Authentic Local Craft Guarantee Banner */}
+                <div className="bg-gradient-to-r from-[#0047A1]/5 via-[#0097A7]/10 to-[#0047A1]/5 p-5 rounded-2xl border border-[#0047A1]/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-extrabold uppercase text-[#0047A1] tracking-wider block">Official Bislig Artisanal Collection</span>
+                      <span className="text-[9px] bg-[#0047A1] text-white px-2 py-0.5 rounded font-extrabold">Verified Local Craft</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-700">
+                      Directly Sourced from Community Artisans & Indigenous Farmers in Surigao del Sur
+                    </p>
                   </div>
-                  <span className="text-xs bg-white text-slate-700 px-3 py-1.5 rounded-full font-semibold border border-slate-200 shadow-sm">
-                    Direct Producer Price
+                  <span className="text-xs bg-white text-[#0047A1] px-3.5 py-1.5 rounded-full font-bold border border-slate-200 shadow-sm shrink-0 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span>100% Authentic</span>
                   </span>
                 </div>
 
@@ -3425,7 +3431,10 @@ export default function App() {
                         <h4 className="font-serif font-bold text-lg text-[#0047A1] group-hover:text-[#0097A7] transition-colors">{prod.name}</h4>
                         <p className="text-xs text-slate-500 line-clamp-2 mt-1">{prod.description}</p>
                       </div>
-                      <span className="text-xs font-bold text-[#FB8C00] mt-2 block">{prod.priceRange}</span>
+                      <span className="text-xs font-bold text-[#0047A1] mt-2 flex items-center gap-1 group-hover:text-[#0097A7] transition-colors">
+                        <span>View Product Details & Order</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -5104,12 +5113,27 @@ export default function App() {
       {lightboxImage && (
         <div
           onClick={() => setLightboxImage(null)}
-          className="fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-4 cursor-zoom-out"
+          className="fixed inset-0 bg-black/95 backdrop-blur-md z-[9999] flex flex-col items-center justify-center p-4 sm:p-8 cursor-zoom-out animate-fadeIn"
         >
-          <img src={lightboxImage.src} alt={lightboxImage.title} referrerPolicy="no-referrer" className="max-w-full max-h-[80vh] object-contain rounded-lg" />
-          <div className="text-center mt-4">
-            <p className="text-white font-bold text-sm">{lightboxImage.title}</p>
-            <p className="text-slate-400 text-xs">Photograph by {lightboxImage.author}</p>
+          <button
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-6 right-6 z-[10000] p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer shadow-lg"
+            title="Close Lightbox"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          
+          <div className="relative max-w-5xl max-h-[85vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={lightboxImage.src}
+              alt={lightboxImage.title}
+              referrerPolicy="no-referrer"
+              className="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+            />
+            <div className="text-center mt-4 bg-black/60 backdrop-blur-md px-6 py-2.5 rounded-full border border-white/10">
+              <p className="text-white font-bold text-sm sm:text-base">{lightboxImage.title}</p>
+              <p className="text-slate-400 text-xs">{lightboxImage.author}</p>
+            </div>
           </div>
         </div>
       )}
