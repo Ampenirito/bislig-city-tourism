@@ -58,7 +58,9 @@ import {
   Package,
   Tag,
   Instagram,
-  MessageSquare
+  MessageSquare,
+  Maximize2,
+  ZoomIn
 } from "lucide-react";
 
 import {
@@ -2805,15 +2807,22 @@ export default function App() {
                     className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-[#0047A1]/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
                   >
                     <div>
-                      <div className="h-64 bg-slate-100 relative overflow-hidden">
+                      <div
+                        className="h-64 bg-slate-100 relative overflow-hidden group cursor-zoom-in"
+                        onClick={() => setLightboxImage({ src: prod.image, title: prod.name, author: prod.category })}
+                        title="Click to open full image lightbox"
+                      >
                         <img
                           src={prod.image}
                           alt={prod.name}
                           referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
                           {prod.category}
+                        </div>
+                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full text-[10px] font-semibold opacity-80 group-hover:opacity-100 transition-opacity shadow flex items-center justify-center">
+                          <Maximize2 className="w-3.5 h-3.5" />
                         </div>
                       </div>
 
@@ -3105,15 +3114,22 @@ export default function App() {
                   className="bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 hover:shadow-2xl hover:border-[#0047A1]/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="h-64 bg-slate-100 relative overflow-hidden">
+                    <div
+                      className="h-64 bg-slate-100 relative overflow-hidden group cursor-zoom-in"
+                      onClick={() => setLightboxImage({ src: prod.image, title: prod.name, author: prod.category })}
+                      title="Click to open full image lightbox"
+                    >
                       <img
                         src={prod.image}
                         alt={prod.name}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
                         {prod.category}
+                      </div>
+                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full text-[10px] font-semibold opacity-80 group-hover:opacity-100 transition-opacity shadow flex items-center justify-center">
+                        <Maximize2 className="w-3.5 h-3.5" />
                       </div>
                     </div>
 
@@ -3192,15 +3208,23 @@ export default function App() {
               {/* Left Column: Image & Media Gallery */}
               <div className="lg:col-span-6 space-y-6">
                 <div className="bg-white p-3 rounded-3xl border border-slate-100 shadow-xl overflow-hidden relative group">
-                  <div className="h-96 sm:h-[450px] rounded-2xl overflow-hidden relative bg-slate-100">
+                  <div
+                    className="h-96 sm:h-[450px] rounded-2xl overflow-hidden relative bg-slate-100 cursor-zoom-in group"
+                    onClick={() => setLightboxImage({ src: selectedProduct.image, title: selectedProduct.name, author: selectedProduct.category })}
+                    title="Click to view high-resolution image in Lightbox"
+                  >
                     <img
                       src={selectedProduct.image}
                       alt={selectedProduct.name}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black text-[#0047A1] shadow-lg border border-slate-100">
                       ⭐ Official Bislig Craft
+                    </div>
+                    <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Lightbox View</span>
                     </div>
                     <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">
                       {selectedProduct.materials}
@@ -3393,7 +3417,7 @@ export default function App() {
                     <img
                       src={prod.image}
                       alt={prod.name}
-                      className="w-28 h-28 object-cover rounded-xl shrink-0 group-hover:scale-105 transition-transform"
+                      className="w-28 h-28 object-cover object-top rounded-xl shrink-0 group-hover:scale-105 transition-transform"
                     />
                     <div className="flex flex-col justify-between py-1">
                       <div>
@@ -4229,17 +4253,24 @@ export default function App() {
                     key={est.id}
                     className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:border-slate-200 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col"
                   >
-                    <div className="h-48 bg-slate-100 relative overflow-hidden group shrink-0">
+                    <div
+                      className="h-48 bg-slate-100 relative overflow-hidden group shrink-0 cursor-zoom-in"
+                      onClick={() => setLightboxImage({ src: est.image, title: est.name, author: est.category })}
+                      title="Click to view full image lightbox"
+                    >
                       <img
                         src={est.image}
                         alt={est.name}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-4 left-4">
                         <span className="text-[9px] font-extrabold uppercase px-2.5 py-1 bg-white text-slate-800 rounded-full shadow-sm border border-slate-100 tracking-wider">
                           {est.category}
                         </span>
+                      </div>
+                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full text-[10px] font-semibold opacity-80 group-hover:opacity-100 transition-opacity shadow flex items-center justify-center">
+                        <Maximize2 className="w-3.5 h-3.5" />
                       </div>
                     </div>
 
