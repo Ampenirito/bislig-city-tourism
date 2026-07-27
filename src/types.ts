@@ -158,7 +158,7 @@ export interface Establishment {
   name: string;
   description: string;
   longDescription?: string;
-  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others" | "Accommodations" | "Churches & Landmarks" | "Attractions";
+  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others" | "Accommodations" | "Churches & Landmarks" | "Attractions" | "Local Products";
   image: string;
   location: string;
   contact: string;
@@ -168,6 +168,31 @@ export interface Establishment {
   coordinates: LocationCoordinates;
   mapUrl: string;
   rating: number;
+}
+
+export interface LocalProduct {
+  id: string;
+  name: string;
+  tagline: string;
+  category: string;
+  image: string;
+  priceRange: string;
+  description: string;
+  longDescription: string;
+  origin: string;
+  materials: string;
+  highlights: string[];
+  contactPhone: string;
+  contactEmail: string;
+  location: string;
+  operatingHours: string;
+  socials: {
+    facebook?: string;
+    instagram?: string;
+    messenger?: string;
+    website?: string;
+  };
+  inquiryNotice?: string;
 }
 
 export interface Vehicle {

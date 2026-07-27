@@ -1,4 +1,4 @@
-import { Attraction, Accommodation, Restaurant, TourismEvent, GalleryItem, BlogPost, FAQ, Establishment, Vehicle, Operator } from "./types";
+import { Attraction, Accommodation, Restaurant, TourismEvent, GalleryItem, BlogPost, FAQ, Establishment, LocalProduct, Vehicle, Operator } from "./types";
 
 
 export const ATTRACTIONS: Attraction[] = [
@@ -1097,6 +1097,144 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2105, lng: 126.3521 },
     mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
     rating: 4.9
+  },
+  {
+    id: "bfo-coffee-establishment",
+    name: "BFO Coffee Producers Hub",
+    description: "Official showroom and roastery store for Bislig's highland organic roasted coffee, beans, and fresh brewed coffee.",
+    longDescription: "BFO Coffee Producers Hub is the official retail showroom and roastery for Bislig City's signature highland coffee. Visitors can sample freshly brewed pour-over coffee, purchase whole roasted beans or ground pouches, and learn about the local coffee farming process in Surigao del Sur.",
+    category: "Local Products",
+    image: "/assets/images/bfo coffee.png",
+    location: "Espiritu St., Brgy. Mangagoy, Bislig City",
+    contact: "+63 917 890 1234",
+    socialMedia: "facebook.com/bfocoffeebislig",
+    website: "https://bfocoffee.bisligtourism.ph",
+    operatingHours: "08:00 AM - 06:00 PM (Mon - Sat)",
+    coordinates: { lat: 8.2095, lng: 126.3525 },
+    mapUrl: "https://www.google.com/maps/search/BFO+Coffee+Bislig",
+    rating: 4.9
+  },
+  {
+    id: "knotting-ellie-establishment",
+    name: "Knotting Ellie Artisan Studio",
+    description: "Handcrafted macrame studio featuring artisanal bags, plant hangers, wall tapestry, and custom fiber art pieces.",
+    longDescription: "Knotting Ellie Artisan Studio is an inviting creative workshop where visitors can watch local craftswomen hand-weave macrame goods, browse artisanal bags, keychains, and home accents, or request bespoke custom fiber art designs.",
+    category: "Local Products",
+    image: "/assets/images/knotting ellie.png",
+    location: "Caramcam District, Brgy. Mangagoy, Bislig City",
+    contact: "+63 928 765 4321",
+    socialMedia: "facebook.com/knottingellie",
+    website: "https://knottingellie.bisligtourism.ph",
+    operatingHours: "09:00 AM - 05:00 PM (Mon - Sat)",
+    coordinates: { lat: 8.2110, lng: 126.3530 },
+    mapUrl: "https://www.google.com/maps/search/Knotting+Ellie+Bislig",
+    rating: 4.9
+  },
+  {
+    id: "bfo-coconut-accents-establishment",
+    name: "BFO Coconut Shell Accents Workshop",
+    description: "Eco-craft workshop producing upcycled coconut shell bowls, candle holders, polished kitchenware, and souvenirs.",
+    longDescription: "BFO Coconut Shell Accents Workshop showcases zero-waste craftsmanship in Bislig City. Artisans hand-carve and oil-polish coconut shell tableware, bowls, and home decor, creating sustainable souvenirs loved by travelers worldwide.",
+    category: "Local Products",
+    image: "/assets/images/BFO Coconut.png",
+    location: "National Highway, Brgy. Poblacion, Bislig City",
+    contact: "+63 939 543 2109",
+    socialMedia: "facebook.com/bfococonutaccents",
+    website: "https://bfococonutaccents.bisligtourism.ph",
+    operatingHours: "08:00 AM - 05:00 PM Daily",
+    coordinates: { lat: 8.2185, lng: 126.3610 },
+    mapUrl: "https://www.google.com/maps/search/BFO+Coconut+Accents+Bislig",
+    rating: 4.8
+  }
+];
+
+export const LOCAL_PRODUCTS: LocalProduct[] = [
+  {
+    id: "bfo-coffee",
+    name: "BFO Coffee",
+    tagline: "Organic Highland Roasted Coffee",
+    category: "Artisanal Coffee",
+    image: "/assets/images/bfo coffee.png",
+    priceRange: "₱250 - ₱450 per pouch (250g / 500g)",
+    description: "Rich, aromatic highland coffee beans hand-harvested from Bislig's fertile mountain slopes, dark-roasted for bold chocolatey notes and smooth crema.",
+    longDescription: "BFO Coffee brings the rich heritage of Surigao del Sur's highland agriculture to every cup. Grown in the volcanic mountain soils of Bislig City, these premium Robusta and Arabica coffee beans are hand-selected by Kamayo farmers, sun-dried naturally, and roasted in small micro-batches to unlock deep cacao notes, low acidity, and a smooth, robust finish. Ideal for espresso, French press, or traditional Philippine drip brewing.",
+    origin: "Highland Mount Caramcam, Bislig City",
+    materials: "100% Organically Grown Coffee Beans",
+    highlights: [
+      "Single-origin Bislig highland harvest",
+      "Hand-picked & shade-grown by local Kamayo farmers",
+      "Available in Whole Beans, Medium Grind & Dark Roast",
+      "Rich notes of dark cocoa, roasted nuts, and caramel"
+    ],
+    contactPhone: "+63 917 890 1234",
+    contactEmail: "bfocoffee@bisligtourism.ph",
+    location: "BFO Producers Hub, Espiritu St., Brgy. Mangagoy, Bislig City",
+    operatingHours: "08:00 AM - 06:00 PM (Monday - Saturday)",
+    socials: {
+      facebook: "https://facebook.com/bfocoffeebislig",
+      instagram: "https://instagram.com/bfocoffee",
+      messenger: "https://m.me/bfocoffeebislig",
+      website: "https://bfocoffee.bisligtourism.ph"
+    },
+    inquiryNotice: "Freshly roasted weekly. Bulk orders and souvenir packages available upon request."
+  },
+  {
+    id: "knotting-ellie",
+    name: "Knotting Ellie",
+    tagline: "Handcrafted Coastal Macrame & Fiber Art",
+    category: "Handcrafted Macrame",
+    image: "/assets/images/knotting ellie.png",
+    priceRange: "₱150 - ₱1,200 (Keychains, Totes & Wall Art)",
+    description: "Exquisite handmade macrame accessories, woven plant hangers, coastal boho bags, and custom fiber art woven by local Bislig artisans.",
+    longDescription: "Knotting Ellie is Bislig City's premier handcrafted macrame studio, turning natural cotton cords and local abaca fibers into breathtaking Bohemian home decor and lifestyle accessories. Each piece is intricately knotted by hand by local women artisans, promoting sustainable livelihoods while crafting durable, beautiful pieces ranging from plant hangers and wall tapestry art to stylish coastal tote bags and keychains.",
+    origin: "Caramcam District, Mangagoy, Bislig City",
+    materials: "100% Recycled Cotton Cord, Local Abaca Fiber, Natural Driftwood",
+    highlights: [
+      "100% Handwoven by Bislig women artisans",
+      "Sustainable, eco-friendly natural cotton and abaca",
+      "Custom colorways and bespoke sizes available",
+      "Durable knotting technique ideal for home & coastal fashion"
+    ],
+    contactPhone: "+63 928 765 4321",
+    contactEmail: "knottingellie@bisligtourism.ph",
+    location: "Knotting Ellie Studio, Caramcam District, Brgy. Mangagoy, Bislig City",
+    operatingHours: "09:00 AM - 05:00 PM (Monday - Saturday)",
+    socials: {
+      facebook: "https://facebook.com/knottingellie",
+      instagram: "https://instagram.com/knottingellie",
+      messenger: "https://m.me/knottingellie",
+      website: "https://knottingellie.bisligtourism.ph"
+    },
+    inquiryNotice: "Custom designs, wedding souvenirs, and wholesale orders welcome."
+  },
+  {
+    id: "bfo-coconut-accents",
+    name: "BFO Coconut Shell Accents",
+    tagline: "Eco-Friendly Hand-Carved Coconut Decor",
+    category: "Eco Crafts & Decor",
+    image: "/assets/images/BFO Coconut.png",
+    priceRange: "₱120 - ₱650 per piece",
+    description: "Upcycled coconut shell bowls, candle holders, carved ornaments, and kitchenware handcrafted by Bislig master woodworkers.",
+    longDescription: "BFO Coconut Shell Accents celebrates zero-waste craftsmanship by transforming discarded coconut shells into polished, functional home items and souvenirs. Master carvers in Bislig shape, sand, and smooth natural coconut shells into tropical smoothie bowls, tealight candle holders, buttons, and decorative ornaments. Sealed with 100% food-safe virgin coconut oil, these sustainable crafts highlight Bislig's commitment to eco-conscious artistry.",
+    origin: "Brgy. Poblacion, Bislig City",
+    materials: "Upcycled Coconut Shells, Virgin Coconut Oil Polish",
+    highlights: [
+      "100% Upcycled zero-waste eco craftsmanship",
+      "Polished with natural food-safe virgin coconut oil",
+      "Water-resistant and durable organic kitchenware",
+      "Ideal local pasalubong souvenir for eco-conscious travelers"
+    ],
+    contactPhone: "+63 939 543 2109",
+    contactEmail: "bfococonutaccents@bisligtourism.ph",
+    location: "BFO Artisan Workshop, National Highway, Brgy. Poblacion, Bislig City",
+    operatingHours: "08:00 AM - 05:00 PM (Daily)",
+    socials: {
+      facebook: "https://facebook.com/bfococonutaccents",
+      instagram: "https://instagram.com/bfococonutaccents",
+      messenger: "https://m.me/bfococonutaccents",
+      website: "https://bfococonutaccents.bisligtourism.ph"
+    },
+    inquiryNotice: "Available at BFO Producers Hub and leading souvenir outlets in Bislig."
   }
 ];
 

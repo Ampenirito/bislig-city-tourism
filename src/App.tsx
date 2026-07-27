@@ -53,7 +53,12 @@ import {
   Mail,
   ChevronDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  ShoppingBag,
+  Package,
+  Tag,
+  Instagram,
+  MessageSquare
 } from "lucide-react";
 
 import {
@@ -66,7 +71,8 @@ import {
   FAQS,
   ESTABLISHMENTS,
   VEHICLES,
-  OPERATORS
+  OPERATORS,
+  LOCAL_PRODUCTS
 } from "./data";
 
 import {
@@ -79,7 +85,8 @@ import {
   Establishment,
   TourismEvent,
   Vehicle,
-  Operator
+  Operator,
+  LocalProduct
 } from "./types";
 
 import GoogleMapSection from "./components/GoogleMapSection";
@@ -461,6 +468,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>("home");
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const selectedEvent = events.find(e => e.id === selectedEventId) ?? null;
+
+  // Local Products State
+  const [selectedProduct, setSelectedProduct] = useState<LocalProduct | null>(null);
+  const [showInquiryModal, setShowInquiryModal] = useState<boolean>(false);
+  const [inquiryProduct, setInquiryProduct] = useState<LocalProduct | null>(null);
+  const [inquirySuccess, setInquirySuccess] = useState<boolean>(false);
+  const [productSearchQuery, setProductSearchQuery] = useState<string>("");
 
   // Accessibility State
   const [highContrast, setHighContrast] = useState<boolean>(false);
@@ -1676,10 +1690,10 @@ export default function App() {
           <button
             onClick={() => setActiveTab("explore")}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "explore" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
+              activeTab === "explore" || activeTab === "things-to-do" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
-            Explore
+            Explore & What to Do
           </button>
           <button
             onClick={() => setActiveTab("attractions")}
@@ -1690,12 +1704,15 @@ export default function App() {
             Attractions
           </button>
           <button
-            onClick={() => setActiveTab("things-to-do")}
+            onClick={() => {
+              setActiveTab("local-products");
+              setSelectedProduct(null);
+            }}
             className={`text-xs font-semibold uppercase tracking-wider cursor-pointer border-b-2 py-2 transition-all ${
-              activeTab === "things-to-do" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
+              activeTab === "local-products" || activeTab === "local-product-detail" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
-            Things to Do
+            Local Products
           </button>
           <button
             onClick={() => setActiveTab("hotels")}
@@ -1733,12 +1750,13 @@ export default function App() {
             </button>
 
             {showDirectoryDropdown && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full w-52 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-2.5 z-[80] animate-fadeIn">
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-56 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200/80 p-2.5 z-[80] animate-fadeIn">
                 <div className="px-2.5 py-1.5 border-b border-slate-100 mb-1">
                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#0047A1]">Categories</p>
                 </div>
                 {[
                   { label: "All Directory", value: "All" },
+                  { label: "Local Products", value: "Local Products" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
                   { label: "Attractions", value: "Attractions" },
@@ -1881,10 +1899,10 @@ export default function App() {
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "explore" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "explore" || activeTab === "things-to-do" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Explore
+              Explore & What to Do
             </button>
             <button
               onClick={() => {
@@ -1899,14 +1917,15 @@ export default function App() {
             </button>
             <button
               onClick={() => {
-                setActiveTab("things-to-do");
+                setActiveTab("local-products");
+                setSelectedProduct(null);
                 setIsMobileMenuOpen(false);
               }}
               className={`text-sm font-bold uppercase tracking-wider text-left py-2.5 px-4 rounded-xl transition-all ${
-                activeTab === "things-to-do" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
+                activeTab === "local-products" || activeTab === "local-product-detail" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Things to Do
+              Local Products
             </button>
             <button
               onClick={() => {
@@ -1947,6 +1966,7 @@ export default function App() {
               <div className="pl-6 pr-2 py-1 space-y-1.5 flex flex-col border-l border-slate-100 ml-4 animate-fadeIn">
                 {[
                   { label: "All Directory", value: "All" },
+                  { label: "Local Products", value: "Local Products" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
                   { label: "Attractions", value: "Attractions" },
@@ -2718,6 +2738,101 @@ export default function App() {
               </div>
             </motion.section>
 
+            {/* Local Products Showcase Section */}
+            <motion.section
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+              className="py-20 px-4 max-w-7xl mx-auto border-t border-gray-100"
+            >
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.25em] block mb-2">HANDCRAFTED IN BISLIG CITY</span>
+                <h3 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Discover Our Local Products</h3>
+                <p className="text-slate-600 mt-3 text-sm md:text-base leading-relaxed">
+                  Support our indigenous Kamayo farmers and local craftswomen. From organic highland-roasted coffee to handwoven macrame and eco-friendly upcycled coconut crafts.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {LOCAL_PRODUCTS.map((prod) => (
+                  <div
+                    key={prod.id}
+                    className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-[#0047A1]/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="h-64 bg-slate-100 relative overflow-hidden">
+                        <img
+                          src={prod.image}
+                          alt={prod.name}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
+                          {prod.category}
+                        </div>
+                        <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-[11px] font-semibold flex items-center justify-between shadow">
+                          <span>📍 {prod.origin.split(',')[0]}</span>
+                          <span className="text-[#FB8C00] font-bold">{prod.priceRange.split(' ')[0]}</span>
+                        </div>
+                      </div>
+
+                      <div className="p-6 space-y-3">
+                        <div>
+                          <span className="text-[10px] text-[#0097A7] font-extrabold uppercase tracking-wider block">{prod.tagline}</span>
+                          <h4 className="font-serif font-bold text-2xl text-[#0047A1] mt-1 group-hover:text-[#0097A7] transition-colors">{prod.name}</h4>
+                        </div>
+
+                        <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">
+                          {prod.description}
+                        </p>
+
+                        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Key Features:</p>
+                          <ul className="space-y-1">
+                            {prod.highlights.slice(0, 2).map((item, idx) => (
+                              <li key={idx} className="text-[11px] text-slate-600 flex items-center gap-1.5">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                <span className="truncate">{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 pt-0">
+                      <button
+                        onClick={() => {
+                          setSelectedProduct(prod);
+                          setActiveTab("local-product-detail");
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="w-full bg-[#0047A1] hover:bg-[#005F92] text-white text-center py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-lg cursor-pointer"
+                      >
+                        <span>View Product Details</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-12 text-center">
+                <button
+                  onClick={() => {
+                    setActiveTab("local-products");
+                    setSelectedProduct(null);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-100 hover:bg-[#0047A1] text-[#0047A1] hover:text-white font-bold text-xs uppercase tracking-wider rounded-full transition-all border border-slate-200 cursor-pointer"
+                >
+                  <span>Explore All Local Products & Directory</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.section>
+
             {/* Newsletter Subscription */}
             <motion.section 
               initial={{ opacity: 0, y: 30 }}
@@ -2763,286 +2878,499 @@ export default function App() {
         {/* ==================================
             EXPLORE CITY TAB RENDER
             ================================== */}
-        {activeTab === "explore" && (
-          <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">INTRODUCING THE CITY</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Nature's Wonder. People's Pride.</h2>
-              <p className="text-slate-600 mt-3 text-sm md:text-base">
-                Bislig City, situated in Surigao del Sur, is blessed with beautiful geographical diversity. It faces the vast Pacific Ocean to the east, producing breathtaking golden sunrises over sprawling coastal islands.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
-              <div className="relative h-96 rounded-2xl overflow-hidden shadow-lg">
-                <img
-                  src="/assets/images/Tinuy.an Featured 1.webp"
-                  alt="Bislig Rainforest"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-6 left-6 text-white">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-[#FB8C00]">SURIGAO DEL SUR</p>
-                  <h4 className="text-xl font-bold font-serif">Pristine Waterway Resources</h4>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <h3 className="text-2xl font-serif text-[#0047A1] font-bold">Culture, Heritage & the Kamayo Tribe</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  The local culture is shaped largely by the **Kamayo tribe**, the original ethnic inhabitants of Bislig and surrounding coastal waters. The Kamayo language is unique, known for its soft intonations and close affinity to classical Visayan dialects.
-                </p>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Historically, Bislig was a key center of the forestry and paper milling industries in Southeast Asia during the late 20th century. Today, the city is transitioning into one of the Philippines' most successful models for community-centric **sustainable eco-tourism**.
-                </p>
-
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
-                  <div>
-                    <span className="text-2xl font-bold text-[#0047A1] block">12+</span>
-                    <span className="text-xs font-bold text-slate-500 uppercase">Pristine Waterfalls</span>
-                  </div>
-                  <div>
-                    <span className="text-2xl font-bold text-[#0097A7] block">100%</span>
-                    <span className="text-xs font-bold text-slate-500 uppercase">Local Tour Guide Guided</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Travel Seasons and Information */}
-            <div className="bg-[#F8F6F2] p-8 rounded-2xl border border-gray-100">
-              <h3 className="text-2xl font-serif text-[#0047A1] font-bold mb-6 text-center">Fast Facts for Planning Your Visit</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#0047A1] font-bold text-sm block mb-2">Optimal Season</span>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    **March to October** brings warm sunny skies, making it ideal for coastal beach hopping, forest trekking, cave viewing, and boat rentals.
-                  </p>
-                </div>
-                <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#0097A7] font-bold text-sm block mb-2">Local Dialects</span>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    **Kamayo** is native. However, **Cebuano/Visayan**, **Tagalog**, and **English** are universally spoken and understood by locals.
-                  </p>
-                </div>
-                <div className="bg-white p-5 rounded-xl shadow-sm">
-                  <span className="text-[#FB8C00] font-bold text-sm block mb-2">Financial Advice</span>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    There are numerous commercial bank ATMs in the city proper. However, carrying cash (Philippine Peso) is highly recommended for entrance fees and local guides.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        )}
-
         {/* ==================================
-            ATTRACTIONS TAB RENDER
+            COMBINED EXPLORE & WHAT TO DO TAB RENDER
             ================================== */}
-        {activeTab === "attractions" && (
-          <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">VISIT THE ICONS</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Majestic Natural Coordinates</h2>
-              <p className="text-slate-600 mt-3 text-sm md:text-base">
-                Explore our waterfalls, spring-fed rivers, quiet caves, and white sand beachheads. Filter and save your favorites to build a dynamic travel plan.
-              </p>
+        {(activeTab === "explore" || activeTab === "things-to-do") && (
+          <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn space-y-20">
+            {/* Section 1: Introducing the City & Heritage */}
+            <div>
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">INTRODUCING THE CITY & HERITAGE</span>
+                <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Nature's Wonder. People's Pride.</h2>
+                <p className="text-slate-600 mt-3 text-sm md:text-base leading-relaxed">
+                  Bislig City, situated in Surigao del Sur, is blessed with beautiful geographical diversity. It faces the vast Pacific Ocean to the east, producing breathtaking golden sunrises over sprawling coastal islands.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+                <div className="relative h-96 rounded-2xl overflow-hidden shadow-lg">
+                  <img
+                    src="/assets/images/Tinuy.an Featured 1.webp"
+                    alt="Bislig Rainforest"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 text-white">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#FB8C00]">SURIGAO DEL SUR</p>
+                    <h4 className="text-xl font-bold font-serif">Pristine Waterway Resources</h4>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-serif text-[#0047A1] font-bold">Culture, Heritage & the Kamayo Tribe</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    The local culture is shaped largely by the **Kamayo tribe**, the original ethnic inhabitants of Bislig and surrounding coastal waters. The Kamayo language is unique, known for its soft intonations and close affinity to classical Visayan dialects.
+                  </p>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    Historically, Bislig was a key center of the forestry and paper milling industries in Southeast Asia during the late 20th century. Today, the city is transitioning into one of the Philippines' most successful models for community-centric **sustainable eco-tourism**.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                    <div>
+                      <span className="text-2xl font-bold text-[#0047A1] block">12+</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase">Pristine Waterfalls</span>
+                    </div>
+                    <div>
+                      <span className="text-2xl font-bold text-[#0097A7] block">100%</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase">Local Tour Guide Guided</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fast Facts Card Grid */}
+              <div className="bg-[#F8F6F2] p-8 rounded-2xl border border-gray-100">
+                <h3 className="text-2xl font-serif text-[#0047A1] font-bold mb-6 text-center">Fast Facts for Planning Your Visit</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="bg-white p-5 rounded-xl shadow-sm">
+                    <span className="text-[#0047A1] font-bold text-sm block mb-2">Optimal Season</span>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      **March to October** brings warm sunny skies, making it ideal for coastal beach hopping, forest trekking, cave viewing, and boat rentals.
+                    </p>
+                  </div>
+                  <div className="bg-white p-5 rounded-xl shadow-sm">
+                    <span className="text-[#0097A7] font-bold text-sm block mb-2">Local Dialects</span>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      **Kamayo** is native. However, **Cebuano/Visayan**, **Tagalog**, and **English** are universally spoken and understood by locals.
+                    </p>
+                  </div>
+                  <div className="bg-white p-5 rounded-xl shadow-sm">
+                    <span className="text-[#FB8C00] font-bold text-sm block mb-2">Financial Advice</span>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      There are numerous commercial bank ATMs in the city proper. However, carrying cash (Philippine Peso) is highly recommended for entrance fees and local guides.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Filter buttons and Search bar */}
-            <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-10 pb-6 border-b border-gray-100">
-              <div className="flex flex-wrap gap-2">
-                {["All", "Waterfalls", "Rivers", "Beaches", "Caves", "Parks"].map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setAttractionFilter(cat)}
-                    className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
-                      attractionFilter === cat
-                        ? "bg-[#0047A1] text-white shadow"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {cat}
-                  </button>
+            {/* Section 2: Outdoor Experiences & What to Do */}
+            <div className="border-t border-slate-200 pt-16">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">OUTDOOR EXPERIENCES & ACTIVITIES</span>
+                <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Unforgettable Adventures</h2>
+                <p className="text-slate-600 mt-3 text-sm md:text-base leading-relaxed">
+                  From soaring waterfalls to deep-river cave exploration, Bislig and surrounding nature reserves offer world-class outdoor activities.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[
+                  {
+                    title: "Waterfall Chasing",
+                    icon: "🌊",
+                    desc: "Take a traditional bamboo raft (balsa) right underneath the roaring torrent of Tinuy-an Falls for a magnificent hydro-massage.",
+                    tips: "Wear dry suits, water goggles, and use a waterproof dry bag."
+                  },
+                  {
+                    title: "Estuary River Swimming",
+                    icon: "🏊",
+                    desc: "Swim down the crystal-clear saltwater flow of Hinatuan Enchanted River, surrounded by thick limestone walls and jungle vines.",
+                    tips: "Strict life vest rules apply. Use eco-friendly reef-safe sunscreen."
+                  },
+                  {
+                    title: "Hagonoy Island Hopping",
+                    icon: "🏝️",
+                    desc: "Rent an outrigger bangka boat from the City Baywalk and land on a glistening white sandbar flanked by a single palm tree stand.",
+                    tips: "Best enjoyed during low tide. Purchase fresh crabs at the pier."
+                  },
+                  {
+                    title: "Hinayagan Cave Exploration",
+                    icon: "🕳️",
+                    desc: "Trek down a lush valley and crawl into a limestone cathedral decorated with sunbeams piercing through a ceiling dome.",
+                    tips: "Wear safety helmets and non-slip sandals. Always follow your local guide."
+                  },
+                  {
+                    title: "Lake Kayaking",
+                    icon: "🛶",
+                    desc: "Rent manual wood kayaks on Lake 77 and glide silently over mirror-flat waters reflecting beautiful tall forest canopies.",
+                    tips: "Perfect for quiet dawn bird-watching."
+                  },
+                  {
+                    title: "Hot Stone Jungle Bath",
+                    icon: "🔥",
+                    desc: "Soak in a giant metal cauldron (kawa) filled with mineral waters, floral petals, and ginger leaves heated gently by wood fire.",
+                    tips: "A relaxing traditional body spa treatment at Kawa-Kawa Lodge."
+                  }
+                ].map((act, idx) => (
+                  <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                    <span className="text-3xl block mb-4">{act.icon}</span>
+                    <h4 className="font-bold font-serif text-lg text-[#0047A1] mb-2">{act.title}</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed mb-4">{act.desc}</p>
+                    <div className="bg-[#F8F6F2] p-3 rounded-lg border border-gray-100">
+                      <p className="text-[10px] font-bold text-[#0097A7] uppercase">Pro Tip</p>
+                      <p className="text-[10px] text-slate-600 mt-0.5">{act.tips}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
 
-              <div className="relative w-full md:w-80">
-                <input
-                  type="text"
-                  placeholder="Search key attraction names..."
-                  value={searchQuery === " " ? "" : searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 text-xs rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0047A1]"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
+              {/* Travel Packing Checklist Section */}
+              <div className="mt-16">
+                <TravelChecklist />
               </div>
             </div>
-
-            {/* Attractions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredAttractions.map((att) => {
-                const isFavorite = favorites.includes(att.id);
-                return (
-                  <div
-                    key={att.id}
-                    className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group hover:border-[#0047A1] hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="h-52 bg-slate-200 relative overflow-hidden">
-                        <img
-                          src={att.image}
-                          alt={att.name}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(att.id);
-                          }}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white/90 backdrop-blur shadow hover:scale-110 transition-transform text-red-500"
-                          title="Save to My Trip List"
-                        >
-                          <Heart className={`w-4.5 h-4.5 ${isFavorite ? "fill-red-500 text-red-500" : "text-slate-400"}`} />
-                        </button>
-                        <span className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-[#0047A1] shadow">
-                          {att.category}
-                        </span>
-                        {!loadingWeather && weatherData && (
-                          <span className="absolute bottom-4 right-4 bg-black/65 backdrop-blur-sm px-2.5 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1.5 shadow">
-                            {getWeatherIcon(weatherData.weatherCode, weatherData.isDay, 11, "text-white")}
-                            <span>{weatherData.temperature}°C</span>
-                            <span className="text-slate-300 font-medium hidden sm:inline">| {weatherData.condition}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="p-6">
-                        <div className="flex justify-between items-center mb-1">
-                          <h3 className="font-bold font-serif text-lg text-[#0047A1] group-hover:text-[#0047A1] transition-colors">
-                            {att.name}
-                          </h3>
-                        </div>
-
-                        <p className="text-slate-500 text-xs line-clamp-3 leading-relaxed mb-4">
-                          {att.description}
-                        </p>
-
-                        <div className="space-y-2 border-t border-slate-50 pt-3 text-[11px] text-slate-400 font-medium">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-3.5 h-3.5 text-[#0047A1]" />
-                            <span>{att.distance} from City center</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-[#0097A7]" />
-                            <span>Approx. {att.travelTime} travel time</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6 pt-0 flex gap-2">
-                      <button
-                        onClick={() => setSelectedAttraction(att)}
-                        className="flex-grow bg-slate-100 text-[#0047A1] text-center py-2.5 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
-                      >
-                        Read Visitor Guide
-                      </button>
-                      <button
-                        onClick={() => addToItinerary(att, "attraction")}
-                        className={`transition-all duration-300 p-2.5 rounded-lg flex items-center justify-center gap-1.5 ${
-                          addedFeedback[att.id]
-                            ? "bg-[#0097A7] text-white scale-105"
-                            : "bg-[#0047A1] text-white hover:bg-[#005f92]"
-                        }`}
-                        title={addedFeedback[att.id] ? `Added to Day ${selectedItineraryDay}` : "Add to Custom Itinerary"}
-                      >
-                        {addedFeedback[att.id] ? (
-                          <>
-                            <Check className="w-4 h-4 animate-scaleIn" />
-                            <span className="text-[10px] font-bold px-1 whitespace-nowrap">Added!</span>
-                          </>
-                        ) : (
-                          <Plus className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
           </div>
         )}
 
         {/* ==================================
-            THINGS TO DO TAB RENDER
+            LOCAL PRODUCTS TAB RENDER
             ================================== */}
-        {activeTab === "things-to-do" && (
-          <div className="max-w-6xl mx-auto px-4 py-16 animate-fadeIn">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">OUTDOOR EXPERIENCES</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Unforgettable Adventures</h2>
-              <p className="text-slate-600 mt-3 text-sm md:text-base">
-                From soaring waterfalls to deep-river cave exploration, Bislig and surrounding nature reserves offer world-class outdoor activities.
+        {(activeTab === "local-products" && !selectedProduct) && (
+          <div className="max-w-7xl mx-auto px-4 py-16 animate-fadeIn">
+            {/* Page Header */}
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.25em] block mb-2">PROUDLY MADE IN BISLIG</span>
+              <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Authentic Local Products & Crafts</h2>
+              <p className="text-slate-600 mt-3 text-sm md:text-base leading-relaxed">
+                Discover the unique artisanal heritage of Surigao del Sur. From organic highland-roasted coffee to handwoven macrame fashion and eco-friendly coconut shell crafts, every product directly supports our local Kamayo farmers and craftswomen.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Waterfall Chasing",
-                  icon: "🌊",
-                  desc: "Take a traditional bamboo raft (balsa) right underneath the roaring torrent of Tinuy-an Falls for a magnificent hydro-massage.",
-                  tips: "Wear dry suits, water goggles, and use a waterproof dry bag."
-                },
-                {
-                  title: "Estuary River Swimming",
-                  icon: "🏊",
-                  desc: "Swim down the crystal-clear saltwater flow of Hinatuan Enchanted River, surrounded by thick limestone walls and jungle vines.",
-                  tips: "Strict life vest rules apply. Use eco-friendly reef-safe sunscreen."
-                },
-                {
-                  title: "Hagonoy Island Hopping",
-                  icon: "🏝️",
-                  desc: "Rent an outrigger bangka boat from the City Baywalk and land on a glistening white sandbar flanked by a single palm tree stand.",
-                  tips: "Best enjoyed during low tide. Purchase fresh crabs at the pier."
-                },
-                {
-                  title: "Hinayagan Cave Exploration",
-                  icon: "🕳️",
-                  desc: "Trek down a lush valley and crawl into a limestone cathedral decorated with sunbeams piercing through a ceiling dome.",
-                  tips: "Wear safety helmets and non-slip sandals. Always follow your local guide."
-                },
-                {
-                  title: "Lake Kayaking",
-                  icon: "🛶",
-                  desc: "Rent manual wood kayaks on Lake 77 and glide silently over mirror-flat waters reflecting beautiful tall forest canopies.",
-                  tips: "Perfect for quiet dawn bird-watching."
-                },
-                {
-                  title: "Hot Stone Jungle Bath",
-                  icon: "🔥",
-                  desc: "Soak in a giant metal cauldron (kawa) filled with mineral waters, floral petals, and ginger leaves heated gently by wood fire.",
-                  tips: "A relaxing traditional body spa treatment at Kawa-Kawa Lodge."
-                }
-              ].map((act, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                  <span className="text-3xl block mb-4">{act.icon}</span>
-                  <h4 className="font-bold font-serif text-lg text-[#0047A1] mb-2">{act.title}</h4>
-                  <p className="text-xs text-slate-500 leading-relaxed mb-4">{act.desc}</p>
-                  <div className="bg-[#F8F6F2] p-3 rounded-lg border border-gray-100">
-                    <p className="text-[10px] font-bold text-[#0097A7] uppercase">Pro Tip</p>
-                    <p className="text-[10px] text-slate-600 mt-0.5">{act.tips}</p>
+            {/* Search Bar */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-12 max-w-xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search local products by name, craft, or material..."
+                  value={productSearchQuery}
+                  onChange={(e) => setProductSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#0047A1] focus:ring-1 focus:ring-[#0047A1] transition-all bg-[#FAFAFA]"
+                />
+              </div>
+            </div>
+
+            {/* Product Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {LOCAL_PRODUCTS.filter(p => 
+                !productSearchQuery.trim() || 
+                p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
+                p.description.toLowerCase().includes(productSearchQuery.toLowerCase()) ||
+                p.category.toLowerCase().includes(productSearchQuery.toLowerCase())
+              ).map((prod) => (
+                <div
+                  key={prod.id}
+                  className="bg-white rounded-2xl overflow-hidden shadow-md border border-slate-100 hover:shadow-2xl hover:border-[#0047A1]/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="h-64 bg-slate-100 relative overflow-hidden">
+                      <img
+                        src={prod.image}
+                        alt={prod.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
+                        {prod.category}
+                      </div>
+                      <div className="absolute bottom-4 left-4 right-4 bg-black/65 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-[11px] font-semibold flex items-center justify-between shadow">
+                        <span>📍 {prod.origin.split(',')[0]}</span>
+                        <span className="text-[#FB8C00] font-extrabold">{prod.priceRange.split(' ')[0]}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <span className="text-[10px] text-[#0097A7] font-extrabold uppercase tracking-wider block">{prod.tagline}</span>
+                        <h3 className="font-serif font-bold text-2xl text-[#0047A1] mt-1 group-hover:text-[#0097A7] transition-colors">{prod.name}</h3>
+                      </div>
+
+                      <p className="text-slate-600 text-xs leading-relaxed line-clamp-3">
+                        {prod.description}
+                      </p>
+
+                      <div className="space-y-2 pt-3 border-t border-slate-100">
+                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Product Highlights:</p>
+                        <ul className="space-y-1.5">
+                          {prod.highlights.slice(0, 3).map((item, idx) => (
+                            <li key={idx} className="text-[11px] text-slate-700 flex items-start gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 pt-0">
+                    <button
+                      onClick={() => {
+                        setSelectedProduct(prod);
+                        setActiveTab("local-product-detail");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="w-full bg-[#0047A1] hover:bg-[#005F92] text-white text-center py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-lg cursor-pointer"
+                    >
+                      <span>View Product Details & Order</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        )}
 
-            {/* Travel Packing Checklist Section */}
-            <TravelChecklist />
+        {/* ==================================
+            DEDICATED LOCAL PRODUCT DETAIL PAGE
+            ================================== */}
+        {selectedProduct && (activeTab === "local-product-detail" || activeTab === "local-products") && (
+          <div className="max-w-6xl mx-auto px-4 py-12 animate-fadeIn">
+            {/* Navigation Breadcrumb & Back button */}
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100 flex-wrap gap-4">
+              <button
+                onClick={() => {
+                  setSelectedProduct(null);
+                  setActiveTab("local-products");
+                }}
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0047A1] hover:text-[#005f92] bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full transition-all cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Back to All Local Products</span>
+              </button>
+
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                <span className="cursor-pointer hover:text-[#0047A1]" onClick={() => setActiveTab("home")}>Home</span>
+                <span>/</span>
+                <span className="cursor-pointer hover:text-[#0047A1]" onClick={() => { setSelectedProduct(null); setActiveTab("local-products"); }}>Local Products</span>
+                <span>/</span>
+                <span className="text-[#0047A1] font-bold">{selectedProduct.name}</span>
+              </div>
+            </div>
+
+            {/* Main Product Showcase Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
+              {/* Left Column: Image & Media Gallery */}
+              <div className="lg:col-span-6 space-y-6">
+                <div className="bg-white p-3 rounded-3xl border border-slate-100 shadow-xl overflow-hidden relative group">
+                  <div className="h-96 sm:h-[450px] rounded-2xl overflow-hidden relative bg-slate-100">
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black text-[#0047A1] shadow-lg border border-slate-100">
+                      ⭐ Official Bislig Craft
+                    </div>
+                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">
+                      {selectedProduct.materials}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Location & Producer Operating Details Card */}
+                <div className="bg-[#FAFCFC] p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                  <h4 className="font-serif font-bold text-base text-[#0047A1] flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-[#0097A7]" />
+                    <span>Producer Studio & Hub Location</span>
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {selectedProduct.location}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 text-xs pt-3 border-t border-slate-200/60">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Operating Hours</span>
+                      <span className="font-semibold text-slate-700">{selectedProduct.operatingHours}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Origin Location</span>
+                      <span className="font-semibold text-[#0097A7]">{selectedProduct.origin}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Product Details & Buying Info */}
+              <div className="lg:col-span-6 space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-3 py-1 bg-[#0047A1]/10 text-[#0047A1] text-[10px] font-extrabold uppercase tracking-widest rounded-full">
+                      {selectedProduct.category}
+                    </span>
+                    <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full font-bold">
+                      ✓ In Stock & Locally Sourced
+                    </span>
+                  </div>
+
+                  <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#0047A1] leading-tight">
+                    {selectedProduct.name}
+                  </h1>
+                  <p className="text-sm font-semibold text-[#0097A7] mt-1">{selectedProduct.tagline}</p>
+                </div>
+
+                {/* Price Range Banner */}
+                <div className="bg-gradient-to-r from-[#0047A1]/5 to-[#0097A7]/10 p-5 rounded-2xl border border-[#0047A1]/10 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">Estimated Price Range</span>
+                    <span className="text-2xl font-bold text-[#0047A1]">{selectedProduct.priceRange}</span>
+                  </div>
+                  <span className="text-xs bg-white text-slate-700 px-3 py-1.5 rounded-full font-semibold border border-slate-200 shadow-sm">
+                    Direct Producer Price
+                  </span>
+                </div>
+
+                {/* Story & Description */}
+                <div className="space-y-3">
+                  <h3 className="text-base font-serif font-bold text-slate-800">About {selectedProduct.name}</h3>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {selectedProduct.longDescription}
+                  </p>
+                </div>
+
+                {/* Key Product Highlights */}
+                <div className="space-y-3 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                  <h4 className="text-xs font-extrabold text-[#0047A1] uppercase tracking-wider">Product Features & Craftsmanship</h4>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    {selectedProduct.highlights.map((feat, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-slate-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Contact Info & Social Media Buttons */}
+                <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <h4 className="font-serif font-bold text-sm text-[#FB8C00] flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-[#FB8C00]" />
+                      <span>Contact Producer / Place Inquiry</span>
+                    </h4>
+                    <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded text-slate-300">Verified Local Artisan</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <a href={`tel:${selectedProduct.contactPhone}`} className="flex items-center gap-2.5 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-all border border-white/5">
+                      <Phone className="w-4 h-4 text-emerald-400" />
+                      <div>
+                        <span className="block text-[9px] text-slate-400 font-bold uppercase">Phone Contact</span>
+                        <span className="font-bold text-white">{selectedProduct.contactPhone}</span>
+                      </div>
+                    </a>
+
+                    <a href={`mailto:${selectedProduct.contactEmail}`} className="flex items-center gap-2.5 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-all border border-white/5">
+                      <Mail className="w-4 h-4 text-sky-400" />
+                      <div>
+                        <span className="block text-[9px] text-slate-400 font-bold uppercase">Email Address</span>
+                        <span className="font-bold text-white truncate max-w-[150px] inline-block">{selectedProduct.contactEmail}</span>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/* Social Media Buttons */}
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-slate-400 block mb-2">Connect on Social Media</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.socials.facebook && (
+                        <a
+                          href={selectedProduct.socials.facebook}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 bg-[#1877F2] hover:bg-[#166fe5] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow"
+                        >
+                          <Facebook className="w-3.5 h-3.5" />
+                          <span>Facebook Page</span>
+                        </a>
+                      )}
+                      {selectedProduct.socials.instagram && (
+                        <a
+                          href={selectedProduct.socials.instagram}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow"
+                        >
+                          <Instagram className="w-3.5 h-3.5" />
+                          <span>Instagram</span>
+                        </a>
+                      )}
+                      {selectedProduct.socials.messenger && (
+                        <a
+                          href={selectedProduct.socials.messenger}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 bg-[#0084FF] hover:bg-[#0078e6] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Messenger</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Inquiry Action Button */}
+                  <button
+                    onClick={() => {
+                      setInquiryProduct(selectedProduct);
+                      setShowInquiryModal(true);
+                      setInquirySuccess(false);
+                    }}
+                    className="w-full bg-[#FB8C00] hover:bg-[#e57c00] text-slate-900 font-extrabold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-2"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Send Direct Product Order Inquiry</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Other Local Products Section */}
+            <div className="border-t border-slate-200 pt-16">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-1">EXPLORE MORE CRAFTS</span>
+                  <h3 className="text-2xl font-serif text-[#0047A1] font-bold">Other Local Bislig Products</h3>
+                </div>
+                <button
+                  onClick={() => { setSelectedProduct(null); setActiveTab("local-products"); }}
+                  className="text-xs font-bold text-[#0047A1] hover:underline flex items-center gap-1"
+                >
+                  View All ({LOCAL_PRODUCTS.length}) →
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {LOCAL_PRODUCTS.filter(p => p.id !== selectedProduct.id).map(prod => (
+                  <div
+                    key={prod.id}
+                    onClick={() => {
+                      setSelectedProduct(prod);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-[#0047A1]/30 transition-all flex gap-4 cursor-pointer group"
+                  >
+                    <img
+                      src={prod.image}
+                      alt={prod.name}
+                      className="w-28 h-28 object-cover rounded-xl shrink-0 group-hover:scale-105 transition-transform"
+                    />
+                    <div className="flex flex-col justify-between py-1">
+                      <div>
+                        <span className="text-[9px] font-bold text-[#0097A7] uppercase">{prod.category}</span>
+                        <h4 className="font-serif font-bold text-lg text-[#0047A1] group-hover:text-[#0097A7] transition-colors">{prod.name}</h4>
+                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">{prod.description}</p>
+                      </div>
+                      <span className="text-xs font-bold text-[#FB8C00] mt-2 block">{prod.priceRange}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -3841,7 +4169,7 @@ export default function App() {
 
               {/* Category Filter Tabs */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {["All", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
+                {["All", "Local Products", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedDirectoryCategory(cat)}
@@ -4886,6 +5214,89 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* PRODUCT INQUIRY MODAL */}
+      {showInquiryModal && inquiryProduct && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99] flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white text-slate-800 w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl p-6 relative">
+            <button
+              onClick={() => setShowInquiryModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {inquirySuccess ? (
+              <div className="py-8 text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-10 h-10" />
+                </div>
+                <h3 className="text-2xl font-serif font-bold text-[#0047A1]">Inquiry Submitted!</h3>
+                <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+                  Thank you for supporting Bislig local artisans! Your inquiry for <strong>{inquiryProduct.name}</strong> has been transmitted to the official producer. They will contact you shortly via email or phone.
+                </p>
+                <button
+                  onClick={() => setShowInquiryModal(false)}
+                  className="bg-[#0047A1] text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-blue-800 transition-colors cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                  <img src={inquiryProduct.image} alt={inquiryProduct.name} className="w-12 h-12 object-cover rounded-lg shrink-0" />
+                  <div>
+                    <span className="text-[9px] font-bold text-[#0097A7] uppercase">Product Order Inquiry</span>
+                    <h3 className="font-serif font-bold text-lg text-[#0047A1]">{inquiryProduct.name}</h3>
+                  </div>
+                </div>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setInquirySuccess(true);
+                  }}
+                  className="space-y-3"
+                >
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Your Full Name *</label>
+                    <input type="text" required placeholder="e.g. Maria Santos" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Email Address *</label>
+                      <input type="email" required placeholder="maria@example.com" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Phone / Mobile *</label>
+                      <input type="tel" required placeholder="+63 912 345 6789" className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Inquiry / Quantity / Message *</label>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder={`I would like to inquire about purchasing ${inquiryProduct.name}...`}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-[#0047A1] hover:bg-[#005f92] text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-colors shadow-md cursor-pointer"
+                  >
+                    Submit Order Inquiry
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Floating Interactive AI Chatbot Concierge */}
       <AiChatbot weatherData={weatherData} />
