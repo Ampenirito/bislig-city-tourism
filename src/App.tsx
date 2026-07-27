@@ -367,14 +367,15 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Automatically inject "The Apero" and sync operator id fields
+  // Automatically inject "The Apero" and "Vista Delymar" and sync operator id fields
   useEffect(() => {
     try {
       const savedR = localStorage.getItem("bislig_restaurants");
       if (savedR) {
-        const parsedR = JSON.parse(savedR);
+        let parsedR = JSON.parse(savedR);
+        let changed = false;
         if (!parsedR.some((r: any) => r.id === "the-apero")) {
-          const theAperoRestaurant = {
+          parsedR.push({
             id: "the-apero",
             name: "The Apero",
             description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
@@ -389,18 +390,40 @@ export default function App() {
             coordinates: { lat: 8.2105, lng: 126.3521 },
             mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
             rating: 4.9
-          };
-          const updatedR = [...parsedR, theAperoRestaurant];
-          localStorage.setItem("bislig_restaurants", JSON.stringify(updatedR));
-          setRestaurants(updatedR);
+          });
+          changed = true;
+        }
+        if (!parsedR.some((r: any) => r.id === "vista-delymar")) {
+          parsedR.push({
+            id: "vista-delymar",
+            name: "Vista Delymar",
+            description: "A premier beachfront dining venue and resort in Bislig offering scenic Pacific ocean views, fresh coastal seafood banquets, grilled delicacies, and refreshing tropical fruit shakes.",
+            category: "Seafood",
+            image: "/assets/images/Vista Delymar.jpg",
+            specialty: ["Grilled Pacific Blue Marlin", "Inasal Chicken & Seafood Boodle Fight", "Fresh Coconut & Fruit Shakes"],
+            priceRange: "₱200 - ₱500 per person",
+            contact: "+63 920 987 6543",
+            socialMedia: "facebook.com/vistadelymarbislig",
+            website: "https://facebook.com/vistadelymarbislig",
+            operatingHours: "07:00 AM - 10:00 PM daily",
+            coordinates: { lat: 8.1885, lng: 126.3572 },
+            mapUrl: "https://www.google.com/maps/search/Vista+Delymar+Bislig",
+            rating: 4.8
+          });
+          changed = true;
+        }
+        if (changed) {
+          localStorage.setItem("bislig_restaurants", JSON.stringify(parsedR));
+          setRestaurants(parsedR);
         }
       }
 
       const savedE = localStorage.getItem("bislig_establishments");
       if (savedE) {
-        const parsedE = JSON.parse(savedE);
+        let parsedE = JSON.parse(savedE);
+        let changed = false;
         if (!parsedE.some((e: any) => e.id === "the-apero")) {
-          const theAperoEst = {
+          parsedE.push({
             id: "the-apero",
             name: "The Apero",
             description: "An upscale bistro and dining destination in Bislig City, known for premium gourmet cuisine, artisanal coffee, and a cozy modern atmosphere.",
@@ -415,10 +438,31 @@ export default function App() {
             coordinates: { lat: 8.2105, lng: 126.3521 },
             mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
             rating: 4.9
-          };
-          const updatedE = [...parsedE, theAperoEst];
-          localStorage.setItem("bislig_establishments", JSON.stringify(updatedE));
-          setEstablishments(updatedE);
+          });
+          changed = true;
+        }
+        if (!parsedE.some((e: any) => e.id === "vista-delymar")) {
+          parsedE.push({
+            id: "vista-delymar",
+            name: "Vista Delymar",
+            description: "A premier beachfront dining venue and resort in Bislig offering scenic Pacific ocean views, fresh coastal seafood banquets, grilled delicacies, and refreshing tropical fruit shakes.",
+            longDescription: "Vista Delymar is one of Bislig's beloved seaside dining landmarks. Nestled along the coastal breeze, visitors enjoy sunset dining with freshly caught fish, grilled specialties, cold brews, and family boodle fights directly facing the Pacific waters.",
+            category: "Dining & Cafes",
+            image: "/assets/images/Vista Delymar.jpg",
+            location: "Purok 4, Brgy. Lawigan, Bislig City, Surigao del Sur",
+            contact: "+63 920 987 6543",
+            socialMedia: "facebook.com/vistadelymarbislig",
+            website: "https://facebook.com/vistadelymarbislig",
+            operatingHours: "07:00 AM - 10:00 PM daily",
+            coordinates: { lat: 8.1885, lng: 126.3572 },
+            mapUrl: "https://www.google.com/maps/search/Vista+Delymar+Bislig",
+            rating: 4.8
+          });
+          changed = true;
+        }
+        if (changed) {
+          localStorage.setItem("bislig_establishments", JSON.stringify(parsedE));
+          setEstablishments(parsedE);
         }
       }
 
@@ -1693,7 +1737,7 @@ export default function App() {
               activeTab === "explore" || activeTab === "things-to-do" ? "border-[#0047A1] text-[#0047A1]" : "border-transparent text-slate-600 hover:text-[#0047A1]"
             }`}
           >
-            Explore & What to Do
+            Explore
           </button>
           <button
             onClick={() => setActiveTab("attractions")}
@@ -1902,7 +1946,7 @@ export default function App() {
                 activeTab === "explore" || activeTab === "things-to-do" ? "bg-[#0047A1]/10 text-[#0047A1]" : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              Explore & What to Do
+              Explore
             </button>
             <button
               onClick={() => {
@@ -2771,10 +2815,6 @@ export default function App() {
                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
                           {prod.category}
                         </div>
-                        <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-[11px] font-semibold flex items-center justify-between shadow">
-                          <span>📍 {prod.origin.split(',')[0]}</span>
-                          <span className="text-[#FB8C00] font-bold">{prod.priceRange.split(' ')[0]}</span>
-                        </div>
                       </div>
 
                       <div className="p-6 space-y-3">
@@ -3074,10 +3114,6 @@ export default function App() {
                       />
                       <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-extrabold text-[#0047A1] shadow">
                         {prod.category}
-                      </div>
-                      <div className="absolute bottom-4 left-4 right-4 bg-black/65 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-[11px] font-semibold flex items-center justify-between shadow">
-                        <span>📍 {prod.origin.split(',')[0]}</span>
-                        <span className="text-[#FB8C00] font-extrabold">{prod.priceRange.split(' ')[0]}</span>
                       </div>
                     </div>
 

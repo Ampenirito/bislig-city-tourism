@@ -224,6 +224,22 @@ export const RESTAURANTS: Restaurant[] = [
     coordinates: { lat: 8.2105, lng: 126.3521 },
     mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
     rating: 4.9
+  },
+  {
+    id: "vista-delymar",
+    name: "Vista Delymar",
+    description: "A premier beachfront dining venue and resort in Bislig offering scenic Pacific ocean views, fresh coastal seafood banquets, grilled delicacies, and refreshing tropical fruit shakes.",
+    category: "Seafood",
+    image: "/assets/images/Vista Delymar.jpg",
+    specialty: ["Grilled Pacific Blue Marlin", "Inasal Chicken & Seafood Boodle Fight", "Fresh Coconut & Fruit Shakes"],
+    priceRange: "₱200 - ₱500 per person",
+    contact: "+63 920 987 6543",
+    socialMedia: "facebook.com/vistadelymarbislig",
+    website: "https://facebook.com/vistadelymarbislig",
+    operatingHours: "07:00 AM - 10:00 PM daily",
+    coordinates: { lat: 8.1885, lng: 126.3572 },
+    mapUrl: "https://www.google.com/maps/search/Vista+Delymar+Bislig",
+    rating: 4.8
   }
 ];
 
@@ -1097,6 +1113,22 @@ export const ESTABLISHMENTS: Establishment[] = [
     coordinates: { lat: 8.2105, lng: 126.3521 },
     mapUrl: "https://www.google.com/maps/search/The+Apero+Bislig",
     rating: 4.9
+  },
+  {
+    id: "vista-delymar",
+    name: "Vista Delymar",
+    description: "A premier beachfront dining venue and resort in Bislig offering scenic Pacific ocean views, fresh coastal seafood banquets, grilled delicacies, and refreshing tropical fruit shakes.",
+    longDescription: "Vista Delymar is one of Bislig's beloved seaside dining landmarks. Nestled along the coastal breeze, visitors enjoy sunset dining with freshly caught fish, grilled specialties, cold brews, and family boodle fights directly facing the Pacific waters.",
+    category: "Dining & Cafes",
+    image: "/assets/images/Vista Delymar.jpg",
+    location: "Purok 4, Brgy. Lawigan, Bislig City, Surigao del Sur",
+    contact: "+63 920 987 6543",
+    socialMedia: "facebook.com/vistadelymarbislig",
+    website: "https://facebook.com/vistadelymarbislig",
+    operatingHours: "07:00 AM - 10:00 PM daily",
+    coordinates: { lat: 8.1885, lng: 126.3572 },
+    mapUrl: "https://www.google.com/maps/search/Vista+Delymar+Bislig",
+    rating: 4.8
   },
   {
     id: "bfo-coffee-establishment",
