@@ -1176,7 +1176,8 @@ export const ESTABLISHMENTS: Establishment[] = [
     operatingHours: "08:00 AM - 05:00 PM Daily",
     coordinates: { lat: 8.2185, lng: 126.3610 },
     mapUrl: "https://www.google.com/maps/search/BFO+Coconut+Accents+Bislig",
-    rating: 4.8
+    rating: 4.8,
+    status: "draft"
   }
 ];
 
@@ -1242,6 +1243,7 @@ export const LOCAL_PRODUCTS: LocalProduct[] = [
   {
     id: "bfo-coconut-accents",
     name: "BFO Coconut Shell Accents",
+    status: "draft",
     tagline: "Eco-Friendly Hand-Carved Coconut Decor",
     category: "Eco Crafts & Decor",
     image: "/assets/images/BFO Coconut.png",

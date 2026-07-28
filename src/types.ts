@@ -23,6 +23,7 @@ export interface Attraction {
   coordinates: LocationCoordinates;
   mapUrl: string;
   rating: number;
+  status?: "published" | "draft";
 }
 
 export interface Accommodation {
@@ -40,6 +41,7 @@ export interface Accommodation {
   coordinates: LocationCoordinates;
   mapUrl: string;
   rating: number;
+  status?: "published" | "draft";
 }
 
 export interface Restaurant {
@@ -57,6 +59,7 @@ export interface Restaurant {
   coordinates: LocationCoordinates;
   mapUrl: string;
   rating: number;
+  status?: "published" | "draft";
 }
 
 export interface TourismEvent {
@@ -82,6 +85,7 @@ export interface TourismEvent {
   schedule: { time: string; activity: string }[];
   tips: string[];          // practical visitor tips
   tags: string[];
+  status?: "published" | "draft";
 }
 
 export interface GalleryItem {
@@ -168,6 +172,7 @@ export interface Establishment {
   coordinates: LocationCoordinates;
   mapUrl: string;
   rating: number;
+  status?: "published" | "draft";
 }
 
 export interface LocalProduct {
@@ -193,6 +198,7 @@ export interface LocalProduct {
     website?: string;
   };
   inquiryNotice?: string;
+  status?: "published" | "draft";
 }
 
 export interface Vehicle {
@@ -207,6 +213,7 @@ export interface Vehicle {
   rate: string;
   features: string[];
   description: string;
+  status?: "published" | "draft";
 }
 
 export interface Operator {
@@ -225,5 +232,6 @@ export interface Operator {
     messenger?: string;
     whatsapp?: string;
   };
+  status?: "published" | "draft";
 }
 

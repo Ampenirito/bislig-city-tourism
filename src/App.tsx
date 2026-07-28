@@ -328,6 +328,15 @@ export default function App() {
     }
   });
 
+  const [localProducts, setLocalProducts] = useState<LocalProduct[]>(() => {
+    try {
+      const saved = localStorage.getItem("bislig_local_products");
+      return saved ? JSON.parse(saved) : LOCAL_PRODUCTS;
+    } catch {
+      return LOCAL_PRODUCTS;
+    }
+  });
+
   // Real-time Weather State
   const [weatherData, setWeatherData] = useState<{
     temperature: number;
@@ -721,7 +730,8 @@ export default function App() {
         est.name.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
         est.location.toLowerCase().includes(directorySearchQuery.toLowerCase()) ||
         est.description.toLowerCase().includes(directorySearchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+      const matchesNotDraft = est.status !== "draft";
+      return matchesCategory && matchesSearch && matchesNotDraft;
     });
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [allEstablishments, selectedDirectoryCategory, directorySearchQuery]);
@@ -1664,6 +1674,8 @@ export default function App() {
         setVehicles={setVehicles}
         operators={operators}
         setOperators={setOperators}
+        localProducts={localProducts}
+        setLocalProducts={setLocalProducts}
       />
     );
   }
@@ -2801,7 +2813,7 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {LOCAL_PRODUCTS.map((prod) => (
+                {localProducts.filter(p => p.status !== "draft").map((prod) => (
                   <div
                     key={prod.id}
                     className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:border-[#0047A1]/30 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
@@ -3103,7 +3115,7 @@ export default function App() {
 
             {/* Product Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {LOCAL_PRODUCTS.filter(p => 
+              {localProducts.filter(p => p.status !== "draft").filter(p => 
                 !productSearchQuery.trim() || 
                 p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
                 p.description.toLowerCase().includes(productSearchQuery.toLowerCase()) ||
@@ -3406,12 +3418,12 @@ export default function App() {
                   onClick={() => { setSelectedProduct(null); setActiveTab("local-products"); }}
                   className="text-xs font-bold text-[#0047A1] hover:underline flex items-center gap-1"
                 >
-                  View All ({LOCAL_PRODUCTS.length}) →
+                  View All ({localProducts.filter(p => p.status !== "draft").length}) →
                 </button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {LOCAL_PRODUCTS.filter(p => p.id !== selectedProduct.id).map(prod => (
+                {localProducts.filter(p => p.status !== "draft" && p.id !== selectedProduct.id).map(prod => (
                   <div
                     key={prod.id}
                     onClick={() => {

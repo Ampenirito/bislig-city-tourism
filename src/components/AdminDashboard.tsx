@@ -13,7 +13,8 @@ import {
   Accommodation,
   Restaurant,
   Vehicle,
-  Operator
+  Operator,
+  LocalProduct
 } from "../types";
 
 // Types for analytics
@@ -121,7 +122,9 @@ export default function AdminDashboard({
   vehicles,
   setVehicles,
   operators,
-  setOperators
+  setOperators,
+  localProducts,
+  setLocalProducts
 }: {
   onBackToHome: () => void;
   events: TourismEvent[];
@@ -138,6 +141,8 @@ export default function AdminDashboard({
   setVehicles: React.Dispatch<React.SetStateAction<Vehicle[]>>;
   operators: Operator[];
   setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
+  localProducts: LocalProduct[];
+  setLocalProducts: React.Dispatch<React.SetStateAction<LocalProduct[]>>;
 }) {
   // Login State
   const [username, setUsername] = useState("");
@@ -1995,6 +2000,8 @@ Based on survey responses across multiple departments and local businesses, we i
         setVehicles={setVehicles}
         operators={operators}
         setOperators={setOperators}
+        localProducts={localProducts}
+        setLocalProducts={setLocalProducts}
       />
     )}
 
@@ -2730,6 +2737,8 @@ interface BfoCmsManagerProps {
   setVehicles: React.Dispatch<React.SetStateAction<Vehicle[]>>;
   operators: Operator[];
   setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
+  localProducts: LocalProduct[];
+  setLocalProducts: React.Dispatch<React.SetStateAction<LocalProduct[]>>;
 }
 
 function BfoCmsManager({
@@ -2746,16 +2755,18 @@ function BfoCmsManager({
   vehicles,
   setVehicles,
   operators,
-  setOperators
+  setOperators,
+  localProducts,
+  setLocalProducts
 }: BfoCmsManagerProps) {
   interface TrashedItem {
     id: string;
-    category: "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators";
+    category: "products" | "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators";
     originalItem: any;
     deletedAt: string;
   }
 
-  const [cmsTab, setCmsTab] = useState<"events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators" | "trash">("events");
+  const [cmsTab, setCmsTab] = useState<"products" | "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators" | "trash">("products");
   const [cmsSearch, setCmsSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -2783,10 +2794,65 @@ function BfoCmsManager({
     setCmsSearch("");
   }, [cmsTab]);
 
+  // Toggle Draft vs Published Status Handler
+  const handleToggleStatus = (id: string, targetTab: string) => {
+    if (targetTab === "products") {
+      const updated = localProducts.map(p => p.id === id ? { ...p, status: (p.status === "draft" ? "published" : "draft") as "published" | "draft" } : p);
+      setLocalProducts(updated);
+      localStorage.setItem("bislig_local_products", JSON.stringify(updated));
+      const toggled = updated.find(p => p.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "events") {
+      const updated = events.map(e => e.id === id ? { ...e, status: (e.status === "draft" ? "published" : "draft") as "published" | "draft" } : e);
+      setEvents(updated);
+      localStorage.setItem("bislig_events", JSON.stringify(updated));
+      const toggled = updated.find(e => e.id === id);
+      setSuccessMsg(`"${toggled?.title}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "directory") {
+      const updated = establishments.map(est => est.id === id ? { ...est, status: (est.status === "draft" ? "published" : "draft") as "published" | "draft" } : est);
+      setEstablishments(updated);
+      localStorage.setItem("bislig_establishments", JSON.stringify(updated));
+      const toggled = updated.find(est => est.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "attractions") {
+      const updated = attractions.map(a => a.id === id ? { ...a, status: (a.status === "draft" ? "published" : "draft") as "published" | "draft" } : a);
+      setAttractions(updated);
+      localStorage.setItem("bislig_attractions", JSON.stringify(updated));
+      const toggled = updated.find(a => a.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "accommodations") {
+      const updated = accommodations.map(acc => acc.id === id ? { ...acc, status: (acc.status === "draft" ? "published" : "draft") as "published" | "draft" } : acc);
+      setAccommodations(updated);
+      localStorage.setItem("bislig_accommodations", JSON.stringify(updated));
+      const toggled = updated.find(acc => acc.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "restaurants") {
+      const updated = restaurants.map(r => r.id === id ? { ...r, status: (r.status === "draft" ? "published" : "draft") as "published" | "draft" } : r);
+      setRestaurants(updated);
+      localStorage.setItem("bislig_restaurants", JSON.stringify(updated));
+      const toggled = updated.find(r => r.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "rentals") {
+      const updated = vehicles.map(v => v.id === id ? { ...v, status: (v.status === "draft" ? "published" : "draft") as "published" | "draft" } : v);
+      setVehicles(updated);
+      localStorage.setItem("bislig_vehicles", JSON.stringify(updated));
+      const toggled = updated.find(v => v.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    } else if (targetTab === "operators") {
+      const updated = operators.map(op => op.id === id ? { ...op, status: (op.status === "draft" ? "published" : "draft") as "published" | "draft" } : op);
+      setOperators(updated);
+      localStorage.setItem("bislig_operators", JSON.stringify(updated));
+      const toggled = updated.find(op => op.id === id);
+      setSuccessMsg(`"${toggled?.name}" is now set to ${toggled?.status?.toUpperCase()}!`);
+    }
+  };
+
   // Dynamic filter for list view
   const filteredItems = useMemo(() => {
     const query = cmsSearch.toLowerCase();
     switch (cmsTab) {
+      case "products":
+        return localProducts.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
       case "events":
         return events.filter(e => e.title.toLowerCase().includes(query));
       case "directory":
@@ -2807,14 +2873,22 @@ function BfoCmsManager({
           return name.toLowerCase().includes(query);
         });
     }
-  }, [cmsTab, cmsSearch, events, establishments, attractions, accommodations, restaurants, vehicles, operators, trash]);
+  }, [cmsTab, cmsSearch, localProducts, events, establishments, attractions, accommodations, restaurants, vehicles, operators, trash]);
 
   // Move to Trash Handler (Soft Delete)
   const handleRemoveItem = (id: string) => {
     let deletedItem: any = null;
-    let itemCategory: TrashedItem["category"] = "events";
+    let itemCategory: TrashedItem["category"] = "products";
 
-    if (cmsTab === "events") {
+    if (cmsTab === "products") {
+      deletedItem = localProducts.find(p => p.id === id);
+      itemCategory = "products";
+      if (deletedItem) {
+        const updated = localProducts.filter(p => p.id !== id);
+        setLocalProducts(updated);
+        localStorage.setItem("bislig_local_products", JSON.stringify(updated));
+      }
+    } else if (cmsTab === "events") {
       deletedItem = events.find(e => e.id === id);
       itemCategory = "events";
       if (deletedItem) {
@@ -2892,7 +2966,11 @@ function BfoCmsManager({
   const handleRestoreItem = (trashed: TrashedItem) => {
     const { category, originalItem } = trashed;
 
-    if (category === "events") {
+    if (category === "products") {
+      const updated = [...localProducts, originalItem];
+      setLocalProducts(updated);
+      localStorage.setItem("bislig_local_products", JSON.stringify(updated));
+    } else if (category === "events") {
       const updated = [...events, originalItem];
       setEvents(updated);
       localStorage.setItem("bislig_events", JSON.stringify(updated));
@@ -2953,8 +3031,44 @@ function BfoCmsManager({
     if (!nameOrTitle || !nameOrTitle.trim()) return;
 
     const baseId = editingItem ? editingItem.id : (nameOrTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now());
+    const selectedStatus = (formData.get("status") as any) || (editingItem?.status || "published");
 
-    if (cmsTab === "events") {
+    if (cmsTab === "products") {
+      const newProd: LocalProduct = {
+        id: baseId,
+        name: formData.get("name") as string,
+        tagline: formData.get("tagline") as string || "Handcrafted Local Product",
+        category: formData.get("category") as string || "Local Craft",
+        image: formData.get("image") as string || "/assets/images/bisligcity logo.jpg",
+        priceRange: formData.get("priceRange") as string || "Direct Producer Price",
+        description: formData.get("description") as string || "",
+        longDescription: formData.get("longDescription") as string || formData.get("description") as string || "",
+        origin: formData.get("origin") as string || "Bislig City",
+        materials: formData.get("materials") as string || "Local Natural Materials",
+        highlights: (formData.get("highlights") as string || "").split(",").map(s => s.trim()).filter(Boolean),
+        contactPhone: formData.get("contactPhone") as string || "+63 900 000 0000",
+        contactEmail: formData.get("contactEmail") as string || "info@bisligtourism.ph",
+        location: formData.get("location") as string || "Bislig City",
+        operatingHours: formData.get("operatingHours") as string || "08:00 AM - 05:00 PM",
+        socials: {
+          facebook: formData.get("facebook") as string || undefined,
+          instagram: formData.get("instagram") as string || undefined
+        },
+        status: selectedStatus
+      };
+
+      let updated;
+      if (editingItem) {
+        updated = localProducts.map(item => item.id === editingItem.id ? newProd : item);
+        setSuccessMsg("Local product details updated successfully!");
+      } else {
+        updated = [...localProducts, newProd];
+        setSuccessMsg("New local product entry added successfully!");
+      }
+      setLocalProducts(updated);
+      localStorage.setItem("bislig_local_products", JSON.stringify(updated));
+
+    } else if (cmsTab === "events") {
       const newEvent: TourismEvent = {
         id: baseId,
         title: formData.get("title") as string,
@@ -2976,7 +3090,8 @@ function BfoCmsManager({
         highlights: (formData.get("highlights") as string || "").split(",").map(s => s.trim()).filter(Boolean),
         schedule: editingItem ? editingItem.schedule : [],
         tips: (formData.get("tips") as string || "").split(",").map(s => s.trim()).filter(Boolean),
-        tags: (formData.get("tags") as string || "Festival, Bislig").split(",").map(s => s.trim()).filter(Boolean)
+        tags: (formData.get("tags") as string || "Festival, Bislig").split(",").map(s => s.trim()).filter(Boolean),
+        status: selectedStatus
       };
 
       let updated;
@@ -3008,7 +3123,8 @@ function BfoCmsManager({
           lng: parseFloat(formData.get("lng") as string) || 126.3125
         },
         mapUrl: formData.get("mapUrl") as string || "https://maps.google.com",
-        rating: editingItem ? editingItem.rating : 4.5
+        rating: editingItem ? editingItem.rating : 4.5,
+        status: selectedStatus
       };
 
       let updated;
@@ -3045,7 +3161,8 @@ function BfoCmsManager({
           lng: parseFloat(formData.get("lng") as string) || 126.3125
         },
         mapUrl: formData.get("mapUrl") as string || "https://maps.google.com",
-        rating: parseFloat(formData.get("rating") as string) || 4.5
+        rating: parseFloat(formData.get("rating") as string) || 4.5,
+        status: selectedStatus
       };
 
       let updated;
@@ -3077,7 +3194,8 @@ function BfoCmsManager({
           lng: parseFloat(formData.get("lng") as string) || 126.3125
         },
         mapUrl: formData.get("mapUrl") as string || "https://maps.google.com",
-        rating: parseFloat(formData.get("rating") as string) || 4.5
+        rating: parseFloat(formData.get("rating") as string) || 4.5,
+        status: selectedStatus
       };
 
       let updated;
@@ -3109,7 +3227,8 @@ function BfoCmsManager({
           lng: parseFloat(formData.get("lng") as string) || 126.3125
         },
         mapUrl: formData.get("mapUrl") as string || "https://maps.google.com",
-        rating: parseFloat(formData.get("rating") as string) || 4.5
+        rating: parseFloat(formData.get("rating") as string) || 4.5,
+        status: selectedStatus
       };
 
       let updated;
@@ -3135,7 +3254,8 @@ function BfoCmsManager({
         fuel: formData.get("fuel") as string || "Diesel",
         rate: formData.get("rate") as string || "₱1,500 - ₱2,000 / day",
         features: (formData.get("features") as string || "Dual Aircon").split(",").map(s => s.trim()).filter(Boolean),
-        description: formData.get("description") as string || ""
+        description: formData.get("description") as string || "",
+        status: selectedStatus
       };
 
       let updated;
@@ -3166,7 +3286,8 @@ function BfoCmsManager({
           facebook: formData.get("facebook") as string || undefined,
           messenger: formData.get("messenger") as string || undefined,
           whatsapp: formData.get("whatsapp") as string || undefined
-        }
+        },
+        status: selectedStatus
       };
 
       let updated;
@@ -3192,14 +3313,15 @@ function BfoCmsManager({
         <div>
           <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block mb-1">DATABASE MANAGER</span>
           <h2 className="text-xl font-serif font-black text-[#0047A1]">BFO CMS Center</h2>
-          <p className="text-[11px] text-slate-500">Add, edit, or remove events, attractions, car rentals, and directory listings dynamically.</p>
+          <p className="text-[11px] text-slate-500">Add, edit, publish, draft, or remove events, products, attractions, car rentals, and directory listings dynamically.</p>
         </div>
 
         {/* CMS Sub-Tabs selector */}
         <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-200/60 flex-wrap gap-1">
           {[
+            { id: "products", label: "🛍️ Local Products" },
             { id: "events", label: "📅 Events" },
-            { id: "directory", label: "🛍️ Directory" },
+            { id: "directory", label: "🏢 Directory" },
             { id: "attractions", label: "🗺️ Attractions" },
             { id: "accommodations", label: "🏨 Hotels" },
             { id: "restaurants", label: "☕ Dining" },
@@ -3318,6 +3440,7 @@ function BfoCmsManager({
                 const name = item.name || item.title;
                 const subText = item.category || item.dateRange || item.date || item.type || item.rate || item.phone || "";
                 const image = item.image || "/assets/images/bisligcity logo.jpg";
+                const isDraft = item.status === "draft";
                 
                 return (
                   <div 
@@ -3325,6 +3448,8 @@ function BfoCmsManager({
                     className={`bg-white border p-3 rounded-xl flex items-center justify-between gap-3 group transition-all ${
                       editingItem && editingItem.id === item.id 
                         ? "border-[#0047A1] bg-[#0047A1]/5 shadow-sm" 
+                        : isDraft
+                        ? "border-amber-200 bg-amber-50/40"
                         : "border-slate-150 hover:border-[#0047A1]/40 hover:shadow-sm"
                     }`}
                   >
@@ -3338,12 +3463,30 @@ function BfoCmsManager({
                         className="w-10 h-10 rounded-lg object-cover bg-slate-100 shrink-0" 
                       />
                       <div className="min-w-0 leading-tight">
-                        <h4 className="font-extrabold text-xs text-slate-800 truncate">{name}</h4>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h4 className="font-extrabold text-xs text-slate-800 truncate">{name}</h4>
+                          <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${
+                            isDraft ? "bg-amber-100 text-amber-800 border border-amber-300" : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                          }`}>
+                            {isDraft ? "Draft" : "Published"}
+                          </span>
+                        </div>
                         <p className="text-[10px] text-slate-400 font-semibold truncate mt-0.5">{subText}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => handleToggleStatus(item.id, cmsTab)}
+                        className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold transition-all cursor-pointer ${
+                          isDraft
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white"
+                            : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-600 hover:text-white"
+                        }`}
+                        title={isDraft ? "Publish item to live site" : "Move item to Draft"}
+                      >
+                        {isDraft ? "Publish" : "Draft"}
+                      </button>
                       <button
                         onClick={() => setEditingItem(item)}
                         className="p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[#0047A1] hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all cursor-pointer"
@@ -3399,30 +3542,38 @@ function BfoCmsManager({
                 type="button"
                 disabled={trash.length === 0}
                 onClick={handleEmptyTrash}
-                className="w-full bg-rose-600 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-rose-700 disabled:bg-slate-150 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors shadow-md shadow-rose-500/10 cursor-pointer"
+                className="w-full bg-rose-500 hover:bg-rose-600 disabled:bg-slate-200 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                🧹 Empty Trash Bin Permanently
+                <Trash2 className="w-4 h-4" />
+                <span>Empty Trash Bin Permanently</span>
               </button>
             </div>
           </div>
         ) : (
-          <form 
-            onSubmit={handleAddSubmit} 
-            key={editingItem ? editingItem.id : "new-" + cmsTab}
-            className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-4"
-          >
+          <form onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
             <div>
-              <h3 className="text-sm font-black text-[#0047A1] uppercase tracking-wider flex items-center gap-2">
-                {editingItem ? (
-                  <>✏️ Edit {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}: <span className="text-slate-700 font-serif italic normal-case font-bold">{editingItem.name || editingItem.title}</span></>
-                ) : (
-                  <>➕ Add New {cmsTab.slice(0, 1).toUpperCase() + cmsTab.slice(1, -1)}</>
-                )}
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                {editingItem ? `✏️ EDIT ${cmsTab.toUpperCase()} ENTRY` : `➕ ADD NEW ${cmsTab.toUpperCase()} ENTRY`}
               </h3>
-              <p className="text-[10px] text-slate-400 leading-tight mt-1">Specify detailed properties below. Make sure to provide a valid image URL for the featured image.</p>
+              <p className="text-[10px] text-slate-400 leading-tight mt-1">Fill out the fields below. Entries can be saved directly as Published or Draft.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Common Publication Status Dropdown */}
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+              <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block mb-1">
+                Publication Status *
+              </label>
+              <select
+                name="status"
+                defaultValue={editingItem ? (editingItem.status || "published") : "published"}
+                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#0047A1]"
+              >
+                <option value="published">🟢 Published (Visible to Visitors on Website)</option>
+                <option value="draft">🟡 Draft (Hidden from Public Website)</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[480px] overflow-y-auto pr-1">
               {cmsTab === "events" && (
                 <>
                   <div className="md:col-span-2">
