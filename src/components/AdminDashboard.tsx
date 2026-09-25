@@ -2856,7 +2856,10 @@ function BfoCmsManager({
       case "events":
         return events.filter(e => e.title.toLowerCase().includes(query));
       case "directory":
-        return establishments.filter(e => e.name.toLowerCase().includes(query));
+        return establishments.filter(e => {
+          const cats = Array.isArray(e.categories) ? e.categories.join(" ") : (e.category || "");
+          return e.name.toLowerCase().includes(query) || cats.toLowerCase().includes(query) || e.location.toLowerCase().includes(query);
+        });
       case "attractions":
         return attractions.filter(a => a.name.toLowerCase().includes(query));
       case "accommodations":
@@ -3106,12 +3109,17 @@ function BfoCmsManager({
       localStorage.setItem("bislig_events", JSON.stringify(updated));
 
     } else if (cmsTab === "directory") {
+      const selectedCategories = formData.getAll("assignedCategories") as string[];
+      const primaryCategory = (formData.get("category") as string) || (selectedCategories[0] || "Services & Others");
+      const allAssignedCategories = Array.from(new Set([primaryCategory, ...selectedCategories].filter(Boolean)));
+
       const newEst: Establishment = {
         id: baseId,
         name: formData.get("name") as string,
         description: formData.get("description") as string,
         longDescription: formData.get("longDescription") as string || "",
-        category: (formData.get("category") as any) || "Services & Others",
+        category: primaryCategory as any,
+        categories: allAssignedCategories,
         image: formData.get("image") as string || "/assets/images/bisligcity logo.jpg",
         location: formData.get("location") as string || "Bislig City",
         contact: formData.get("contact") as string || "N/A",
@@ -3438,7 +3446,9 @@ function BfoCmsManager({
             <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
               {filteredItems.map((item: any) => {
                 const name = item.name || item.title;
-                const subText = item.category || item.dateRange || item.date || item.type || item.rate || item.phone || "";
+                const subText = Array.isArray(item.categories) && item.categories.length > 0
+                  ? item.categories.join(", ")
+                  : (item.category || item.dateRange || item.date || item.type || item.rate || item.phone || "");
                 const image = item.image || "/assets/images/bisligcity logo.jpg";
                 const isDraft = item.status === "draft";
                 
@@ -3550,7 +3560,7 @@ function BfoCmsManager({
             </div>
           </div>
         ) : (
-          <form onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
+          <form key={editingItem ? `${editingItem.id}-${cmsTab}` : `new-${cmsTab}`} onSubmit={handleAddSubmit} className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
             <div>
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
                 {editingItem ? `✏️ EDIT ${cmsTab.toUpperCase()} ENTRY` : `➕ ADD NEW ${cmsTab.toUpperCase()} ENTRY`}
@@ -3663,18 +3673,64 @@ function BfoCmsManager({
                     <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Directory Category *</label>
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Primary Category *</label>
                     <select name="category" defaultValue={editingItem ? editingItem.category : "Services & Others"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      <option value="Events & Convention Center">Events & Convention Center</option>
+                      <option value="School">School</option>
+                      <option value="Accommodations">Accommodations</option>
+                      <option value="Dining & Cafes">Dining & Cafes</option>
+                      <option value="Attractions">Attractions</option>
                       <option value="Shops & Malls">Shops & Malls</option>
                       <option value="Convenience Stores">Convenience Stores</option>
-                      <option value="Dining & Cafes">Dining & Cafes</option>
                       <option value="Sports & Recreation">Sports & Recreation</option>
+                      <option value="Churches & Landmarks">Churches & Landmarks</option>
                       <option value="Surfing & Beaches">Surfing & Beaches</option>
                       <option value="Services & Others">Services & Others</option>
-                      <option value="Accommodations">Accommodations</option>
-                      <option value="Churches & Landmarks">Churches & Landmarks</option>
-                      <option value="Attractions">Attractions</option>
+                      <option value="Local Products">Local Products</option>
                     </select>
+                  </div>
+                  <div className="md:col-span-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                        Assign to Multiple Categories (Select all that apply)
+                      </label>
+                      <span className="text-[9px] font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">Multi-Category</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400">This entry will appear in the directory whenever visitors filter by any of the checked categories.</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                      {[
+                        "Events & Convention Center",
+                        "School",
+                        "Accommodations",
+                        "Dining & Cafes",
+                        "Attractions",
+                        "Shops & Malls",
+                        "Convenience Stores",
+                        "Sports & Recreation",
+                        "Churches & Landmarks",
+                        "Surfing & Beaches",
+                        "Services & Others",
+                        "Local Products"
+                      ].map((cat) => {
+                        const isChecked = editingItem
+                          ? (Array.isArray(editingItem.categories) 
+                              ? editingItem.categories.includes(cat) 
+                              : editingItem.category === cat)
+                          : false;
+                        return (
+                          <label key={cat} className="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:border-[#0047A1] cursor-pointer transition-all">
+                            <input
+                              type="checkbox"
+                              name="assignedCategories"
+                              value={cat}
+                              defaultChecked={isChecked}
+                              className="w-4 h-4 rounded text-[#0047A1] focus:ring-[#0047A1] border-slate-300"
+                            />
+                            <span className="truncate text-[11px]">{cat}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Operating Hours *</label>

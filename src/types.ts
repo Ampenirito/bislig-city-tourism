@@ -162,7 +162,8 @@ export interface Establishment {
   name: string;
   description: string;
   longDescription?: string;
-  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others" | "Accommodations" | "Churches & Landmarks" | "Attractions" | "Local Products";
+  category: "Shops & Malls" | "Convenience Stores" | "Dining & Cafes" | "Sports & Recreation" | "Surfing & Beaches" | "Services & Others" | "Accommodations" | "Churches & Landmarks" | "Events & Convention Center" | "School" | "Attractions" | "Local Products" | string;
+  categories?: string[];
   image: string;
   location: string;
   contact: string;

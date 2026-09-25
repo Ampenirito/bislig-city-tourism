@@ -491,6 +491,48 @@ export default function App() {
           });
           changed = true;
         }
+        if (!parsedE.some((e: any) => e.id === "bislig-city-cultural-sports-center")) {
+          parsedE.push({
+            id: "bislig-city-cultural-sports-center",
+            name: "Bislig City Cultural & Sports Center",
+            description: "A premier multi-purpose arena and convention hub hosting major city events, sports tournaments, civic gatherings, and cultural celebrations.",
+            longDescription: "The Bislig City Cultural & Sports Center is Bislig's flagship multi-purpose facility and convention hub. Situated in the civic heart of the city, it hosts major cultural festivals, regional athletic meets, municipal conventions, graduation ceremonies, and community exhibitions. Equipped with spacious indoor seating, stage facilities, and basketball/badminton courts, it serves as the vibrant venue where Bisliganons celebrate heritage, sportsmanship, and civic milestones.",
+            category: "Events & Convention Center",
+            categories: ["Events & Convention Center", "Sports & Recreation"],
+            image: "/assets/images/bislig sports center.jpg",
+            location: "Poblacion, Bislig City, Surigao del Sur",
+            contact: "+63 86 853 6000 (City Mayor's Office / Sports Division)",
+            socialMedia: "facebook.com/bisligcitytourism",
+            website: "https://bislig.gov.ph",
+            operatingHours: "06:00 AM - 09:00 PM (Depends on scheduled events)",
+            coordinates: { lat: 8.2198, lng: 126.3633 },
+            mapUrl: "https://www.google.com/maps/search/Bislig+City+Cultural+%26+Sports+Center",
+            rating: 4.8,
+            status: "published"
+          });
+          changed = true;
+        }
+        if (!parsedE.some((e: any) => e.id === "bislig-city-national-high-school")) {
+          parsedE.push({
+            id: "bislig-city-national-high-school",
+            name: "Bislig City National High School",
+            description: "The premier public secondary educational institution in Bislig City, dedicated to academic excellence, leadership, and youth development.",
+            longDescription: "Bislig City National High School (BCNHS) is a renowned public secondary high school located at P10 Villa Josefa, Poblacion, Bislig City. Serving thousands of young scholars across the city, BCNHS offers comprehensive Junior and Senior High School curriculums, STEM tracks, technical-vocational programs, and active arts and athletic clubs. It stands as an educational beacon in Surigao del Sur, fostering competent leaders and future professionals.",
+            category: "School",
+            categories: ["School"],
+            image: "/assets/images/Bislig City National Highschool.jpg",
+            location: "P10 Villa Josefa, Poblacion, Bislig, Philippines, 8311",
+            contact: "+63 86 853 1234 / DepEd Bislig City Division",
+            socialMedia: "facebook.com/BisligCityNationalHighSchool",
+            website: "https://depedbislig.com",
+            operatingHours: "07:00 AM - 05:00 PM (Monday - Friday)",
+            coordinates: { lat: 8.2130, lng: 126.3190 },
+            mapUrl: "https://www.google.com/maps/search/Bislig+City+National+High+School+P10+Villa+Josefa+Poblacion+Bislig",
+            rating: 4.8,
+            status: "published"
+          });
+          changed = true;
+        }
         if (changed) {
           localStorage.setItem("bislig_establishments", JSON.stringify(parsedE));
           setEstablishments(parsedE);
@@ -738,6 +780,8 @@ export default function App() {
       const matchesCategory =
         selectedDirectoryCategory === "All" || 
         est.category === selectedDirectoryCategory ||
+        (Array.isArray(est.categories) && est.categories.includes(selectedDirectoryCategory)) ||
+        (typeof est.category === "string" && est.category.split(",").map((c: string) => c.trim()).includes(selectedDirectoryCategory)) ||
         // Ocean View Park cross-categorization (Dining & Cafes, Attractions)
         (est.name.toLowerCase().includes("ocean view park") && 
           (selectedDirectoryCategory === "Dining & Cafes" || 
@@ -1835,6 +1879,8 @@ export default function App() {
                 {[
                   { label: "All Directory", value: "All" },
                   { label: "Local Products", value: "Local Products" },
+                  { label: "Events & Convention Center", value: "Events & Convention Center" },
+                  { label: "School", value: "School" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
                   { label: "Attractions", value: "Attractions" },
@@ -2045,6 +2091,8 @@ export default function App() {
                 {[
                   { label: "All Directory", value: "All" },
                   { label: "Local Products", value: "Local Products" },
+                  { label: "Events & Convention Center", value: "Events & Convention Center" },
+                  { label: "School", value: "School" },
                   { label: "Accommodations", value: "Accommodations" },
                   { label: "Dining & Cafes", value: "Dining & Cafes" },
                   { label: "Attractions", value: "Attractions" },
@@ -4387,7 +4435,7 @@ export default function App() {
               <span className="text-[#0047A1] text-xs font-bold uppercase tracking-[0.2em] block mb-2">LOCAL RESOURCES</span>
               <h2 className="text-3xl md:text-5xl font-serif text-[#0047A1] font-bold">Bislig City Business & Services Directory</h2>
               <p className="text-slate-600 mt-3 text-sm md:text-base">
-                Discover the best local accommodations, dining spots, shopping centers, convenience stores, sports facilities, churches, landmarks, and emergency services around Bislig proper.
+                Discover the best local accommodations, dining spots, shopping centers, convenience stores, sports facilities, events & convention centers, schools, churches, landmarks, and emergency services around Bislig proper.
               </p>
             </div>
 
@@ -4407,7 +4455,7 @@ export default function App() {
 
               {/* Category Filter Tabs */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {["All", "Local Products", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
+                {["All", "Local Products", "Events & Convention Center", "School", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedDirectoryCategory(cat)}
@@ -4442,10 +4490,18 @@ export default function App() {
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute top-4 left-4">
-                        <span className="text-[9px] font-extrabold uppercase px-2.5 py-1 bg-white text-slate-800 rounded-full shadow-sm border border-slate-100 tracking-wider">
-                          {est.category}
-                        </span>
+                      <div className="absolute top-4 left-4 flex flex-wrap gap-1 max-w-[80%]">
+                        {Array.isArray(est.categories) && est.categories.length > 0 ? (
+                          est.categories.map((c: string) => (
+                            <span key={c} className="text-[9px] font-extrabold uppercase px-2 py-0.5 bg-white text-slate-800 rounded-full shadow-sm border border-slate-100 tracking-wider">
+                              {c}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-[9px] font-extrabold uppercase px-2.5 py-1 bg-white text-slate-800 rounded-full shadow-sm border border-slate-100 tracking-wider">
+                            {est.category}
+                          </span>
+                        )}
                       </div>
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full text-[10px] font-semibold opacity-80 group-hover:opacity-100 transition-opacity shadow flex items-center justify-center">
                         <Maximize2 className="w-3.5 h-3.5" />
@@ -5221,9 +5277,17 @@ export default function App() {
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="absolute bottom-4 left-4 text-white drop-shadow-md">
-                <span className="text-[9px] px-2 py-0.5 bg-[#0047A1] text-white rounded font-bold uppercase">{selectedEstablishment.category}</span>
-                <h3 className="text-xl font-bold font-serif mt-1 text-white">{selectedEstablishment.name}</h3>
+              <div className="absolute bottom-4 left-4 text-white drop-shadow-md max-w-[85%]">
+                <div className="flex flex-wrap gap-1 mb-1">
+                  {Array.isArray(selectedEstablishment.categories) && selectedEstablishment.categories.length > 0 ? (
+                    selectedEstablishment.categories.map((c: string) => (
+                      <span key={c} className="text-[9px] px-2 py-0.5 bg-[#0047A1] text-white rounded font-bold uppercase">{c}</span>
+                    ))
+                  ) : (
+                    <span className="text-[9px] px-2 py-0.5 bg-[#0047A1] text-white rounded font-bold uppercase">{selectedEstablishment.category}</span>
+                  )}
+                </div>
+                <h3 className="text-xl font-bold font-serif text-white">{selectedEstablishment.name}</h3>
               </div>
             </div>
             <div className="p-6 space-y-4 max-h-[calc(100vh-20rem)] overflow-y-auto">
