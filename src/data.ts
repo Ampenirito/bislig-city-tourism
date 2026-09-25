@@ -971,6 +971,23 @@ export const ESTABLISHMENTS: Establishment[] = [
     rating: 4.6
   },
   {
+    id: "bislig-city-church-of-christ",
+    name: "Bislig City Church of Christ",
+    description: "A welcoming Christian church and spiritual community located at Guava Junction in Poblacion, Bislig City.",
+    longDescription: "Bislig City Church of Christ is a vibrant Christian congregation located at Purok 11, Guava Junction, Poblacion, Bislig City. It serves as a spiritual home offering regular Sunday worship, prayer meetings, Bible study sessions, and community fellowship. The church warmly opens its doors to local residents and visitors looking for a welcoming place of worship and spiritual encouragement.",
+    category: "Churches & Landmarks",
+    image: "/assets/images/Church of Christ.jpg",
+    location: "Purok 11 guava junction, poblacion, Bislig City",
+    contact: "+63 912 345 6789",
+    socialMedia: "facebook.com/bisligcitychurchofchrist",
+    website: "",
+    operatingHours: "Sunday Worship: 09:00 AM - 12:00 PM | Open Daily for Prayer",
+    coordinates: { lat: 8.2148, lng: 126.3155 },
+    mapUrl: "https://www.google.com/maps/search/Bislig+City+Church+of+Christ+Purok+11+guava+junction+poblacion+Bislig+City",
+    rating: 4.8,
+    status: "published"
+  },
+  {
     id: "i-love-bislig",
     name: "I Love Bislig Sign & Baywalk",
     description: "The iconic colorful landmark sign along the scenic Bislig Baywalk, perfect for souvenir photos and evening walks.",
