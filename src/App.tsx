@@ -337,6 +337,39 @@ export default function App() {
     }
   });
 
+  const [directoryCategories, setDirectoryCategories] = useState<string[]>(() => {
+    const defaultCats = [
+      "Events & Convention Center",
+      "School",
+      "Accommodations",
+      "Dining & Cafes",
+      "Attractions",
+      "Shops & Malls",
+      "Convenience Stores",
+      "Sports & Recreation",
+      "Churches & Landmarks",
+      "Surfing & Beaches",
+      "Services & Others",
+      "Local Products"
+    ];
+    try {
+      const saved = localStorage.getItem("bislig_directory_categories");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return Array.from(new Set([...parsed, ...defaultCats]));
+        }
+      }
+    } catch {}
+    return defaultCats;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("bislig_directory_categories", JSON.stringify(directoryCategories));
+    } catch {}
+  }, [directoryCategories]);
+
   // Real-time Weather State
   const [weatherData, setWeatherData] = useState<{
     temperature: number;
@@ -1740,6 +1773,8 @@ export default function App() {
         setOperators={setOperators}
         localProducts={localProducts}
         setLocalProducts={setLocalProducts}
+        directoryCategories={directoryCategories}
+        setDirectoryCategories={setDirectoryCategories}
       />
     );
   }
@@ -1878,17 +1913,7 @@ export default function App() {
                 </div>
                 {[
                   { label: "All Directory", value: "All" },
-                  { label: "Local Products", value: "Local Products" },
-                  { label: "Events & Convention Center", value: "Events & Convention Center" },
-                  { label: "School", value: "School" },
-                  { label: "Accommodations", value: "Accommodations" },
-                  { label: "Dining & Cafes", value: "Dining & Cafes" },
-                  { label: "Attractions", value: "Attractions" },
-                  { label: "Shops & Malls", value: "Shops & Malls" },
-                  { label: "Sports & Recreation", value: "Sports & Recreation" },
-                  { label: "Churches & Landmarks", value: "Churches & Landmarks" },
-                  { label: "Surfing & Beaches", value: "Surfing & Beaches" },
-                  { label: "Services & Others", value: "Services & Others" }
+                  ...directoryCategories.map((c) => ({ label: c, value: c }))
                 ].map((item) => (
                   <button
                     key={item.value}
@@ -2090,17 +2115,7 @@ export default function App() {
               <div className="pl-6 pr-2 py-1 space-y-1.5 flex flex-col border-l border-slate-100 ml-4 animate-fadeIn">
                 {[
                   { label: "All Directory", value: "All" },
-                  { label: "Local Products", value: "Local Products" },
-                  { label: "Events & Convention Center", value: "Events & Convention Center" },
-                  { label: "School", value: "School" },
-                  { label: "Accommodations", value: "Accommodations" },
-                  { label: "Dining & Cafes", value: "Dining & Cafes" },
-                  { label: "Attractions", value: "Attractions" },
-                  { label: "Shops & Malls", value: "Shops & Malls" },
-                  { label: "Sports & Recreation", value: "Sports & Recreation" },
-                  { label: "Churches & Landmarks", value: "Churches & Landmarks" },
-                  { label: "Surfing & Beaches", value: "Surfing & Beaches" },
-                  { label: "Services & Others", value: "Services & Others" }
+                  ...directoryCategories.map((c) => ({ label: c, value: c }))
                 ].map((item) => (
                   <button
                     key={item.value}
@@ -4455,7 +4470,7 @@ export default function App() {
 
               {/* Category Filter Tabs */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {["All", "Local Products", "Events & Convention Center", "School", "Accommodations", "Dining & Cafes", "Attractions", "Shops & Malls", "Sports & Recreation", "Churches & Landmarks", "Surfing & Beaches", "Services & Others"].map((cat) => (
+                {["All", ...directoryCategories].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedDirectoryCategory(cat)}

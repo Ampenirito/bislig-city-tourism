@@ -124,7 +124,9 @@ export default function AdminDashboard({
   operators,
   setOperators,
   localProducts,
-  setLocalProducts
+  setLocalProducts,
+  directoryCategories,
+  setDirectoryCategories
 }: {
   onBackToHome: () => void;
   events: TourismEvent[];
@@ -143,6 +145,8 @@ export default function AdminDashboard({
   setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
   localProducts: LocalProduct[];
   setLocalProducts: React.Dispatch<React.SetStateAction<LocalProduct[]>>;
+  directoryCategories?: string[];
+  setDirectoryCategories?: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
   // Login State
   const [username, setUsername] = useState("");
@@ -2002,6 +2006,8 @@ Based on survey responses across multiple departments and local businesses, we i
         setOperators={setOperators}
         localProducts={localProducts}
         setLocalProducts={setLocalProducts}
+        directoryCategories={directoryCategories}
+        setDirectoryCategories={setDirectoryCategories}
       />
     )}
 
@@ -2739,7 +2745,24 @@ interface BfoCmsManagerProps {
   setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
   localProducts: LocalProduct[];
   setLocalProducts: React.Dispatch<React.SetStateAction<LocalProduct[]>>;
+  directoryCategories?: string[];
+  setDirectoryCategories?: React.Dispatch<React.SetStateAction<string[]>>;
 }
+
+const DEFAULT_DIRECTORY_CATEGORIES = [
+  "Events & Convention Center",
+  "School",
+  "Accommodations",
+  "Dining & Cafes",
+  "Attractions",
+  "Shops & Malls",
+  "Convenience Stores",
+  "Sports & Recreation",
+  "Churches & Landmarks",
+  "Surfing & Beaches",
+  "Services & Others",
+  "Local Products"
+];
 
 function BfoCmsManager({
   events,
@@ -2757,7 +2780,9 @@ function BfoCmsManager({
   operators,
   setOperators,
   localProducts,
-  setLocalProducts
+  setLocalProducts,
+  directoryCategories,
+  setDirectoryCategories
 }: BfoCmsManagerProps) {
   interface TrashedItem {
     id: string;
@@ -2766,10 +2791,123 @@ function BfoCmsManager({
     deletedAt: string;
   }
 
-  const [cmsTab, setCmsTab] = useState<"products" | "events" | "directory" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators" | "trash">("products");
+  const [cmsTab, setCmsTab] = useState<"products" | "events" | "directory" | "categories" | "attractions" | "accommodations" | "restaurants" | "rentals" | "operators" | "trash">("products");
   const [cmsSearch, setCmsSearch] = useState("");
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [editingItem, setEditingItem] = useState<any | null>(null);
+
+  // Category Management State
+  const [localCategories, setLocalCategories] = useState<string[]>(() => {
+    if (directoryCategories && directoryCategories.length > 0) return directoryCategories;
+    try {
+      const saved = localStorage.getItem("bislig_directory_categories");
+      return saved ? JSON.parse(saved) : DEFAULT_DIRECTORY_CATEGORIES;
+    } catch {
+      return DEFAULT_DIRECTORY_CATEGORIES;
+    }
+  });
+
+  useEffect(() => {
+    if (directoryCategories && directoryCategories.length > 0) {
+      setLocalCategories(directoryCategories);
+    }
+  }, [directoryCategories]);
+
+  const updateCategories = (newCats: string[]) => {
+    setLocalCategories(newCats);
+    try {
+      localStorage.setItem("bislig_directory_categories", JSON.stringify(newCats));
+    } catch {}
+    if (setDirectoryCategories) {
+      setDirectoryCategories(newCats);
+    }
+  };
+
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [newCatInput, setNewCatInput] = useState<string>("");
+  const [editCatInput, setEditCatInput] = useState<string>("");
+
+  const handleAddCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCatInput.trim();
+    if (!trimmed) return;
+    if (localCategories.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+      alert("A category with this name already exists!");
+      return;
+    }
+    const updated = [...localCategories, trimmed];
+    updateCategories(updated);
+    setNewCatInput("");
+    setSuccessMsg(`Category "${trimmed}" added successfully!`);
+  };
+
+  const handleEditCategorySave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory) return;
+    const oldName = editingCategory;
+    const trimmed = editCatInput.trim();
+    if (!trimmed) return;
+    if (trimmed.toLowerCase() !== oldName.toLowerCase() && localCategories.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+      alert("Another category with this name already exists!");
+      return;
+    }
+
+    const updatedCats = localCategories.map(c => c === oldName ? trimmed : c);
+    updateCategories(updatedCats);
+
+    // Cascade update to all establishments
+    let matchCount = 0;
+    const updatedEst = establishments.map(est => {
+      let changed = false;
+      let primary = est.category;
+      let assigned = Array.isArray(est.categories) ? [...est.categories] : [est.category];
+
+      if (primary === oldName) {
+        primary = trimmed as any;
+        changed = true;
+      }
+      if (assigned.includes(oldName)) {
+        assigned = assigned.map(c => c === oldName ? trimmed : c);
+        changed = true;
+      }
+      if (changed) {
+        matchCount++;
+        return { ...est, category: primary, categories: assigned };
+      }
+      return est;
+    });
+
+    if (matchCount > 0) {
+      setEstablishments(updatedEst);
+      try {
+        localStorage.setItem("bislig_establishments", JSON.stringify(updatedEst));
+      } catch {}
+    }
+
+    setEditingCategory(null);
+    setEditCatInput("");
+    setSuccessMsg(`Category renamed from "${oldName}" to "${trimmed}" (updated in ${matchCount} directory entries)!`);
+  };
+
+  const handleDeleteCategory = (catName: string) => {
+    const assignedEsts = establishments.filter(est => 
+      est.category === catName || (Array.isArray(est.categories) && est.categories.includes(catName))
+    );
+
+    const warnMsg = assignedEsts.length > 0
+      ? `"${catName}" is currently assigned to ${assignedEsts.length} directory establishment(s). Are you sure you want to delete this category?`
+      : `Are you sure you want to delete the category "${catName}"?`;
+
+    if (!window.confirm(warnMsg)) return;
+
+    const updated = localCategories.filter(c => c !== catName);
+    updateCategories(updated);
+    if (editingCategory === catName) {
+      setEditingCategory(null);
+      setEditCatInput("");
+    }
+    setSuccessMsg(`Category "${catName}" has been removed.`);
+  };
 
   const [trash, setTrash] = useState<TrashedItem[]>(() => {
     try {
@@ -2791,6 +2929,7 @@ function BfoCmsManager({
   // Reset editing mode when switching tabs
   useEffect(() => {
     setEditingItem(null);
+    setEditingCategory(null);
     setCmsSearch("");
   }, [cmsTab]);
 
@@ -2860,6 +2999,8 @@ function BfoCmsManager({
           const cats = Array.isArray(e.categories) ? e.categories.join(" ") : (e.category || "");
           return e.name.toLowerCase().includes(query) || cats.toLowerCase().includes(query) || e.location.toLowerCase().includes(query);
         });
+      case "categories":
+        return localCategories.filter(c => c.toLowerCase().includes(query));
       case "attractions":
         return attractions.filter(a => a.name.toLowerCase().includes(query));
       case "accommodations":
@@ -3330,6 +3471,7 @@ function BfoCmsManager({
             { id: "products", label: "🛍️ Local Products" },
             { id: "events", label: "📅 Events" },
             { id: "directory", label: "🏢 Directory" },
+            { id: "categories", label: "📂 Categories" },
             { id: "attractions", label: "🗺️ Attractions" },
             { id: "accommodations", label: "🏨 Hotels" },
             { id: "restaurants", label: "☕ Dining" },
@@ -3390,7 +3532,66 @@ function BfoCmsManager({
           </div>
 
           {/* Items Container */}
-          {cmsTab === "trash" ? (
+          {cmsTab === "categories" ? (
+            <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+              {filteredItems.map((catName: any) => {
+                const count = establishments.filter(est => 
+                  est.category === catName || (Array.isArray(est.categories) && est.categories.includes(catName))
+                ).length;
+                const isEditing = editingCategory === catName;
+
+                return (
+                  <div 
+                    key={catName}
+                    className={`bg-white border p-3 rounded-xl flex items-center justify-between gap-3 group transition-all ${
+                      isEditing 
+                        ? "border-[#0047A1] bg-[#0047A1]/5 shadow-sm" 
+                        : "border-slate-150 hover:border-[#0047A1]/40 hover:shadow-sm"
+                    }`}
+                  >
+                    <div className="min-w-0 leading-tight">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-extrabold text-xs text-slate-800">{catName}</h4>
+                        {isEditing && (
+                          <span className="px-1.5 py-0.5 bg-blue-100 text-[#0047A1] text-[8px] font-bold rounded">
+                            Editing
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                        {count} {count === 1 ? "establishment" : "establishments"} assigned
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCategory(catName);
+                          setEditCatInput(catName);
+                        }}
+                        className="p-1.5 rounded-lg bg-blue-50 border border-blue-100 text-[#0047A1] hover:bg-[#0047A1] hover:text-white hover:border-[#0047A1] transition-all cursor-pointer"
+                        title="Edit Category Name"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(catName)}
+                        className="p-1.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all cursor-pointer"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              {filteredItems.length === 0 && (
+                <p className="text-xs text-slate-400 italic text-center py-6">No matching categories found.</p>
+              )}
+            </div>
+          ) : cmsTab === "trash" ? (
             <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
               {filteredItems.map((itemVal: any) => {
                 const tItem = itemVal as TrashedItem;
@@ -3523,8 +3724,101 @@ function BfoCmsManager({
           )}
         </div>
 
-        {/* Right Side: Form Panel or Trash Info Panel (7 columns) */}
-        {cmsTab === "trash" ? (
+        {/* Right Side: Form Panel, Categories Panel, or Trash Info Panel (7 columns) */}
+        {cmsTab === "categories" ? (
+          <div className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
+            <div>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
+                {editingCategory ? "✏️ EDIT CATEGORY NAME" : "➕ ADD NEW DIRECTORY CATEGORY"}
+              </h3>
+              <p className="text-[10px] text-slate-400 leading-tight mt-1">
+                {editingCategory 
+                  ? `Renaming "${editingCategory}" will automatically update all existing establishments currently assigned to it.` 
+                  : "Add new business or resource categories to organize the Bislig City directory."}
+              </p>
+            </div>
+
+            {editingCategory ? (
+              <form onSubmit={handleEditCategorySave} className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">
+                    Current Category Name
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={editingCategory}
+                    className="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 cursor-not-allowed"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">
+                    New Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editCatInput}
+                    onChange={(e) => setEditCatInput(e.target.value)}
+                    placeholder="e.g. Higher Education & Universities"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]"
+                  />
+                </div>
+
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200/80 text-[11px] text-amber-800 leading-relaxed">
+                  💡 <strong>Cascade Update:</strong> Saving this will instantly update all directory entries in your database and on the public website that are assigned to <strong>"{editingCategory}"</strong>.
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#0047A1] hover:bg-[#003882] text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all cursor-pointer"
+                  >
+                    Save Category Name
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCategory(null);
+                      setEditCatInput("");
+                    }}
+                    className="px-5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleAddCategory} className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">
+                    New Category Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newCatInput}
+                    onChange={(e) => setNewCatInput(e.target.value)}
+                    placeholder="e.g. Medical Clinics & Hospitals, Banks & ATMs"
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]"
+                  />
+                </div>
+
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-200/80 text-[11px] text-[#0047A1] leading-relaxed">
+                  ✨ <strong>Instant Availability:</strong> Once added, this category will immediately appear in the Directory category filter tabs, navigation menus, and the CMS directory entry form.
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-[#0047A1] hover:bg-[#003882] text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all cursor-pointer"
+                >
+                  ➕ Add Category
+                </button>
+              </form>
+            )}
+          </div>
+        ) : cmsTab === "trash" ? (
           <div className="lg:col-span-7 bg-white border border-slate-200/60 p-6 rounded-2xl space-y-6">
             <div>
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">
@@ -3673,20 +3967,20 @@ function BfoCmsManager({
                     <input type="text" name="name" required defaultValue={editingItem ? editingItem.name : ""} placeholder="Aqua X Refilling Station" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block mb-1">Primary Category *</label>
-                    <select name="category" defaultValue={editingItem ? editingItem.category : "Services & Others"} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
-                      <option value="Events & Convention Center">Events & Convention Center</option>
-                      <option value="School">School</option>
-                      <option value="Accommodations">Accommodations</option>
-                      <option value="Dining & Cafes">Dining & Cafes</option>
-                      <option value="Attractions">Attractions</option>
-                      <option value="Shops & Malls">Shops & Malls</option>
-                      <option value="Convenience Stores">Convenience Stores</option>
-                      <option value="Sports & Recreation">Sports & Recreation</option>
-                      <option value="Churches & Landmarks">Churches & Landmarks</option>
-                      <option value="Surfing & Beaches">Surfing & Beaches</option>
-                      <option value="Services & Others">Services & Others</option>
-                      <option value="Local Products">Local Products</option>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-[10px] font-black text-slate-600 uppercase tracking-wider block">Primary Category *</label>
+                      <button
+                        type="button"
+                        onClick={() => setCmsTab("categories")}
+                        className="text-[10px] font-bold text-[#0047A1] hover:underline cursor-pointer"
+                      >
+                        + Manage Categories
+                      </button>
+                    </div>
+                    <select name="category" defaultValue={editingItem ? editingItem.category : (localCategories[0] || "Services & Others")} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-[#0047A1]">
+                      {localCategories.map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="md:col-span-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
@@ -3694,24 +3988,17 @@ function BfoCmsManager({
                       <label className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
                         Assign to Multiple Categories (Select all that apply)
                       </label>
-                      <span className="text-[9px] font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">Multi-Category</span>
+                      <button
+                        type="button"
+                        onClick={() => setCmsTab("categories")}
+                        className="text-[9px] font-bold text-[#0047A1] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer"
+                      >
+                        Edit Categories
+                      </button>
                     </div>
                     <p className="text-[10px] text-slate-400">This entry will appear in the directory whenever visitors filter by any of the checked categories.</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
-                      {[
-                        "Events & Convention Center",
-                        "School",
-                        "Accommodations",
-                        "Dining & Cafes",
-                        "Attractions",
-                        "Shops & Malls",
-                        "Convenience Stores",
-                        "Sports & Recreation",
-                        "Churches & Landmarks",
-                        "Surfing & Beaches",
-                        "Services & Others",
-                        "Local Products"
-                      ].map((cat) => {
+                      {localCategories.map((cat) => {
                         const isChecked = editingItem
                           ? (Array.isArray(editingItem.categories) 
                               ? editingItem.categories.includes(cat) 
